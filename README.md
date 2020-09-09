@@ -1,2 +1,9 @@
 # saltyrtc-client-kotlin-mpp
-Kotlin multiplatform implementation of the SaltyRTC client
+Kotlin multiplatform programming implementation of the SaltyRTC client. 
+
+
+# Target: JVM 
+# Target: JS 
+ 
+
+
