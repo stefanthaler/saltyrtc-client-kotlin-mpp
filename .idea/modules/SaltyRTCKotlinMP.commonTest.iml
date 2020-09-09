@@ -5,9 +5,7 @@
       <configuration version="3" platform="Common (experimental) " allPlatforms="JS []/JVM [1.6]/Native []/Native [general]" useProjectSettings="false" isTestModule="true" externalProjectId="SaltyRTCKotlinMP">
         <newMppModelJpsModuleKind>SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>
-          <externalSystemTestTask>jsBrowserTest|SaltyRTCKotlinMP:jsTest|js</externalSystemTestTask>
           <externalSystemTestTask>jvmTest|SaltyRTCKotlinMP:jvmTest|jvm</externalSystemTestTask>
-          <externalSystemTestTask>nativeTest|SaltyRTCKotlinMP:nativeTest|native</externalSystemTestTask>
         </externalSystemTestTasks>
         <compilerSettings />
         <compilerArguments>
