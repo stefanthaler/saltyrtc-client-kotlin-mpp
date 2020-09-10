@@ -1,18 +1,15 @@
 package org.saltyrtc.client.crypto
 
-actual class SecureRandom {
-    /**
-     * Securely random bytes
-     */
-    actual fun nextBytes(numBytes: Int): ByteArray {
-        TODO("Not yet implemented")
-    }
+/**
+ * Securely random bytes
+ */
+actual fun secureRandomeBytes(numBytes: Int): ByteArray {
+    TODO("Not yet implemented")
+}
 
-    /**
-     * Next securely random Integer
-     */
-    actual fun nextInt(): Int {
-        TODO("Not yet implemented")
-    }
-
+/**
+ * Next securely random Int
+ */
+actual fun secureRandomInt(): Int {
+    TODO("Not yet implemented")
 }

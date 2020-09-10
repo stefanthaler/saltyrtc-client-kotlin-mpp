@@ -1,9 +1,8 @@
-package org.saltyrtc.client.message
+package org.saltyrtc.client.signalling
 
 
 import org.saltyrtc.client.crypto.secureRandomeBytes
 import org.saltyrtc.client.exceptions.ValidationError
-import kotlin.random.Random.Default.nextBytes
 
 class Cookie {
     val bytes:ByteArray
