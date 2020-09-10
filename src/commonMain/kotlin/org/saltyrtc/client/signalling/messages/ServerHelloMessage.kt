@@ -7,7 +7,7 @@ import org.saltyrtc.client.signalling.SignallingMessage
 class ServerHelloMessage: SignallingMessage {
     lateinit var key:ByteArray
 
-    constructor(type: String, nonce: Nonce, payloadMap: Map<String, Any>) {
+    constructor(type: String, nonce: Nonce, payloadMap: Map<String, Any>) : super(type, nonce, payloadMap) {
         //TODO validate all values
 
         key = payloadMap.get("key") as ByteArray

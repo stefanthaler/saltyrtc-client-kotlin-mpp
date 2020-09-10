@@ -1,3 +1,4 @@
+@file:JvmName("JVMLogger")
 package org.saltyrtc.client.logging
 
 import mu.KotlinLogging
@@ -7,7 +8,6 @@ private val logger = KotlinLogging.logger {}
 
 
 internal actual fun writeLogMessage(message: String, logLevel: LogLevel) {
-
     when(logLevel) {
         LogLevel.DEBUG -> {logger.debug { message }}
         LogLevel.WARN -> {logger.warn { message }}
