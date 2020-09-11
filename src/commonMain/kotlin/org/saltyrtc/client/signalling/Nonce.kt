@@ -1,13 +1,14 @@
 package org.saltyrtc.client.signalling
 
+import org.saltyrtc.client.extensions.toByteArary
+import org.saltyrtc.client.extensions.toByteArray
 import org.saltyrtc.client.extensions.toUInt
 import org.saltyrtc.client.extensions.toUShort
 
 class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val overflowNumber: UShort, val sequenceNumber: UInt ) {
 
     fun toByteArray():ByteArray {
-        //TODO continue here
-        return cookie.bytes
+        return cookie.bytes + source.toByteArray() + destination.toByteArray() + overflowNumber.toByteArary() + sequenceNumber.toByteArray()
     }
 
     companion object{
@@ -21,5 +22,6 @@ class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val over
         }
     }
 }
+
 
 

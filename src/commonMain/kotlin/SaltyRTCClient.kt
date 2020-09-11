@@ -4,9 +4,11 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import org.saltyrtc.client.crypto.NaCLKeyPair
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.signalling.*
+import org.saltyrtc.client.signalling.Cookie
 import org.saltyrtc.client.signalling.states.StartState
 
 
@@ -16,6 +18,7 @@ import org.saltyrtc.client.signalling.states.StartState
  * TODO testing
  * @property state The current signalling state.
  * @property role The role this client assumes - either initiator of a WebRTC connection, or repsonder.
+ * @property identity: A client SHALL use its assigned identity as source address. If it has not been assigned an identity yet, the source address MUST be set to 0x00
  */
 class SaltyRTCClient {
     var state: State = StartState(this)
@@ -30,11 +33,18 @@ class SaltyRTCClient {
     var signallingPath: SignallingPath? = null
     var websocketSession: WebSocketSession? = null
     var sessionPublicKey:ByteArray? = null
+    var identity:Byte = 0
+    lateinit var clientPermanentKey:NaCLKeyPair
+    var your_cookie: Cookie? = null
 
+    constructor(clientPermanentKey:NaCLKeyPair) {
+        this.clientPermanentKey = clientPermanentKey
+    }
 
-    fun recieve(frame: ByteArray) {
+    suspend fun recieve(frame: ByteArray) {
         logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
-        val nonce = Nonce.from(frame.sliceArray(0..23)) // TODO validate nonce
+        val nonce = Nonce.from(frame.sliceArray(0..23))
+
         val payload:ByteArray = frame.sliceArray(24 .. frame.size - 1)
         // Unpack data into map
         val payloadMap =  unpackPayloadMap(payload)
@@ -45,13 +55,28 @@ class SaltyRTCClient {
         if(message==null) {
             throw ValidationError("Message of $messageType could not be created")
         }
+        if (message !is IncomingSignallingMessage) {
+            throw ValidationError("Message should be an IncommingSignallingMessage, was ${message::class.toString()}")
+        }
+        message.validateSource(role)
         //TODO notify observers
         //TODO construct message
 
         state.recieve(message)
     }
 
-    fun sendNextMessage() {
+    fun nextNonce(destination: Byte):Nonce {
+        if (your_cookie==null) {
+            throw ValidationError("Trying to construct a nonce when your cookie was not set.")
+        }
+
+        return Nonce(cookie = your_cookie!!,source = identity, destination=destination, 0u,0u)
+    }
+
+    /**
+     * Sends the next message(s) according to the protocol state.
+     */
+    suspend fun sendNextMessage() {
         state.sendNextMessage()
     }
 
@@ -116,6 +141,21 @@ class SaltyRTCClient {
 
     fun isResponder():Boolean {
         return role == Role.RESPONDER
+    }
+
+    fun validateDestination(destination:Byte) {
+        if (!state.isAuthenticated()) {
+            if (destination.toInt()!=0) throw ValidationError("A client MUST check that the destination address targets 0x00 during authentication,was $destination")
+            if (identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
+        }
+        // now we are in an authenticated state
+        if (isInitiator()) {
+            if (destination.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $destination")
+            if (identity.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $identity")
+        } else {
+            if (destination.toInt()==1) throw ValidationError("Responders SHALL ONLY accept 0x0-20xFF as destination after authentication, was $destination")
+            if (identity.toInt()==1) throw ValidationError("Responders SHALL ONLY accept 0x02-0xFF as destination after authentication, was $identity")
+        }
     }
 
     enum class Role {

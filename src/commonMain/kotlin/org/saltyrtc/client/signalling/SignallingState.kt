@@ -3,13 +3,14 @@ package org.saltyrtc.client.signalling
 import SaltyRTCClient
 
 interface State {
-    abstract fun recieve(message:SignallingMessage)
-    abstract fun sendNextMessage()
+    abstract suspend fun recieve(message:IncomingSignallingMessage)
+    abstract suspend fun sendNextMessage()
+    abstract fun isAuthenticated(): Boolean
 }
 
 /**
  *
  */
-abstract class BaseState:State {
-    constructor(client:SaltyRTCClient)
+abstract class BaseState(val client:SaltyRTCClient):State {
+
 }

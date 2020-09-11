@@ -6,7 +6,7 @@ import org.saltyrtc.client.signalling.messages.ServerHelloMessage
 enum class SignallingMessageTypes(val type:String) {
     SERVER_HELLO("server-hello") {
         override fun create(nonce: Nonce, map: Map<String, Any>): SignallingMessage {
-            return ServerHelloMessage(type, nonce, map)
+            return ServerHelloMessage(nonce, map)
         }
     },
     CLIENT_HELLO("client-hello") {

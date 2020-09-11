@@ -15,3 +15,7 @@ actual fun unpackPayloadMap(payload: ByteArray): Map<String, Any> {
     }
     return map
 }
+
+actual fun packPayloadMap(payloadMap: HashMap<String, Any>): ByteArray {
+    TODO("Not yet implemented")
+}
