@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.logging.logDebug
@@ -21,7 +22,7 @@ import org.saltyrtc.client.signalling.states.StartState
  * @property identity: A client SHALL use its assigned identity as source address. If it has not been assigned an identity yet, the source address MUST be set to 0x00
  * @see https://github.com/saltyrtc/saltyrtc-meta
  */
-class SaltyRTCClient {
+class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     var state: State = StartState(this)
         set(newState:State) {
             //TODO add notification for observer
@@ -33,14 +34,9 @@ class SaltyRTCClient {
     var signallingServer:SignallingServer? = null
     var signallingPath: SignallingPath? = null
     var websocketSession: WebSocketSession? = null
-    var sessionPublicKey:ByteArray? = null
+    var sessionPublicKey:NaClKey.NaClPublicKey? = null
     var identity:Byte = 0
-    lateinit var clientPermanentKey:NaClKeyPair
     var your_cookie: Cookie? = null
-
-    constructor(clientPermanentKey:NaClKeyPair) {
-        this.clientPermanentKey = clientPermanentKey
-    }
 
     suspend fun recieve(frame: ByteArray) {
         logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
@@ -48,7 +44,6 @@ class SaltyRTCClient {
         val data:ByteArray = frame.sliceArray(24 .. frame.size - 1)
         //TODO notify observers
         //TODO construct message
-
         state.recieve(nonce, data)
     }
 
@@ -64,7 +59,7 @@ class SaltyRTCClient {
      * Sends the next message(s) according to the protocol state.
      */
     suspend fun sendNextMessage() {
-        state.sendNextMessage()
+        state.sendNextProtocolMessage()
     }
 
     suspend fun openWebSocket(server: SignallingServer, path:SignallingPath) {

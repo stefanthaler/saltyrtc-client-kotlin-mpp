@@ -50,7 +50,18 @@ abstract class IncomingSignallingMessage(nonce: Nonce, val payloadMap: Map<Strin
 abstract class OutgoingSignallingMessage(nonce: Nonce, val client:SaltyRTCClient):SignallingMessage(nonce)  {
     var payloadMap = HashMap<String,Any>()
 
-    abstract fun encrypt(payloadBytes: ByteArray):ByteArray
+    /**
+     * method that creates
+     * @param naCl NaCl compliant crypto provider. If supplied, then the data will be encrypted, otherwise the messagepacked payload.
+     * @return A bytearray containing either the encrypted or the unencrypted databaytes of the message.
+     */
+    fun getDataBytes(naCl: NaCl?=null):ByteArray {
+        return if( naCl!=null) {
+            naCl.encrypt(this)
+        } else {
+            payloadBytes()
+        }
+    }
 
     /**
      * Message packed payload of the message
@@ -61,10 +72,11 @@ abstract class OutgoingSignallingMessage(nonce: Nonce, val client:SaltyRTCClient
 
     /**
      * converts the outgoing signalling message to a byte array that can be sent via the WebSocket data
+     * @param naCl
      */
-    fun toByteArray():ByteArray {
+    fun toByteArray(naCl: NaCl?=null):ByteArray {
         var nonceBytes = nonce.toByteArray()
-        var dataBytes = payloadBytes()
+        var dataBytes = getDataBytes(naCl)
         return nonceBytes + dataBytes
     }
 }

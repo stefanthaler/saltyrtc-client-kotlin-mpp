@@ -1,5 +1,6 @@
 package org.saltyrtc.client.signalling
 
+import org.saltyrtc.client.signalling.messages.ServerAuthMessage
 import org.saltyrtc.client.signalling.messages.ServerHelloMessage
 
 
@@ -21,7 +22,7 @@ enum class SignallingMessageTypes(val type:String) {
     },
     SERVER_AUTH("server-auth") {
         override fun create(nonce: Nonce, map: Map<String, Any>): SignallingMessage {
-            TODO("Not yet implemented")
+            return ServerAuthMessage(nonce, map)
         }
     },
     NEW_INITIATOR("new-initiator") {

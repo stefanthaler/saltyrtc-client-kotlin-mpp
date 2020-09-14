@@ -1,7 +1,6 @@
 package org.saltyrtc.client.signalling.messages
 
 import SaltyRTCClient
-import org.saltyrtc.client.crypto.naclEncrypt
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.OutgoingSignallingMessage
@@ -50,22 +49,7 @@ class ClientAuthMessage: OutgoingSignallingMessage {
 
         // If the client has stored the server's public permanent key (32 bytes), it SHOULD set it in the your_key field.
         if (client.sessionPublicKey!=null) {
-            payloadMap["$YOUR_KEY"] = client.sessionPublicKey!!
+            payloadMap["$YOUR_KEY"] = client.sessionPublicKey!!.bytes
         }
     }
-
-    /**
-     * The message SHALL be NaCl public-key encrypted:
-     *  by the server's session key pair (public key sent in 'server-hello')
-     *  the client's permanent key pair (public key as part of the WebSocket path or sent in 'client-hello').
-     */
-    override fun encrypt(payloadBytes: ByteArray): ByteArray {
-        var encPayloadBytes = naclEncrypt(client.clientPermanentKey.privateKey, payloadBytes)
-        if (client.sessionPublicKey==null) {
-            throw ValidationError("Session public key was null, should be set after server hello message")
-        }
-        return naclEncrypt(client.sessionPublicKey!!,encPayloadBytes)
-    }
-
-
 }
