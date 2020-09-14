@@ -4,7 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import org.saltyrtc.client.crypto.NaCLKeyPair
+import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.signalling.*
@@ -19,6 +19,7 @@ import org.saltyrtc.client.signalling.states.StartState
  * @property state The current signalling state.
  * @property role The role this client assumes - either initiator of a WebRTC connection, or repsonder.
  * @property identity: A client SHALL use its assigned identity as source address. If it has not been assigned an identity yet, the source address MUST be set to 0x00
+ * @see https://github.com/saltyrtc/saltyrtc-meta
  */
 class SaltyRTCClient {
     var state: State = StartState(this)
@@ -34,35 +35,21 @@ class SaltyRTCClient {
     var websocketSession: WebSocketSession? = null
     var sessionPublicKey:ByteArray? = null
     var identity:Byte = 0
-    lateinit var clientPermanentKey:NaCLKeyPair
+    lateinit var clientPermanentKey:NaClKeyPair
     var your_cookie: Cookie? = null
 
-    constructor(clientPermanentKey:NaCLKeyPair) {
+    constructor(clientPermanentKey:NaClKeyPair) {
         this.clientPermanentKey = clientPermanentKey
     }
 
     suspend fun recieve(frame: ByteArray) {
         logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
-        val nonce = Nonce.from(frame.sliceArray(0..23))
-
-        val payload:ByteArray = frame.sliceArray(24 .. frame.size - 1)
-        // Unpack data into map
-        val payloadMap =  unpackPayloadMap(payload)
-        // construct Message type
-        val messageType = payloadMap.get("type") as String
-        val message = SignallingMessageTypes.from(messageType)?.create(nonce, payloadMap)
-
-        if(message==null) {
-            throw ValidationError("Message of $messageType could not be created")
-        }
-        if (message !is IncomingSignallingMessage) {
-            throw ValidationError("Message should be an IncommingSignallingMessage, was ${message::class.toString()}")
-        }
-        message.validateSource(role)
+        val nonce = frame.sliceArray(0..23)
+        val data:ByteArray = frame.sliceArray(24 .. frame.size - 1)
         //TODO notify observers
         //TODO construct message
 
-        state.recieve(message)
+        state.recieve(nonce, data)
     }
 
     fun nextNonce(destination: Byte):Nonce {

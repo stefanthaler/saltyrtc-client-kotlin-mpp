@@ -11,10 +11,11 @@ import org.saltyrtc.client.signalling.messages.ClientAuthMessage
 /**
  * After the Initiator has received the Server hello message, a client-auth message will be sent and a server-auth message will be expected.
  *
- *
+ *  PreviousState: StartState
+ *  NextState:
  */
 class InitiatorServerHelloRecievedState(client: SaltyRTCClient) : BaseState(client) {
-    override suspend fun recieve(message: IncomingSignallingMessage) {
+    override suspend fun recieve(dataBytes:ByteArray, nonceByte:ByteArray) {
         TODO("Not yet implemented")
     }
 

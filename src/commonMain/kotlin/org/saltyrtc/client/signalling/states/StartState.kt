@@ -4,32 +4,23 @@ import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logDebug
+import org.saltyrtc.client.logging.logInfo
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.BaseState
 import org.saltyrtc.client.signalling.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.SignallingMessage
 import org.saltyrtc.client.signalling.messages.ServerHelloMessage
 
 class StartState(client: SaltyRTCClient) : BaseState(client) {
-    override suspend fun recieve(message: IncomingSignallingMessage) {
+    override suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray) {
         logWarn("In StartState")
 
+        val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client.role)
+
         if (message !is ServerHelloMessage) {
-            logDebug("Ignoring $message in StartState, only waiting for server-hello messages.")
-            return
+            logInfo("Recieved ${message::class.toString()} in StartState, ignoring.")
         }
-        if (client.signallingServer?.permanentPublicKey == message.key.toHexString()) {
-            throw ValidationError("Session public key must not be the same as the permanent public key.")
-        }
-        client.sessionPublicKey = message.key
-        client.your_cookie = message.nonce.cookie
-        logDebug("Session public key set to ${message.key}")
-
-        // next state
-        if (client.isInitiator()) {
-            client.state = InitiatorServerHelloRecievedState(client)
-        }
-
         client.sendNextMessage()
     }
 
