@@ -6,6 +6,7 @@ import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.BaseState
 import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
 import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
+import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
 
 /**
  * After the Initiator has received the Server hello message, a client-auth message will be sent and a server-auth message will be expected.
@@ -17,7 +18,12 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
     override val acceptedMessageType = ServerAuthMessage::class
 
     override suspend fun sendNextProtocolMessage() {
-        val nextNonce = client.nextNonce(0)
+        var nextNonce = client.nextNonce(0) // TODO verify nonce and destination
+        //As soon as the client has received the 'server-hello' message, it MUST ONLY respond with this message in case the client takes the role of a responder.
+        if (client.isResponder()) {
+            client.sendToWebSocket(ClientHelloMessage(nextNonce,client ).toByteArray())
+            nextNonce = client.nextNonce(0)
+        }
         val message = ClientAuthMessage(nextNonce, client, 0)
 
         /**
