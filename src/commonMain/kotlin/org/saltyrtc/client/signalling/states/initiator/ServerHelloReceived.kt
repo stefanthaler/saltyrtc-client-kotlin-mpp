@@ -17,8 +17,20 @@ import kotlin.reflect.KClass
  *  PreviousState: StartState
  *  NextState:
  */
-class ServerHelloReceived(client: SaltyRTCClient) : BaseState(client) {
-    override val acceptedMessageType = ServerAuthMessage::class
+class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {
+    override val acceptedMessageType = ServerHelloMessage::class
+
+    override suspend fun validate(message: ServerHelloMessage) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun stateActions(message: ServerHelloMessage) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun setNextState(message: ServerHelloMessage) {
+        client.state =  ServerAuthReceived(client)
+    }
 
     override suspend fun sendNextProtocolMessage() {
         val nextNonce = client.nextNonce(0)
@@ -36,16 +48,9 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState(client) {
         client.sendToWebSocket(message.toByteArray(nacl))
     }
 
-
-    override suspend fun stateActions(message: IncomingSignallingMessage) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun nextState(): State {
-        return ServerAuthReceived(client)
-    }
-
     override fun isAuthenticated(): Boolean {
         return false
     }
+
+
 }

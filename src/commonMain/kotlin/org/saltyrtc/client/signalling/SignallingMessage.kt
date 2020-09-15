@@ -6,9 +6,6 @@ import org.saltyrtc.client.exceptions.ValidationError
 
 /**
  * A SaltyRTC signalling message, which consists of a nonce and a payload.
- *
- *
- *
  * @property nonce start with a 24-byte nonce followed by either
  * @property payload the message payload. Can be either an NaCl public-key authenticated encrypted MessagePack object, an NaCl secret-key authenticated encrypted MessagePack object or an unencrypted MessagePack object, encoded as bytearray.
  * @see Nonce
@@ -33,7 +30,7 @@ abstract class IncomingSignallingMessage(nonce: Nonce, val payloadMap: Map<Strin
 
             // construct message
             val messageType = payloadMap.get("type") as String
-            val message = SignallingMessageTypes.from(messageType)?.create(nonce, payloadMap)
+            val message = SignallingMessageTypes.from(messageType)?.create(nonce, payloadMap)// TODO add client role
 
             if(message==null) {
                 throw ValidationError("Message of $messageType could not be created")

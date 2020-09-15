@@ -7,15 +7,15 @@ import org.saltyrtc.client.signalling.messages.DisconnectedMessage
 import org.saltyrtc.client.signalling.messages.SendError
 import kotlin.reflect.KClass
 
-interface State {
-    val acceptedMessageType:KClass<out IncomingSignallingMessage>
-
-    suspend fun sendNextProtocolMessage()
-
-    suspend fun stateActions(message: IncomingSignallingMessage) //what to do with the message
-    suspend fun nextState():State
+interface State<T:IncomingSignallingMessage> {
+    val acceptedMessageType:KClass<T>
 
     suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray)
+    suspend fun validate(message:T) // extra validation
+    suspend fun stateActions(message:T) //what to do with the message
+
+    suspend fun setNextState(message:T)
+    suspend fun sendNextProtocolMessage()
 
     fun isAuthenticated(): Boolean
 }
@@ -23,12 +23,13 @@ interface State {
 /**
  *  Note: Message validation takes place in the constructor of each message
  */
-abstract class BaseState(val client:SaltyRTCClient):State {
+abstract class BaseState<T:IncomingSignallingMessage>(val client:SaltyRTCClient):State<T> {
+
     /**
      * Template message for receiving data
      */
     override suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray) {
-        val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client.role)
+        val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client.role) as T
 
         // message types each state needs to handle
         when (message::class) {
@@ -44,6 +45,7 @@ abstract class BaseState(val client:SaltyRTCClient):State {
 
         }
 
+        // each state should handle only one other type otherwise
         if ( message::class != acceptedMessageType) {
             logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message types [${acceptedMessageType.toString()}], ignoring.")
             //TODO take care of ignored messages
@@ -51,7 +53,8 @@ abstract class BaseState(val client:SaltyRTCClient):State {
         }
 
         stateActions(message)
-        client.state=nextState()
+        setNextState(message)
+
         sendNextProtocolMessage()
     }
 
