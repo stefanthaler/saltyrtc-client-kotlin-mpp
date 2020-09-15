@@ -1,5 +1,6 @@
 package org.saltyrtc.client.signalling.messages
 
+import SaltyRTCClient
 import org.saltyrtc.client.signalling.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
 
@@ -7,12 +8,12 @@ class DropResponder : IncomingSignallingMessage {
     override val TYPE: String = "drop-responder"
     lateinit var reason: DropResponder.CLOSE_REASON
 
-    constructor(nonce: Nonce, payloadMap: Map<String, Any>):super(nonce, payloadMap) {
+    constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
         reason = DropResponder.CLOSE_REASON.from(payloadMap["reason"] as Int)!!
         //TODO validate reason number
     }
 
-    override fun validateSource(clientRole: SaltyRTCClient.Role) {
+    override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
         TODO("Not yet implemented")
     }
 

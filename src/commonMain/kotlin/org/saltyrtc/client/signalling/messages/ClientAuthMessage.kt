@@ -52,4 +52,8 @@ class ClientAuthMessage: OutgoingSignallingMessage {
             payloadMap["$YOUR_KEY"] = client.sessionPublicKey!!.bytes
         }
     }
+
+    override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
+        TODO("Not yet implemented")
+    }
 }

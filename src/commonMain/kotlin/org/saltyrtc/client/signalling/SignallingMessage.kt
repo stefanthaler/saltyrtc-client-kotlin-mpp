@@ -10,15 +10,19 @@ import org.saltyrtc.client.exceptions.ValidationError
  * @property payload the message payload. Can be either an NaCl public-key authenticated encrypted MessagePack object, an NaCl secret-key authenticated encrypted MessagePack object or an unencrypted MessagePack object, encoded as bytearray.
  * @see Nonce
  */
-abstract class SignallingMessage(val nonce: Nonce) {
+abstract class SignallingMessage(val nonce: Nonce, val client:SaltyRTCClient) {
     abstract val TYPE:String
+
+    /**
+     * Validates that all values are correctly set
+     * @throws ValidationError
+     */
+    abstract fun validate(client:SaltyRTCClient, payloadMap: Map<String, Any>)
 }
 
-abstract class IncomingSignallingMessage(nonce: Nonce, val payloadMap: Map<String, Any>):SignallingMessage(nonce) {
-    abstract fun validateSource(clientRole:SaltyRTCClient.Role)
-
+abstract class IncomingSignallingMessage(nonce: Nonce, client:SaltyRTCClient, val payloadMap: Map<String, Any>):SignallingMessage(nonce, client) {
     companion object {
-        fun parse( dataBytes:ByteArray, nonceBytes:ByteArray, clientRole:SaltyRTCClient.Role, naCl: NaCl?=null): IncomingSignallingMessage {
+        fun parse( dataBytes:ByteArray, nonceBytes:ByteArray, client:SaltyRTCClient, naCl: NaCl?=null): IncomingSignallingMessage {
             val payloadBytes = if (naCl!=null) {
                 naCl.decrypt(dataBytes, nonceBytes)
             } else {
@@ -38,13 +42,13 @@ abstract class IncomingSignallingMessage(nonce: Nonce, val payloadMap: Map<Strin
             if (message !is IncomingSignallingMessage) {
                 throw ValidationError("Message should be an IncommingSignallingMessage, was ${message::class.toString()}")
             }
-            message.validateSource(clientRole)
+            message.validate(client, payloadMap)
             return message
         }
     }
 }
 
-abstract class OutgoingSignallingMessage(nonce: Nonce, val client:SaltyRTCClient):SignallingMessage(nonce)  {
+abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient):SignallingMessage(nonce,client)  {
     var payloadMap = HashMap<String,Any>()
 
     /**

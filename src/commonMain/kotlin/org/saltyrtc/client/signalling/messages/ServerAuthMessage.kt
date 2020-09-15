@@ -1,5 +1,6 @@
 package org.saltyrtc.client.signalling.messages
 
+import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.signalling.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
@@ -10,15 +11,14 @@ import org.saltyrtc.client.signalling.SignallingMessageTypes
  */
 class ServerAuthMessage: IncomingSignallingMessage {
     override val TYPE: String = SignallingMessageTypes.SERVER_AUTH.type
-    val HELLP:String="fdf"
 
-    constructor(nonce: Nonce, payloadMap: Map<String, Any>, clientRole: SaltyRTCClient.Role) : super(nonce, payloadMap) {
-        
+    constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
 
-        //TODO validate all values
     }
 
-    override fun validateSource(clientRole: SaltyRTCClient.Role) {
+    override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
         TODO("Not yet implemented")
     }
+
+
 }
