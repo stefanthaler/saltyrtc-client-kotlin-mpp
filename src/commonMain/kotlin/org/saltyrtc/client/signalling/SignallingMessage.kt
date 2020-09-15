@@ -18,9 +18,36 @@ abstract class SignallingMessage(val nonce: Nonce, val client:SaltyRTCClient) {
      * @throws ValidationError
      */
     abstract fun validate(client:SaltyRTCClient, payloadMap: Map<String, Any>)
+    fun validateSource(client: SaltyRTCClient) {
+        require(nonce.source.toInt()==0)
+    }
+    fun validateDestination(client: SaltyRTCClient) {
+        // A client MUST check that the destination address targets its assigned identity (or 0x00 during authentication).
+        // However, the client MUST validate that the identity fits its role –
+        // initiators SHALL ONLY accept 0x01 and responders SHALL ONLY an identity from the range 0x02..0xff.
+        // The identity MUST be stored as the client's assigned identity.
+
+        if (client.isAuthenticatedTowardsServer()) {
+            if (client.isInitiator()) {
+                require(nonce.destination.toInt()==1)
+            }
+            if (client.isResponder()) {
+                require(nonce.destination.toInt() in 2..255)
+            }
+        } else {
+            require(nonce.destination.toInt() == 0)
+        }
+    }
 }
 
-abstract class IncomingSignallingMessage(nonce: Nonce, client:SaltyRTCClient, val payloadMap: Map<String, Any>):SignallingMessage(nonce, client) {
+abstract class IncomingSignallingMessage:SignallingMessage {
+
+    constructor(nonce: Nonce, client:SaltyRTCClient, payloadMap: Map<String, Any>):super(nonce, client){
+        validate(client, payloadMap)
+        validateSource(client)
+        validateDestination(client)
+    }
+
     companion object {
         fun parse( dataBytes:ByteArray, nonceBytes:ByteArray, client:SaltyRTCClient, naCl: NaCl?=null): IncomingSignallingMessage {
             val payloadBytes = if (naCl!=null) {
@@ -84,10 +111,14 @@ abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient):Si
 
 enum class SignallingMessageFields(val value:String) {
     TYPE("type"),
+    KEY("key"),
     YOUR_COOKIE("your_cookie"),
     YOUR_KEY("your_key"),
     SUBPROTOCOLS("subprotocols"),
-    PING_INTERVAL("ping_interval");
+    PING_INTERVAL("ping_interval"),
+    SIGNED_KEYS("signed_keys"),
+    RESPONDERS("responders"),
+    INITIATOR_CONNECTED("initiator_connected");
 
     override fun toString(): String {
         return value

@@ -1,5 +1,7 @@
 package org.saltyrtc.client.signalling
 
+import org.saltyrtc.client.crypto.NaClKey
+
 /**
  * Signalling server
  *
@@ -8,6 +10,6 @@ package org.saltyrtc.client.signalling
 data class SignallingServer(
     val host: String,
     val port: Int,
-    val permanentPublicKey: String,
+    val permanentPublicKey: NaClKey.NaClPublicKey,
     val subProtocol: String ="v1.saltyrtc.org"
 )

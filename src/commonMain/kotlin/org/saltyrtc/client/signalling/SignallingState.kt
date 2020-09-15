@@ -2,22 +2,26 @@ package org.saltyrtc.client.signalling
 
 import SaltyRTCClient
 import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.signalling.messages.CloseMessage
-import org.saltyrtc.client.signalling.messages.DisconnectedMessage
-import org.saltyrtc.client.signalling.messages.SendError
+import org.saltyrtc.client.signalling.messages.incoming.CloseMessage
+import org.saltyrtc.client.signalling.messages.incoming.DisconnectedMessage
+import org.saltyrtc.client.signalling.messages.incoming.SendError
 import kotlin.reflect.KClass
 
+/**
+ * Signalling state.
+ *
+ * SignallingState transition states only after they have received a message.
+ *
+ */
 interface State<T:IncomingSignallingMessage> {
     val acceptedMessageType:KClass<T>
 
-    suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray)
-    suspend fun validate(message:T) // extra validation
-    suspend fun stateActions(message:T) //what to do with the message
-
-    suspend fun setNextState(message:T)
     suspend fun sendNextProtocolMessage()
+    suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray)
+    suspend fun stateActions(message:T) //what to do with the message
+    suspend fun setNextState(message:T) //set next messages
 
-    fun isAuthenticated(): Boolean
+    fun isAuthenticatedTowardsServer(): Boolean
 }
 
 /**
@@ -29,7 +33,7 @@ abstract class BaseState<T:IncomingSignallingMessage>(val client:SaltyRTCClient)
      * Template message for receiving data
      */
     override suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray) {
-        val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client.role) as T
+        val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client) as T
 
         // message types each state needs to handle
         when (message::class) {
@@ -54,8 +58,7 @@ abstract class BaseState<T:IncomingSignallingMessage>(val client:SaltyRTCClient)
 
         stateActions(message)
         setNextState(message)
-
-        sendNextProtocolMessage()
+        sendNextProtocolMessage() //TODO make sure that there are no concurrency issues
     }
 
 }

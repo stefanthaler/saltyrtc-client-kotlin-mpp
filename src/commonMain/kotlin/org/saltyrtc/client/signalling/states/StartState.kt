@@ -3,29 +3,25 @@ package org.saltyrtc.client.signalling.states
 import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.*
-import org.saltyrtc.client.signalling.messages.ServerHelloMessage
-import org.saltyrtc.client.signalling.states.initiator.ServerHelloReceived
-import kotlin.reflect.KClass
+import org.saltyrtc.client.signalling.messages.incoming.ServerHelloMessage
+import org.saltyrtc.client.signalling.states.server.ServerHelloReceived
 
-class StartState(client: SaltyRTCClient) : BaseState(client) {
+class StartState(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {
     override val acceptedMessageType = ServerHelloMessage::class
 
     override suspend fun sendNextProtocolMessage() {
         ValidationError("SendNextMessage should not be called from start state - after connecting the WebSocket, the server should send a ServerHello message.")
     }
 
-
-    override suspend fun stateActions(message:IncomingSignallingMessage) {
-        client.sessionPublicKey = (message as ServerHelloMessage).key
-    }
-
-    override suspend fun nextState(): State {
-        return ServerHelloReceived(client)
-    }
-
-    override fun isAuthenticated(): Boolean {
+    override fun isAuthenticatedTowardsServer(): Boolean {
         return false
     }
 
+    override suspend fun stateActions(message: ServerHelloMessage) {
+        client.sessionPublicKey = message.key
+    }
 
+    override suspend fun setNextState(message: ServerHelloMessage) {
+        client.state= ServerHelloReceived(client)
+    }
 }

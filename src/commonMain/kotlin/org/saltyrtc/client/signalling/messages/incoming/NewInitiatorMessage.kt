@@ -1,15 +1,13 @@
-package org.saltyrtc.client.signalling.messages
+package org.saltyrtc.client.signalling.messages.incoming
 
 import SaltyRTCClient
 import org.saltyrtc.client.signalling.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
 
-class SendError:IncomingSignallingMessage {
-    override val TYPE: String = "send-error"
-    lateinit var id: ByteArray
+class NewInitiatorMessage: IncomingSignallingMessage {
+    override val TYPE: String = "new-initiator"
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
-        id = (payloadMap["id"] as ByteArray)!!
         //TODO validate reason number
     }
 

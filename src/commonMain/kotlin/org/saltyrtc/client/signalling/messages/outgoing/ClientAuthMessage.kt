@@ -1,4 +1,4 @@
-package org.saltyrtc.client.signalling.messages
+package org.saltyrtc.client.signalling.messages.outgoing
 
 import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
@@ -54,6 +54,6 @@ class ClientAuthMessage: OutgoingSignallingMessage {
     }
 
     override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
-        TODO("Not yet implemented")
+
     }
 }

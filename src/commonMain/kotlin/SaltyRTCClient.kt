@@ -23,8 +23,8 @@ import org.saltyrtc.client.signalling.states.StartState
  * @see https://github.com/saltyrtc/saltyrtc-meta
  */
 class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
-    var state: State = StartState(this)
-        set(newState:State) {
+    var state: State<out IncomingSignallingMessage> = StartState(this)
+        set(newState:State<out IncomingSignallingMessage>) {
             //TODO add notification for observer
             //TODO could use delegates
             logDebug("State is set from $state to $newState")
@@ -126,7 +126,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     fun validateDestination(destination:Byte) {
-        if (!state.isAuthenticated()) {
+        if (!state.isAuthenticatedTowardsServer()) {
             if (destination.toInt()!=0) throw ValidationError("A client MUST check that the destination address targets 0x00 during authentication,was $destination")
             if (identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
         }
@@ -138,6 +138,10 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
             if (destination.toInt()==1) throw ValidationError("Responders SHALL ONLY accept 0x0-20xFF as destination after authentication, was $destination")
             if (identity.toInt()==1) throw ValidationError("Responders SHALL ONLY accept 0x02-0xFF as destination after authentication, was $identity")
         }
+    }
+
+    fun isAuthenticatedTowardsServer(): Boolean {
+        return state.isAuthenticatedTowardsServer()
     }
 
     enum class Role {
