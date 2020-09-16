@@ -6,7 +6,7 @@ import org.saltyrtc.client.signalling.messages.incoming.ServerHelloMessage
 import org.saltyrtc.client.signalling.states.BaseState
 import kotlin.reflect.KClass
 
-class StartState(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {
+class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {
     override suspend fun sendNextProtocolMessage() {
         throw ValidationError("SendNextMessage should not be called from start state - after connecting the WebSocket, the server should send a ServerHello message.")
     }

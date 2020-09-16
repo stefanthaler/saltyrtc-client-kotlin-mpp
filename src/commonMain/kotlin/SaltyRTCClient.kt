@@ -15,7 +15,7 @@ import org.saltyrtc.client.signalling.peers.Initiator
 import org.saltyrtc.client.signalling.peers.Node
 import org.saltyrtc.client.signalling.peers.Responder
 import org.saltyrtc.client.signalling.states.State
-import org.saltyrtc.client.signalling.states.server.StartState
+import org.saltyrtc.client.signalling.states.server.ServerAuthenticationStart
 
 
 /**
@@ -34,7 +34,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     var signallingServer:SignallingServer? = null
     var initiator:Initiator? = null
 
-    var role: Node = Initiator(0, StartState(this))
+    var role: Node = Initiator(0, ServerAuthenticationStart(this))
 
     var signallingPath: SignallingPath? = null
     var websocketSession: WebSocketSession? = null
@@ -66,7 +66,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     suspend fun connect(server: SignallingServer, path: SignallingPath, role:Node?=null) {
-        this.role = if (role==null) Initiator(0, StartState(this)) else role
+        this.role = if (role==null) Initiator(0, ServerAuthenticationStart(this)) else role
         openWebSocket(server, path)
     }
 
