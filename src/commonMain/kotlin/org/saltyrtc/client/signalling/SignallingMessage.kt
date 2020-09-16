@@ -61,7 +61,7 @@ abstract class IncomingSignallingMessage:SignallingMessage {
 
             // construct message
             val messageType = payloadMap.get("type") as String
-            val message = SignallingMessageTypes.from(messageType)?.create(nonce, payloadMap)// TODO add client role
+            val message = SignallingMessageTypes.from(messageType)?.create(nonce, client, payloadMap)// TODO add client role
 
             if(message==null) {
                 throw ValidationError("Message of $messageType could not be created")
@@ -118,6 +118,7 @@ enum class SignallingMessageFields(val value:String) {
     PING_INTERVAL("ping_interval"),
     SIGNED_KEYS("signed_keys"),
     RESPONDERS("responders"),
+    ID("id"), //
     INITIATOR_CONNECTED("initiator_connected");
 
     override fun toString(): String {

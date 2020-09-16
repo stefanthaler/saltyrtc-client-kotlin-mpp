@@ -5,7 +5,6 @@ import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.messages.incoming.CloseMessage
 import org.saltyrtc.client.signalling.messages.incoming.DisconnectedMessage
 import org.saltyrtc.client.signalling.messages.incoming.SendError
-import kotlin.reflect.KClass
 
 /**
  * Signalling state.
@@ -14,14 +13,12 @@ import kotlin.reflect.KClass
  *
  */
 interface State<T:IncomingSignallingMessage> {
-    val acceptedMessageType:KClass<T>
-
-    suspend fun sendNextProtocolMessage()
+    suspend fun sendNextProtocolMessage(incomingMessage: T)
     suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray)
-    suspend fun stateActions(message:T) //what to do with the message
-    suspend fun setNextState(message:T) //set next messages
+    suspend fun stateActions(incomingMessage:T) //what to do with the message
+    suspend fun setNextState(incomingMessage:T) //set next messages
 
-    fun isAuthenticatedTowardsServer(): Boolean
+    fun isAuthenticated(): Boolean
 }
 
 /**
@@ -35,34 +32,38 @@ abstract class BaseState<T:IncomingSignallingMessage>(val client:SaltyRTCClient)
     override suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray) {
         val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client) as T
 
-        // message types each state needs to handle
-        if (isAuthenticatedTowardsServer()) {
+        with(client.lock) { // TODO  make sure there are no concurrency issues
+            // message types each state needs to handle
+            if (client.isAuthenticatedTowardsServer()) {
+                when (message::class) {
+                    DisconnectedMessage::class -> {
+                        // validate
+                        // clear out
+                    }
+                    CloseMessage::class -> {
+                        //TODO stuff
+                    }
+                    SendError::class -> {
+                        // TODO stuff
+                    }
+                    else -> {
+                        if (message is T) {
 
-
-
-        } else {
-            when (message::class) {
-                CloseMessage::class -> {
-                    //TODO stuff
+                        } else {
+                            logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message type, ignoring.")
+                        }
+                    }
                 }
-                DisconnectedMessage::class -> {
-                    //TODO stuff
-                }
-                SendError::class -> {
-                    // TODO stuff
-                }
-                acceptedMessageType -> {
+            } else {
+                if (message is T) {
                     stateActions(message)
                     setNextState(message)
-                    sendNextProtocolMessage() //TODO make sure that there are no concurrency issues
-                }
-                else -> {
-                    logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message types [${acceptedMessageType.toString()}], ignoring.")
+                    sendNextProtocolMessage(message)
+                } else {
+                    logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message types,ignoring.")
                 }
             }
         }
-
-
     }
 
 }

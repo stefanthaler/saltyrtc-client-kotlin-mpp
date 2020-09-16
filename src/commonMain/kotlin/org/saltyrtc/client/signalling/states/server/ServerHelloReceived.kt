@@ -15,9 +15,8 @@ import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
  *  NextState:
  */
 class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
-    override val acceptedMessageType = ServerAuthMessage::class
 
-    override suspend fun sendNextProtocolMessage() {
+    override suspend fun sendNextProtocolMessage(message: ServerAuthMessage) {
         var nextNonce = client.nextNonce(0) // TODO verify nonce and destination
         //As soon as the client has received the 'server-hello' message, it MUST ONLY respond with this message in case the client takes the role of a responder.
         if (client.isResponder()) {
@@ -46,7 +45,7 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
         client.state =  ResponderAuthenticatedTowardsServer(client)
     }
 
-    override fun isAuthenticatedTowardsServer(): Boolean {
+    override fun isAuthenticated(): Boolean {
         return false
     }
 

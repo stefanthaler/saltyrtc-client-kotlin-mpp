@@ -9,7 +9,7 @@ import org.saltyrtc.client.signalling.Nonce
  *
  */
 class CloseMessage : IncomingSignallingMessage {
-    override val TYPE: String = "close"
+    override val TYPE: String = "close" // TODO use enum
     lateinit var reason: CLOSE_REASON
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {

@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.sync.Mutex
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.exceptions.ValidationError
@@ -26,8 +27,9 @@ import org.saltyrtc.client.signalling.states.StartState
  * @see https://github.com/saltyrtc/saltyrtc-meta
  */
 class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
+    val lock = Mutex()
 
-    val responders =  HashMap<Byte, State<out IncomingSignallingMessage>>()
+    val responders =  HashMap<Byte, Responder>()
     var signallingServer:SignallingServer? = null
     var initiator:Initiator? = null
 
@@ -41,7 +43,6 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
 
     var state:State<out IncomingSignallingMessage> by role::state
     var identity:Byte by role::identity
-
 
     suspend fun recieve(frame: ByteArray) {
         logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
@@ -59,13 +60,6 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         }
 
         return Nonce(cookie = your_cookie!!,source = identity, destination=destination, 0u,0u)
-    }
-
-    /**
-     * Sends the next message(s) according to the protocol state.
-     */
-    suspend fun sendNextMessage() {
-        state.sendNextProtocolMessage()
     }
 
     suspend fun connect(server: SignallingServer, path: SignallingPath, role:Node?=null) {
@@ -143,7 +137,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     fun validateDestination(destination:Byte) {
-        if (state.isAuthenticatedTowardsServer()) {
+        if (state.isAuthenticated()) {
             if (isInitiator()) {
                 if (destination.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $destination")
                 if (role.identity.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $identity")
@@ -161,7 +155,13 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     fun isAuthenticatedTowardsServer(): Boolean {
-        return state.isAuthenticatedTowardsServer()
+        return state.isAuthenticated()
+    }
+
+    fun knowsResponder(source: Byte): Boolean {
+        if (!responders.containsKey(source)) return false
+        if (responders.get(source)==null) return false
+        return true
     }
 
     companion object {

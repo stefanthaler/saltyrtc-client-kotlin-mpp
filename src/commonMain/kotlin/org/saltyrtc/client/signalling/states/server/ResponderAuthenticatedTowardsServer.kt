@@ -5,9 +5,7 @@ import org.saltyrtc.client.signalling.BaseState
 import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
 
 class ResponderAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
-    override val acceptedMessageType = ServerAuthMessage::class
-
-    override suspend fun sendNextProtocolMessage() {
+    override suspend fun sendNextProtocolMessage(message: ServerAuthMessage) {
         TODO("Not yet implemented")
     }
 
@@ -19,7 +17,7 @@ class ResponderAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<Se
         TODO("Not yet implemented")
     }
 
-    override fun isAuthenticatedTowardsServer(): Boolean {
+    override fun isAuthenticated(): Boolean {
         return true
     }
 }

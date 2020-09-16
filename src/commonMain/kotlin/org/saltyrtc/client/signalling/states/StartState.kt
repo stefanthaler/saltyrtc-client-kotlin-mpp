@@ -7,13 +7,11 @@ import org.saltyrtc.client.signalling.messages.incoming.ServerHelloMessage
 import org.saltyrtc.client.signalling.states.server.ServerHelloReceived
 
 class StartState(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {
-    override val acceptedMessageType = ServerHelloMessage::class
-
-    override suspend fun sendNextProtocolMessage() {
+    override suspend fun sendNextProtocolMessage(message:ServerHelloMessage) {
         ValidationError("SendNextMessage should not be called from start state - after connecting the WebSocket, the server should send a ServerHello message.")
     }
 
-    override fun isAuthenticatedTowardsServer(): Boolean {
+    override fun isAuthenticated(): Boolean {
         return false
     }
 

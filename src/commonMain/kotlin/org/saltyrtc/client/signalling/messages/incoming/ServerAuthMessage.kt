@@ -83,6 +83,4 @@ class ServerAuthMessage : IncomingSignallingMessage {
             require(initiatorConnected is Boolean)
         }
     }
-
-
 }

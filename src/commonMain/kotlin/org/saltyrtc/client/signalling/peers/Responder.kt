@@ -4,6 +4,7 @@ import SaltyRTCClient
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.signalling.Cookie
 import org.saltyrtc.client.signalling.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.SignallingMessage
 import org.saltyrtc.client.signalling.State
 import org.saltyrtc.client.signalling.states.StartState
 
