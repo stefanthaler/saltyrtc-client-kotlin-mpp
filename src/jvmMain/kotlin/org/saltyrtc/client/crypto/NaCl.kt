@@ -5,8 +5,7 @@ import com.goterl.lazycode.lazysodium.SodiumJava
 import com.goterl.lazycode.lazysodium.interfaces.Box
 import com.goterl.lazycode.lazysodium.interfaces.Box.BEFORENMBYTES
 import com.goterl.lazycode.lazysodium.interfaces.Box.MACBYTES
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
-import org.saltyrtc.client.signalling.OutgoingSignallingMessage
+import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
 
 
 /**

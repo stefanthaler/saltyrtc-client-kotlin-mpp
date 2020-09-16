@@ -11,6 +11,7 @@ import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.signalling.*
 import org.saltyrtc.client.signalling.Cookie
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.peers.Initiator
 import org.saltyrtc.client.signalling.peers.Node
 import org.saltyrtc.client.signalling.peers.Responder

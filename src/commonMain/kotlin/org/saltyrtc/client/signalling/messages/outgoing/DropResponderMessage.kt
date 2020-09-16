@@ -1,7 +1,7 @@
 package org.saltyrtc.client.signalling.messages.outgoing
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
 
 class DropResponder : IncomingSignallingMessage {

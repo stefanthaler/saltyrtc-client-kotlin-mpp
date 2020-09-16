@@ -1,7 +1,6 @@
 package org.saltyrtc.client.crypto
 
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
-import org.saltyrtc.client.signalling.OutgoingSignallingMessage
+import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
 
 
 /**

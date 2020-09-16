@@ -1,12 +1,10 @@
-package org.saltyrtc.client.signalling.messages.incoming
+package org.saltyrtc.client.signalling.messages.incoming.client.handshake
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
-import org.saltyrtc.client.signalling.SignallingMessage
-import org.saltyrtc.client.signalling.SignallingMessageTypes
+import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 
-class AuthMessage:IncomingSignallingMessage {
+class KeyMessage: TokenOrKeyMessage {
     override val TYPE: String = SignallingMessageTypes.KEY.type
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce, client, payloadMap) {

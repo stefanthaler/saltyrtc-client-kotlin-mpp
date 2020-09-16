@@ -2,7 +2,7 @@ package org.saltyrtc.client.signalling.states.client.responder
 
 import SaltyRTCClient
 import org.saltyrtc.client.signalling.states.BaseState
-import org.saltyrtc.client.signalling.messages.incoming.KeyMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.KeyMessage
 import kotlin.reflect.KClass
 
 class HandshakeStartState(client: SaltyRTCClient) : BaseState<KeyMessage>(client) {

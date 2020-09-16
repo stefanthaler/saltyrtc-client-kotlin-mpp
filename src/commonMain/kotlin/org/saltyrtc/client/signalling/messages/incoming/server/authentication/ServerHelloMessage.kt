@@ -1,9 +1,12 @@
-package org.saltyrtc.client.signalling.messages.incoming
+package org.saltyrtc.client.signalling.messages.incoming.server.authentication
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCLConstants.Companion.PUBLIC_KEY_BYTES
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.signalling.*
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields
+import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 
 /**
  * This message MUST be sent by the server after a client connected to the server using a valid signalling path.

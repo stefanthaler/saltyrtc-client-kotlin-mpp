@@ -2,7 +2,7 @@ package org.saltyrtc.client.signalling.states.client.initiator
 
 import SaltyRTCClient
 import org.saltyrtc.client.signalling.states.BaseState
-import org.saltyrtc.client.signalling.messages.incoming.AuthMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.AuthMessage
 import kotlin.reflect.KClass
 
 class ResponderAuthenticatedState(client: SaltyRTCClient) : BaseState<AuthMessage>(client) {

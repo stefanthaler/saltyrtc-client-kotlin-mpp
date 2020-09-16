@@ -3,10 +3,10 @@ package org.saltyrtc.client.signalling.messages.outgoing
 import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.Nonce
-import org.saltyrtc.client.signalling.OutgoingSignallingMessage
-import org.saltyrtc.client.signalling.SignallingMessage
-import org.saltyrtc.client.signalling.SignallingMessageFields
-import org.saltyrtc.client.signalling.SignallingMessageFields.*
+import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields.*
+import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 
 /**
  * IncomingSignallingMessage
@@ -24,7 +24,7 @@ import org.saltyrtc.client.signalling.SignallingMessageFields.*
  */
 
 class ClientAuthMessage: OutgoingSignallingMessage {
-    override val TYPE: String = org.saltyrtc.client.signalling.SignallingMessageTypes.CLIENT_AUTH.type
+    override val TYPE: String = SignallingMessageTypes.CLIENT_AUTH.type
 
     constructor(nonce: Nonce, client:SaltyRTCClient, pingInterval:Int=0) : super(nonce,client) {
         payloadMap["${SignallingMessageFields.TYPE}"] = TYPE

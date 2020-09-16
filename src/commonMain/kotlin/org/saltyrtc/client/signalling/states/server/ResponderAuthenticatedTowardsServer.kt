@@ -2,7 +2,7 @@ package org.saltyrtc.client.signalling.states.server
 
 import SaltyRTCClient
 import org.saltyrtc.client.signalling.states.BaseState
-import org.saltyrtc.client.signalling.messages.incoming.NewInitiatorMessage
+import org.saltyrtc.client.signalling.messages.incoming.server.NewInitiatorMessage
 import org.saltyrtc.client.signalling.peers.Initiator
 import org.saltyrtc.client.signalling.states.client.responder.HandshakeStartState
 import kotlin.reflect.KClass

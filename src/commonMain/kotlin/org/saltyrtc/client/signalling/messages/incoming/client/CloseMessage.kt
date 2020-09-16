@@ -1,7 +1,7 @@
-package org.saltyrtc.client.signalling.messages.incoming
+package org.saltyrtc.client.signalling.messages.incoming.client
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
 
 /**
@@ -14,7 +14,7 @@ class CloseMessage : IncomingSignallingMessage {
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
         reason = CLOSE_REASON.from(payloadMap["reason"] as Int)!!
-        //TODO validate reason number
+
     }
 
     override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {

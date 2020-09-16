@@ -3,14 +3,14 @@ package org.saltyrtc.client.signalling.states.client.initiator
 import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.states.BaseState
-import org.saltyrtc.client.signalling.messages.incoming.KeyMessage
-import org.saltyrtc.client.signalling.messages.incoming.TokenMessage
-import org.saltyrtc.client.signalling.messages.incoming.TokenOrKeyMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.KeyMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.TokenMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.TokenOrKeyMessage
 import kotlin.reflect.KClass
 
 class HandshakeStartState(client: SaltyRTCClient) : BaseState<TokenOrKeyMessage>(client)  {
-    var keyMessage:KeyMessage? = null
-    var tokenMessage:TokenMessage? = null
+    var keyMessage: KeyMessage? = null
+    var tokenMessage: TokenMessage? = null
 
     override suspend fun sendNextProtocolMessage() {
         // wait for token and key message of responder

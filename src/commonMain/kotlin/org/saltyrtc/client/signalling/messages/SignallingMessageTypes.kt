@@ -1,8 +1,9 @@
-package org.saltyrtc.client.signalling
+package org.saltyrtc.client.signalling.messages
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
-import org.saltyrtc.client.signalling.messages.incoming.ServerHelloMessage
+import org.saltyrtc.client.signalling.Nonce
+import org.saltyrtc.client.signalling.messages.incoming.server.authentication.ServerAuthMessage
+import org.saltyrtc.client.signalling.messages.incoming.server.authentication.ServerHelloMessage
 
 
 enum class SignallingMessageTypes(val type:String) {

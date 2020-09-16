@@ -1,16 +1,26 @@
 package org.saltyrtc.client.signalling.states
 
 import SaltyRTCClient
+import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
-import org.saltyrtc.client.signalling.messages.incoming.*
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.messages.SignallingMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.CloseMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.AuthMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.KeyMessage
+import org.saltyrtc.client.signalling.messages.incoming.client.handshake.TokenMessage
+import org.saltyrtc.client.signalling.messages.incoming.server.DisconnectedMessage
+import org.saltyrtc.client.signalling.messages.incoming.server.SendError
 import kotlin.reflect.KClass
 
 /**
  * Signalling state.
  *
  * SignallingState transition states only after they have received a message.
- *
+ * Message Validation takes place at the construction of the message
+ * @see SignallingMessage.validate
+ * @see SignallingMessage.validateDestination
+ * @see SignallingMessage.validateSource
  */
 interface State<T: IncomingSignallingMessage> {
     var incomingMessage: IncomingSignallingMessage
@@ -49,8 +59,7 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
      * Template message for receiving data
      */
     override suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray) {
-        val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client) as IncomingSignallingMessage
-
+        val message = SignallingMessage.parse(dataBytes, nonceBytes, client, getNaCL())
 
         with(client.lock) { // TODO  make sure there are no concurrency issues
             // message types each state needs to handle
@@ -89,6 +98,14 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
                 logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message type, ignoring.")
             }
         }
+    }
+
+    /**
+     * Obtains a NaCl clompliant crypto object. Depends on the state whether messages should be decrypted or not.
+     * @see NaCl
+     */
+    fun getNaCL():NaCl? {
+        return null
     }
 
     companion object {

@@ -2,8 +2,8 @@ package org.saltyrtc.client.signalling.messages.outgoing
 
 import SaltyRTCClient
 import org.saltyrtc.client.signalling.Nonce
-import org.saltyrtc.client.signalling.OutgoingSignallingMessage
-import org.saltyrtc.client.signalling.SignallingMessageFields
+import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields
 
 
 /**

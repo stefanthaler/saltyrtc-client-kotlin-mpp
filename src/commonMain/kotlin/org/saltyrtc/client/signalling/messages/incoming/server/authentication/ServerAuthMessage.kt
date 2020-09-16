@@ -1,12 +1,12 @@
-package org.saltyrtc.client.signalling.messages.incoming
+package org.saltyrtc.client.signalling.messages.incoming.server.authentication
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
-import org.saltyrtc.client.signalling.SignallingMessageFields
-import org.saltyrtc.client.signalling.SignallingMessageTypes
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields
+import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 
 /**
  * Once the server has received the 'client-auth' message, it SHALL reply with this message. Depending on the client's role, the server SHALL choose and assign an identity to the client by setting the destination address accordingly:

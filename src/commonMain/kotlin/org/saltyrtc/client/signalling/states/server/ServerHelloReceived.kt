@@ -5,7 +5,7 @@ import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.states.BaseState
 import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
-import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
+import org.saltyrtc.client.signalling.messages.incoming.server.authentication.ServerAuthMessage
 import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
 import kotlin.reflect.KClass
 
@@ -19,7 +19,8 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
 
     override suspend fun sendNextProtocolMessage() {
         var nextNonce = client.nextNonce(0) // TODO verify nonce and destination
-        //As soon as the client has received the 'server-hello' message, it MUST ONLY respond with this message in case the client takes the role of a responder.
+        //As soon as the client has received the 'server-hello' message,
+        // it MUST ONLY respond with this message in case the client takes the role of a responder.
         if (client.isResponder()) {
             client.sendToWebSocket(ClientHelloMessage(nextNonce,client ).toByteArray())
             nextNonce = client.nextNonce(0)

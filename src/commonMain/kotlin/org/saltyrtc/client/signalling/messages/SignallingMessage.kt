@@ -1,8 +1,11 @@
-package org.saltyrtc.client.signalling
+package org.saltyrtc.client.signalling.messages
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.exceptions.ValidationError
+import org.saltyrtc.client.signalling.Nonce
+import org.saltyrtc.client.signalling.packPayloadMap
+import org.saltyrtc.client.signalling.unpackPayloadMap
 
 /**
  * A SaltyRTC signalling message, which consists of a nonce and a payload.
@@ -10,7 +13,7 @@ import org.saltyrtc.client.exceptions.ValidationError
  * @property payload the message payload. Can be either an NaCl public-key authenticated encrypted MessagePack object, an NaCl secret-key authenticated encrypted MessagePack object or an unencrypted MessagePack object, encoded as bytearray.
  * @see Nonce
  */
-abstract class SignallingMessage(val nonce: Nonce, val client:SaltyRTCClient) {
+abstract class SignallingMessage(val nonce: Nonce) {
     abstract val TYPE:String
 
     /**
@@ -18,9 +21,23 @@ abstract class SignallingMessage(val nonce: Nonce, val client:SaltyRTCClient) {
      * @throws ValidationError
      */
     abstract fun validate(client:SaltyRTCClient, payloadMap: Map<String, Any>)
+
+    /**
+     * Client-to-client messages are distinguishable from client-to-server messages by looking at the address fields of the nonce.
+     * If both fields contain a client address (an address different to 0x00), the message is a client-to-client message.
+     */
+    fun isClient2ClientMessage():Boolean {
+        return !isClient2ServerMessage()
+    }
+
+    fun isClient2ServerMessage():Boolean {
+        return nonce.source.toInt()==0 || nonce.destination.toInt() == 0
+    }
+
     fun validateSource(client: SaltyRTCClient) {
         require(nonce.source.toInt()==0)
     }
+
     fun validateDestination(client: SaltyRTCClient) {
         // A client MUST check that the destination address targets its assigned identity (or 0x00 during authentication).
         // However, the client MUST validate that the identity fits its role –
@@ -38,18 +55,10 @@ abstract class SignallingMessage(val nonce: Nonce, val client:SaltyRTCClient) {
             require(nonce.destination.toInt() == 0)
         }
     }
-}
-
-abstract class IncomingSignallingMessage:SignallingMessage {
-
-    constructor(nonce: Nonce, client:SaltyRTCClient, payloadMap: Map<String, Any>):super(nonce, client){
-        validate(client, payloadMap)
-        validateSource(client)
-        validateDestination(client)
-    }
 
     companion object {
-        fun parse( dataBytes:ByteArray, nonceBytes:ByteArray, client:SaltyRTCClient, naCl: NaCl?=null): IncomingSignallingMessage {
+        fun parse( dataBytes:ByteArray, nonceBytes:ByteArray, client:SaltyRTCClient, naCl:NaCl?): IncomingSignallingMessage {
+
             val payloadBytes = if (naCl!=null) {
                 naCl.decrypt(dataBytes, nonceBytes)
             } else {
@@ -69,13 +78,22 @@ abstract class IncomingSignallingMessage:SignallingMessage {
             if (message !is IncomingSignallingMessage) {
                 throw ValidationError("Message should be an IncommingSignallingMessage, was ${message::class.toString()}")
             }
-            message.validate(client, payloadMap)
             return message
         }
     }
 }
 
-abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient):SignallingMessage(nonce,client)  {
+abstract class IncomingSignallingMessage: SignallingMessage {
+
+    constructor(nonce: Nonce, client:SaltyRTCClient, payloadMap: Map<String, Any>):super(nonce){
+        validate(client, payloadMap)
+        validateSource(client)
+        validateDestination(client)
+    }
+
+}
+
+abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient): SignallingMessage(nonce)  {
     var payloadMap = HashMap<String,Any>()
 
     /**

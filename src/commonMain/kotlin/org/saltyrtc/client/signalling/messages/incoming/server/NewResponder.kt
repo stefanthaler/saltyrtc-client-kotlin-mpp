@@ -1,15 +1,15 @@
-package org.saltyrtc.client.signalling.messages.incoming
+package org.saltyrtc.client.signalling.messages.incoming.server
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.IncomingSignallingMessage
+import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
-import org.saltyrtc.client.signalling.SignallingMessageFields
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields
 
 
 /**
  * As soon as a new responder has authenticated itself towards the server on path, the server MUST send this message to an authenticated initiator on the same path
  */
-class NewResponder:IncomingSignallingMessage {
+class NewResponder: IncomingSignallingMessage {
     override val TYPE: String = "new-responder"
     var id: Byte = 0
 
