@@ -14,7 +14,8 @@ import org.saltyrtc.client.signalling.Cookie
 import org.saltyrtc.client.signalling.peers.Initiator
 import org.saltyrtc.client.signalling.peers.Node
 import org.saltyrtc.client.signalling.peers.Responder
-import org.saltyrtc.client.signalling.states.StartState
+import org.saltyrtc.client.signalling.states.State
+import org.saltyrtc.client.signalling.states.server.StartState
 
 
 /**
@@ -41,7 +42,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
 
     var your_cookie: Cookie? = null
 
-    var state:State<out IncomingSignallingMessage> by role::state
+    var state: State<out IncomingSignallingMessage> by role::state
     var identity:Byte by role::identity
 
     suspend fun recieve(frame: ByteArray) {

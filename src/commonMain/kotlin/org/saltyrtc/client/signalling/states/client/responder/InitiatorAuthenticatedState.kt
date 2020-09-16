@@ -1,7 +1,7 @@
 package org.saltyrtc.client.signalling.states.client.responder
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.BaseState
+import org.saltyrtc.client.signalling.states.BaseState
 import org.saltyrtc.client.signalling.messages.incoming.AuthMessage
 import kotlin.reflect.KClass
 

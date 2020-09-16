@@ -1,10 +1,9 @@
-package org.saltyrtc.client.signalling.states
+package org.saltyrtc.client.signalling.states.server
 
 import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
-import org.saltyrtc.client.signalling.*
 import org.saltyrtc.client.signalling.messages.incoming.ServerHelloMessage
-import org.saltyrtc.client.signalling.states.server.ServerHelloReceived
+import org.saltyrtc.client.signalling.states.BaseState
 import kotlin.reflect.KClass
 
 class StartState(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {

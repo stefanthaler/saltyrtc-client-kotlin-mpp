@@ -1,7 +1,8 @@
-package org.saltyrtc.client.signalling
+package org.saltyrtc.client.signalling.states
 
 import SaltyRTCClient
 import org.saltyrtc.client.logging.logWarn
+import org.saltyrtc.client.signalling.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.messages.incoming.*
 import kotlin.reflect.KClass
 
@@ -11,10 +12,10 @@ import kotlin.reflect.KClass
  * SignallingState transition states only after they have received a message.
  *
  */
-interface State<T:IncomingSignallingMessage> {
-    var incomingMessage:IncomingSignallingMessage
+interface State<T: IncomingSignallingMessage> {
+    var incomingMessage: IncomingSignallingMessage
     fun getIncomingMessage():T
-    fun setIncomingMessage(incomingMessage:IncomingSignallingMessage)
+    fun setIncomingMessage(incomingMessage: IncomingSignallingMessage)
 
     suspend fun sendNextProtocolMessage() // this will be called on next state
     suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray)
@@ -28,12 +29,12 @@ interface State<T:IncomingSignallingMessage> {
 /**
  *  Note: Message validation takes place in the constructor of each message
  */
-abstract class BaseState<T:IncomingSignallingMessage>(val client:SaltyRTCClient):State<T> {
-    override lateinit var incomingMessage:IncomingSignallingMessage
+abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient): State<T> {
+    override lateinit var incomingMessage: IncomingSignallingMessage
     override fun getIncomingMessage():T {
         return incomingMessage as T
     }
-    override fun setIncomingMessage(incomingMessage:IncomingSignallingMessage) {
+    override fun setIncomingMessage(incomingMessage: IncomingSignallingMessage) {
         this.incomingMessage=incomingMessage
     }
 

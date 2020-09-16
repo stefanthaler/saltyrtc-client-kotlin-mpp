@@ -2,9 +2,8 @@ package org.saltyrtc.client.signalling.states.client.initiator
 
 import SaltyRTCClient
 import org.saltyrtc.client.exceptions.ValidationError
-import org.saltyrtc.client.signalling.BaseState
+import org.saltyrtc.client.signalling.states.BaseState
 import org.saltyrtc.client.signalling.messages.incoming.KeyMessage
-import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
 import org.saltyrtc.client.signalling.messages.incoming.TokenMessage
 import org.saltyrtc.client.signalling.messages.incoming.TokenOrKeyMessage
 import kotlin.reflect.KClass

@@ -3,7 +3,7 @@ package org.saltyrtc.client.signalling.states.server
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.exceptions.ValidationError
-import org.saltyrtc.client.signalling.BaseState
+import org.saltyrtc.client.signalling.states.BaseState
 import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
 import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
 import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage

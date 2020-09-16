@@ -1,10 +1,8 @@
 package org.saltyrtc.client.signalling.peers
 
-import SaltyRTCClient
 import org.saltyrtc.client.signalling.Cookie
 import org.saltyrtc.client.signalling.IncomingSignallingMessage
-import org.saltyrtc.client.signalling.State
-import kotlin.reflect.KProperty
+import org.saltyrtc.client.signalling.states.State
 
 interface Node {
     var identity:Byte
