@@ -10,4 +10,4 @@ expect fun secureRandomeBytes(numBytes:Int):ByteArray
  * Next securely random Int
  */
 
-expect fun secureRandomInt():Int
+expect fun secureRandomInt():UInt

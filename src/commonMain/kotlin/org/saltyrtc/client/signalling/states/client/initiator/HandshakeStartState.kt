@@ -17,11 +17,11 @@ class HandshakeStartState(client: SaltyRTCClient) : BaseState<TokenOrKeyMessage>
     }
 
     override suspend fun stateActions() {
-        if (incomingMessage is KeyMessage) {
-            this.keyMessage=incomingMessage as KeyMessage
+        if (message is KeyMessage) {
+            this.keyMessage=message as KeyMessage
         }
-        if (incomingMessage is TokenMessage) {
-            this.tokenMessage=incomingMessage as TokenMessage
+        if (message is TokenMessage) {
+            this.tokenMessage=message as TokenMessage
         }
         if (keyMessage == null || tokenMessage == null) {
             return
@@ -33,7 +33,7 @@ class HandshakeStartState(client: SaltyRTCClient) : BaseState<TokenOrKeyMessage>
         if (keyMessage == null || tokenMessage == null) {
             return
         }
-        val source = incomingMessage.nonce.source
+        val source = message.nonce.source
         if (client.knowsResponder(source)) {
             val responderState = client.responders.get(source)!!.state
             if (responderState != this) {

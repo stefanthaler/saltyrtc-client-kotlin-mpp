@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 
 class ServerAuthReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
     override suspend fun sendNextProtocolMessage() {
-        TODO("Not yet implemented")
+        // no message
     }
 
     override suspend fun stateActions() {
@@ -15,11 +15,7 @@ class ServerAuthReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(
     }
 
     override suspend fun setNextState() {
-        if (client.isInitiator()) {
-            client.state = InitiatorAuthenticatedTowardsServer(client)
-        } else {
-            client.state = ResponderAuthenticatedTowardsServer(client)
-        }
+        
     }
 
     override fun isAuthenticated(): Boolean {

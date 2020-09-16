@@ -17,6 +17,13 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
 
     override suspend fun stateActions() {
         client.sessionPublicKey = getIncomingMessage().key
+        // In case this is the first message received from the sender, the peer:
+        // MUST check that the overflow number of the source peer is 0 (or the upper 16 bits of the combined sequence number of the source peer are 0, in code: csn & 0xffff00000000 == 0) and,
+        // if the peer has already sent a message to the sender, MUST check that the sender's cookie is different than its own cookie, and
+        // MUST store cookie, overflow number and sequence number (or the combined sequence number) for checks on further messages.
+        // The above number(s) SHALL be stored and updated separately for each other peer by its identity (source address in this case).
+        client.server.nonce=getIncomingMessage().nonce
+        client.server.theirCookie=getIncomingMessage().nonce.cookie
     }
 
     override suspend fun setNextState() {

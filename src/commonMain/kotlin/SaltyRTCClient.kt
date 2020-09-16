@@ -24,7 +24,7 @@ import org.saltyrtc.client.signalling.states.server.ServerAuthenticationStart
  * TODO register/remove state ovserver
  * TODO testing
  * @property state The current signalling state.
- * @property role The role this client assumes - either initiator of a WebRTC connection, or repsonder.
+ * @property server The role this client assumes towards the server - either initiator of a WebRTC connection, or repsonder.
  * @property identity: A client SHALL use its assigned identity as source address. If it has not been assigned an identity yet, the source address MUST be set to 0x00
  * @see https://github.com/saltyrtc/saltyrtc-meta
  */
@@ -35,16 +35,14 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     var signallingServer:SignallingServer? = null
     var initiator:Initiator? = null
 
-    var role: Node = Initiator(0, ServerAuthenticationStart(this))
+    var server: Node = Initiator(0,ServerAuthenticationStart(this))
+    var sessionPublicKey:NaClKey.NaClPublicKey? by server::publicKey
+    var state: State<out IncomingSignallingMessage> by server::state
 
     var signallingPath: SignallingPath? = null
     var websocketSession: WebSocketSession? = null
-    var sessionPublicKey:NaClKey.NaClPublicKey? = null
 
-    var your_cookie: Cookie? = null
-
-    var state: State<out IncomingSignallingMessage> by role::state
-    var identity:Byte by role::identity
+    var identity:Byte by server::identity
 
     suspend fun recieve(frame: ByteArray) {
         logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
@@ -53,21 +51,10 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         //TODO notify observers
         //TODO construct message
         state.recieve(nonce, data)
-
-
-    }
-
-    fun nextNonce(destination: Byte):Nonce {
-        //TODO this method needs to be validated and corrected
-        if (your_cookie==null) {
-            throw ValidationError("Trying to construct a nonce when your cookie was not set.")
-        }
-
-        return Nonce(cookie = your_cookie!!,source = identity, destination=destination, 0u,0u)
     }
 
     suspend fun connect(server: SignallingServer, path: SignallingPath, role:Node?=null) {
-        this.role = if (role==null) Initiator(0, ServerAuthenticationStart(this)) else role
+        this.server = if (role==null) Initiator(0,ServerAuthenticationStart(this)) else role
         openWebSocket(server, path)
     }
 
@@ -127,32 +114,26 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     fun isInitiator():Boolean {
-        if (role == null) {
-            return false
-        }
-        return role!!::class == Initiator::class
+       return server is Initiator
     }
 
     fun isResponder():Boolean {
-        if (role == null) {
-            return false
-        }
-        return role!!::class == Responder::class
+       return server is Responder
     }
 
     fun validateDestination(destination:Byte) {
         if (state.isAuthenticated()) {
             if (isInitiator()) {
                 if (destination.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $destination")
-                if (role.identity.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $identity")
+                if (server.identity.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $identity")
             } else {
                 if (destination.toInt() !in 2..255) throw ValidationError("Responders SHALL ONLY accept 0x0-20xFF as destination after authentication, was $destination")
-                if (role.identity.toInt() !in  2..255) throw ValidationError("Responders SHALL ONLY accept 0x02-0xFF as destination after authentication, was $identity")
+                if (server.identity.toInt() !in  2..255) throw ValidationError("Responders SHALL ONLY accept 0x02-0xFF as destination after authentication, was $identity")
             }
 
         } else {
             if (destination.toInt()!=0) throw ValidationError("A client MUST check that the destination address targets 0x00 during authentication,was $destination")
-            if (role.identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
+            if (server.identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
         }
 
 

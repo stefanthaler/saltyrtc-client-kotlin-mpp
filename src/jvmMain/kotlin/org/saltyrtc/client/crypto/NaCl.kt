@@ -14,7 +14,7 @@ import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
  * @see https://libsodium.gitbook.io/doc/
  * @see https://libsodium.gitbook.io/doc/public-key_cryptography
  */
-actual class NaCl actual constructor() {
+actual class NaCl {
     lateinit var sharedKey:ByteArray
     lateinit var sodium: Box.Native
     lateinit var ownPrivateKey: ByteArray

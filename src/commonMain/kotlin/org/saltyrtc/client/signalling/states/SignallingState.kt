@@ -3,6 +3,7 @@ package org.saltyrtc.client.signalling.states
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.logging.logWarn
+import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.messages.SignallingMessage
 import org.saltyrtc.client.signalling.messages.incoming.client.CloseMessage
@@ -23,7 +24,7 @@ import kotlin.reflect.KClass
  * @see SignallingMessage.validateSource
  */
 interface State<T: IncomingSignallingMessage> {
-    var incomingMessage: IncomingSignallingMessage
+
     fun getIncomingMessage():T
     fun setIncomingMessage(incomingMessage: IncomingSignallingMessage)
 
@@ -40,12 +41,12 @@ interface State<T: IncomingSignallingMessage> {
  *  Note: Message validation takes place in the constructor of each message
  */
 abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient): State<T> {
-    override lateinit var incomingMessage: IncomingSignallingMessage
+    lateinit var message: IncomingSignallingMessage
     override fun getIncomingMessage():T {
-        return incomingMessage as T
+        return message as T
     }
     override fun setIncomingMessage(incomingMessage: IncomingSignallingMessage) {
-        this.incomingMessage=incomingMessage
+        this.message=incomingMessage
     }
 
     suspend fun handleMessage(incomingMessage: IncomingSignallingMessage) {

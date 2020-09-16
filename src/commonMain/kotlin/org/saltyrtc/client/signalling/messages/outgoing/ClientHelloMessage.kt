@@ -25,7 +25,7 @@ class ClientHelloMessage: OutgoingSignallingMessage {
         payloadMap["${SignallingMessageFields.KEY}"]=client.ownPermanentKey.publicKey.bytes
     }
 
-    override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
+    override fun validate(client: SaltyRTCClient) {
         TODO("Not yet implemented")
     }
 }

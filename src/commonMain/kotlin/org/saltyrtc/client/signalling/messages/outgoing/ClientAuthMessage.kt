@@ -30,10 +30,7 @@ class ClientAuthMessage: OutgoingSignallingMessage {
         payloadMap["${SignallingMessageFields.TYPE}"] = TYPE
 
         // The client MUST set the your_cookie field to the cookie the server has used in the nonce of the 'server-hello' message.
-        if (client.your_cookie==null) {
-            throw ValidationError("Cookie should be set in ClientAuthMessage, was null")
-        }
-        payloadMap["${YOUR_COOKIE}"] = client.your_cookie!!
+        payloadMap["${YOUR_COOKIE}"] = client.server.theirCookie!!
 
         if (client.signallingServer==null) {
             throw ValidationError("Signalling server has to be set in ClientAuthMessage")
@@ -53,7 +50,17 @@ class ClientAuthMessage: OutgoingSignallingMessage {
         }
     }
 
-    override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
+    override fun validate(client:SaltyRTCClient) {
+        if (client.isInitiator()) {
+            require(nonce.source.toInt() == 1)
+        }
+        if (client.isResponder()) {
+            if (client.isInitiator()) {
+                require(nonce.source.toInt() in 2..255)
+            }
+        }
+        require(nonce.destination.toInt()==0)
+        require(nonce.cookie == client.server.yourCookie)
 
     }
 }

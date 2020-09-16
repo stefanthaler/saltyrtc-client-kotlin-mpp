@@ -6,7 +6,7 @@ import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
 /**
  * Provides NaCL compliant public-private key encryption and symmetric encryption.
  */
-expect class NaCl() {
+expect class NaCl {
     constructor(ownPrivateKey:NaClKey, otherPublicKey:NaClKey)
 
     fun encrypt(outgoingSignallingMessage: OutgoingSignallingMessage):ByteArray

@@ -11,6 +11,9 @@ class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val over
         return cookie.bytes + source.toByteArray() + destination.toByteArray() + overflowNumber.toByteArary() + sequenceNumber.toByteArray()
     }
 
+
+
+
     companion object{
         fun from(frame:ByteArray):Nonce {
             val cookie = Cookie(frame.sliceArray(0..15))

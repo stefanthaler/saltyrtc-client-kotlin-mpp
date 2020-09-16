@@ -29,12 +29,23 @@ class ServerAuthMessage : IncomingSignallingMessage {
     }
 
     override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
+        // nonce validation
+        require(nonce.source.toInt()==0)
+        require(nonce.destination.toInt()==0)
+        require(nonce.cookie == client.server.theirCookie )
+        if (nonce.overflowNumber == client.server.nonce!!.overflowNumber) {
+            require(nonce.sequenceNumber == (client.server.nonce!!.sequenceNumber+1u).toUInt())
+        }
+        if (nonce.overflowNumber == (client.server.nonce!!.overflowNumber+1u).toUShort() ) {
+            require(nonce.sequenceNumber == 0u)
+        }
+
         // The your_cookie field SHALL contain the cookie the client has used in its previous messages.
         require(payloadMap.containsKey(SignallingMessageFields.YOUR_COOKIE))
         val messageYourCookies = payloadMap.get(SignallingMessageFields.YOUR_COOKIE)!!
         require(messageYourCookies!= null)
         require(messageYourCookies is ByteArray)
-        require(messageYourCookies.contentEquals(client.your_cookie?.bytes))
+        require(messageYourCookies.contentEquals(client.server.yourCookie?.bytes))
 
         //If the client has knowledge of the server's public permanent key,
         // it SHALL decrypt the signed_keys field by using the message's nonce,

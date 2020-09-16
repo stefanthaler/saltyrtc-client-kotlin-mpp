@@ -5,7 +5,7 @@ import io.ktor.utils.io.core.*
 import io.ktor.utils.io.core.internal.*
 import org.saltyrtc.client.exceptions.ValidationError
 
-class NaClKeyPair() {
+class NaClKeyPair {
     lateinit var publicKey: NaClKey
         private set
     lateinit var privateKey: NaClKey

@@ -1,5 +1,7 @@
 package org.saltyrtc.client.crypto
 
+import io.ktor.utils.io.charsets.*
+import io.ktor.utils.io.core.*
 import org.saltyrtc.client.exceptions.ValidationError
 
 abstract class NaClKey(val bytes: ByteArray) {
@@ -16,12 +18,23 @@ abstract class NaClKey(val bytes: ByteArray) {
                 throw ValidationError("Public key must be exactly ${NaCLConstants.PUBLIC_KEY_BYTES} bytes long, was ${bytes.size}")
             }
         }
+
+        companion object {
+            fun from(hexString:String):NaClPublicKey {
+                return NaClPublicKey(hexString.toByteArray(Charsets.UTF_8))
+            }
+        }
     }
 
     class NaClPrivateKey(bytes: ByteArray): NaClKey(bytes) {
         override fun validate() {
             if (bytes.size!=NaCLConstants.PRIVATE_KEY_BYTES) {
                 throw ValidationError("Private key must be exactly ${NaCLConstants.PRIVATE_KEY_BYTES} bytes long, was ${bytes.size}")
+            }
+        }
+        companion object {
+            fun from(hexString:String):NaClPrivateKey {
+                return NaClPrivateKey(hexString.toByteArray(Charsets.UTF_8))
             }
         }
     }

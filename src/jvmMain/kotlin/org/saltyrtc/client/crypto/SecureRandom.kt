@@ -10,6 +10,6 @@ actual fun secureRandomeBytes(numBytes: Int): ByteArray {
 /**
  * Next securely random Int
  */
-actual fun secureRandomInt(): Int {
+actual fun secureRandomInt(): UInt {
     TODO("Not yet implemented")
 }

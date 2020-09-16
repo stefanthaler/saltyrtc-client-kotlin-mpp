@@ -31,6 +31,10 @@ class ServerHelloMessage: IncomingSignallingMessage {
         require(key is ByteArray)
         require(key.size == PUBLIC_KEY_BYTES)
 
+        require(nonce.overflowNumber == (0u as UShort))
+        require(nonce.destination.toInt() == 0)
+        require(nonce.source.toInt() == 0)
+
         // In case the client has knowledge of the server's public permanent key, it SHALL ensure that the server's public session key is different to the server's public permanent key.
         if (client.signallingServer?.permanentPublicKey != null) {
             require(!key.contentEquals(client.signallingServer!!.permanentPublicKey.bytes))

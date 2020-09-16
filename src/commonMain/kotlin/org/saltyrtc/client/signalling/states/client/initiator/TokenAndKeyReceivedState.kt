@@ -19,7 +19,7 @@ class TokenAndKeyReceivedState(client: SaltyRTCClient) : BaseState<AuthMessage>(
     }
 
     override suspend fun setNextState() {
-        val source = incomingMessage.nonce.source
+        val source = getIncomingMessage().nonce.source
         if (client.knowsResponder(source)) {
             val responderState = client.responders.get(source)!!.state
             if (responderState != this) {
