@@ -51,6 +51,8 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         //TODO notify observers
         //TODO construct message
         state.recieve(nonce, data)
+
+
     }
 
     fun nextNonce(destination: Byte):Nonce {

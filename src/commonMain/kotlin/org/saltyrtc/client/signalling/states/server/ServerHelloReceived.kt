@@ -7,6 +7,7 @@ import org.saltyrtc.client.signalling.BaseState
 import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
 import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
 import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
+import kotlin.reflect.KClass
 
 /**
  * After the Initiator has received the Server hello message, a client-auth message will be sent and a server-auth message will be expected.
@@ -16,7 +17,7 @@ import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
  */
 class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
 
-    override suspend fun sendNextProtocolMessage(message: ServerAuthMessage) {
+    override suspend fun sendNextProtocolMessage() {
         var nextNonce = client.nextNonce(0) // TODO verify nonce and destination
         //As soon as the client has received the 'server-hello' message, it MUST ONLY respond with this message in case the client takes the role of a responder.
         if (client.isResponder()) {
@@ -37,16 +38,20 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
         client.sendToWebSocket(message.toByteArray(nacl))
     }
 
-    override suspend fun stateActions(message: ServerAuthMessage) {
-        client.role?.identity=message.nonce.destination
+    override suspend fun stateActions() {
+        client.role?.identity=incomingMessage.nonce.destination
     }
 
-    override suspend fun setNextState(message: ServerAuthMessage) {
+    override suspend fun setNextState() {
         client.state =  ResponderAuthenticatedTowardsServer(client)
     }
 
     override fun isAuthenticated(): Boolean {
         return false
+    }
+
+    override fun allowedMessageTypes(): Array<KClass<out ServerAuthMessage>> {
+        return arrayOf(ServerAuthMessage::class)
     }
 
 
