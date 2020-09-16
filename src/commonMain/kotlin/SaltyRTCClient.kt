@@ -10,6 +10,9 @@ import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.signalling.*
 import org.saltyrtc.client.signalling.Cookie
+import org.saltyrtc.client.signalling.peers.Initiator
+import org.saltyrtc.client.signalling.peers.Node
+import org.saltyrtc.client.signalling.peers.Responder
 import org.saltyrtc.client.signalling.states.StartState
 
 
@@ -23,20 +26,22 @@ import org.saltyrtc.client.signalling.states.StartState
  * @see https://github.com/saltyrtc/saltyrtc-meta
  */
 class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
-    var state: State<out IncomingSignallingMessage> = StartState(this)
-        set(newState:State<out IncomingSignallingMessage>) {
-            //TODO add notification for observer
-            //TODO could use delegates
-            logDebug("State is set from $state to $newState")
-            state = newState
-        }
-    var role = Role.INITIATOR
+
+    val responders =  HashMap<Byte, State<out IncomingSignallingMessage>>()
     var signallingServer:SignallingServer? = null
+    var initiator:Initiator? = null
+
+    var role: Node = Initiator(0, StartState(this))
+
     var signallingPath: SignallingPath? = null
     var websocketSession: WebSocketSession? = null
     var sessionPublicKey:NaClKey.NaClPublicKey? = null
-    var identity:Byte = 0
+
     var your_cookie: Cookie? = null
+
+    var state:State<out IncomingSignallingMessage> by role::state
+    var identity:Byte by role::identity
+
 
     suspend fun recieve(frame: ByteArray) {
         logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
@@ -48,6 +53,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     fun nextNonce(destination: Byte):Nonce {
+        //TODO this method needs to be validated and corrected
         if (your_cookie==null) {
             throw ValidationError("Trying to construct a nonce when your cookie was not set.")
         }
@@ -60,6 +66,11 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
      */
     suspend fun sendNextMessage() {
         state.sendNextProtocolMessage()
+    }
+
+    suspend fun connect(server: SignallingServer, path: SignallingPath, role:Node?=null) {
+        this.role = if (role==null) Initiator(0, StartState(this)) else role
+        openWebSocket(server, path)
     }
 
     suspend fun openWebSocket(server: SignallingServer, path:SignallingPath) {
@@ -118,35 +129,39 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     }
 
     fun isInitiator():Boolean {
-        return role == Role.INITIATOR
+        if (role == null) {
+            return false
+        }
+        return role!!::class == Initiator::class
     }
 
     fun isResponder():Boolean {
-        return role == Role.RESPONDER
+        if (role == null) {
+            return false
+        }
+        return role!!::class == Responder::class
     }
 
     fun validateDestination(destination:Byte) {
-        if (!state.isAuthenticatedTowardsServer()) {
-            if (destination.toInt()!=0) throw ValidationError("A client MUST check that the destination address targets 0x00 during authentication,was $destination")
-            if (identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
-        }
-        // now we are in an authenticated state
-        if (isInitiator()) {
-            if (destination.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $destination")
-            if (identity.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $identity")
+        if (state.isAuthenticatedTowardsServer()) {
+            if (isInitiator()) {
+                if (destination.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $destination")
+                if (role.identity.toInt()!=1) throw ValidationError("Initiators SHALL ONLY accept 0x01 as destination after authentication, was $identity")
+            } else {
+                if (destination.toInt() !in 2..255) throw ValidationError("Responders SHALL ONLY accept 0x0-20xFF as destination after authentication, was $destination")
+                if (role.identity.toInt() !in  2..255) throw ValidationError("Responders SHALL ONLY accept 0x02-0xFF as destination after authentication, was $identity")
+            }
+
         } else {
-            if (destination.toInt()==1) throw ValidationError("Responders SHALL ONLY accept 0x0-20xFF as destination after authentication, was $destination")
-            if (identity.toInt()==1) throw ValidationError("Responders SHALL ONLY accept 0x02-0xFF as destination after authentication, was $identity")
+            if (destination.toInt()!=0) throw ValidationError("A client MUST check that the destination address targets 0x00 during authentication,was $destination")
+            if (role.identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
         }
+
+
     }
 
     fun isAuthenticatedTowardsServer(): Boolean {
         return state.isAuthenticatedTowardsServer()
-    }
-
-    enum class Role {
-        INITIATOR,
-        RESPONDER
     }
 
     companion object {

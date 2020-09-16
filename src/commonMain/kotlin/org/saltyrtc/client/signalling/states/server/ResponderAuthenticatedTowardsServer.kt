@@ -4,7 +4,7 @@ import SaltyRTCClient
 import org.saltyrtc.client.signalling.BaseState
 import org.saltyrtc.client.signalling.messages.incoming.ServerAuthMessage
 
-class AuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
+class ResponderAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
     override val acceptedMessageType = ServerAuthMessage::class
 
     override suspend fun sendNextProtocolMessage() {

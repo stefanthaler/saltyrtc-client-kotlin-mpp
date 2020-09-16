@@ -39,11 +39,11 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
     }
 
     override suspend fun stateActions(message: ServerAuthMessage) {
-        client.identity=message.nonce.destination
+        client.role?.identity=message.nonce.destination
     }
 
     override suspend fun setNextState(message: ServerAuthMessage) {
-        client.state =  AuthenticatedTowardsServer(client)
+        client.state =  ResponderAuthenticatedTowardsServer(client)
     }
 
     override fun isAuthenticatedTowardsServer(): Boolean {

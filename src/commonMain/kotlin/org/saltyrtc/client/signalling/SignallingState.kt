@@ -36,29 +36,33 @@ abstract class BaseState<T:IncomingSignallingMessage>(val client:SaltyRTCClient)
         val message = IncomingSignallingMessage.parse(dataBytes, nonceBytes, client) as T
 
         // message types each state needs to handle
-        when (message::class) {
-            CloseMessage::class -> {
-                //TODO stuff
-            }
-            DisconnectedMessage::class -> {
-                //TODO stuff
-            }
-            SendError::class -> {
-                // TODO stuff
-            }
+        if (isAuthenticatedTowardsServer()) {
 
+
+
+        } else {
+            when (message::class) {
+                CloseMessage::class -> {
+                    //TODO stuff
+                }
+                DisconnectedMessage::class -> {
+                    //TODO stuff
+                }
+                SendError::class -> {
+                    // TODO stuff
+                }
+                acceptedMessageType -> {
+                    stateActions(message)
+                    setNextState(message)
+                    sendNextProtocolMessage() //TODO make sure that there are no concurrency issues
+                }
+                else -> {
+                    logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message types [${acceptedMessageType.toString()}], ignoring.")
+                }
+            }
         }
 
-        // each state should handle only one other type otherwise
-        if ( message::class != acceptedMessageType) {
-            logWarn("Recieved ${message::class.toString()} in ${this::class.toString()} that was not in accepted message types [${acceptedMessageType.toString()}], ignoring.")
-            //TODO take care of ignored messages
-            return
-        }
 
-        stateActions(message)
-        setNextState(message)
-        sendNextProtocolMessage() //TODO make sure that there are no concurrency issues
     }
 
 }

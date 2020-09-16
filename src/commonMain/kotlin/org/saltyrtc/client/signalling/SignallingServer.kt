@@ -11,5 +11,6 @@ data class SignallingServer(
     val host: String,
     val port: Int,
     val permanentPublicKey: NaClKey.NaClPublicKey,
-    val subProtocol: String ="v1.saltyrtc.org"
+    val subProtocol: String ="v1.saltyrtc.org",
+    var cookie:Cookie? = null
 )
