@@ -3,6 +3,7 @@ package org.saltyrtc.client.crypto
 import io.ktor.utils.io.charsets.*
 import io.ktor.utils.io.core.*
 import org.saltyrtc.client.exceptions.ValidationError
+import org.saltyrtc.client.extensions.fromHexToByteArray
 
 abstract class NaClKey(val bytes: ByteArray) {
 
@@ -21,7 +22,7 @@ abstract class NaClKey(val bytes: ByteArray) {
 
         companion object {
             fun from(hexString:String):NaClPublicKey {
-                return NaClPublicKey(hexString.toByteArray(Charsets.UTF_8))
+                return NaClPublicKey(hexString.fromHexToByteArray())
             }
         }
     }
@@ -34,7 +35,7 @@ abstract class NaClKey(val bytes: ByteArray) {
         }
         companion object {
             fun from(hexString:String):NaClPrivateKey {
-                return NaClPrivateKey(hexString.toByteArray(Charsets.UTF_8))
+                return NaClPrivateKey(hexString.fromHexToByteArray())
             }
         }
     }
@@ -47,3 +48,4 @@ abstract class NaClKey(val bytes: ByteArray) {
         }
     }
 }
+

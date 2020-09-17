@@ -26,6 +26,6 @@ class ClientHelloMessage: OutgoingSignallingMessage {
     }
 
     override fun validate(client: SaltyRTCClient) {
-        TODO("Not yet implemented")
+
     }
 }

@@ -17,8 +17,8 @@ class NaClKeyPair {
     }
 
     constructor(publicKeyHex:String, privatKeyHex:String) {
-        this.publicKey= NaClKey.NaClPublicKey(publicKeyHex.toByteArray(Charsets.UTF_8))
-        this.privateKey== NaClKey.NaClPrivateKey(privatKeyHex.toByteArray(Charsets.UTF_8))
+        this.publicKey= NaClKey.NaClPublicKey.from(publicKeyHex)
+        this.privateKey== NaClKey.NaClPrivateKey.from(privatKeyHex)
     }
 }
 
