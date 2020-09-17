@@ -21,28 +21,12 @@ import kotlin.reflect.KClass
  */
 class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
 
-    /**
-     * After we have received server-hello, we send client-auth as Initiator and client-hello and client-auth as Responder.
-     */
-    override suspend fun sendNextProtocolMessage() {
-        var nextNonce = client.server.nextNonce(0)
-        //As soon as the client has received the 'server-hello' message,
-        // it MUST ONLY respond with this message in case the client takes the role of a responder.
-        if (client.isResponder()) {
-            client.sendToWebSocket(ClientHelloMessage(nextNonce,client ).toByteArray(client))
-            nextNonce = client.server.nextNonce(0)
-        }
-
-        val message = ClientAuthMessage(nextNonce, client, 0)
-        if (client.sessionPublicKey==null) {
-            throw ValidationError("After ServerHello has been received, the session public key should not be null")
-        }
-        val nacl = NaCl(client.ownPermanentKey.privateKey, client.sessionPublicKey!!) //TODO perhaps create single instance in client
-        client.sendToWebSocket(message.toByteArray(client,nacl))
-    }
-
     override suspend fun stateActions() {
         client.server.identity=getIncomingMessage().nonce.destination
+    }
+
+    override suspend fun sendNextProtocolMessage() {
+        //NO message
     }
 
     override suspend fun setNextState() {
@@ -60,6 +44,4 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
     override fun allowedMessageTypes(): Array<KClass<out ServerAuthMessage>> {
         return arrayOf(ServerAuthMessage::class)
     }
-
-
 }

@@ -15,6 +15,8 @@ class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val over
 
 
     companion object{
+        val LENGTH: Int = 24
+
         fun from(frame:ByteArray):Nonce {
             val cookie = Cookie(frame.sliceArray(0..15))
             val source = frame[16]

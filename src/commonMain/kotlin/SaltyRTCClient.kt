@@ -3,12 +3,14 @@ import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.sync.Mutex
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.logging.logDebug
+import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.*
 import org.saltyrtc.client.signalling.Cookie
 import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
@@ -44,13 +46,16 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
 
     var identity:Byte by server::identity
 
+    /**
+     * receive a data frame from the web socket. The frame s a byte array in BIG_ENDIAN.
+     */
     suspend fun recieve(frame: ByteArray) {
-        logDebug("A message has arrived from WebSocket: ${frame.decodeToString()}")
-        val nonce = frame.sliceArray(0..23)
-        val data:ByteArray = frame.sliceArray(24 .. frame.size - 1)
+        logWarn("A message has arrived from WebSocket: ${frame.decodeToString()}, native byte order is: ${ByteOrder.nativeOrder()}")
+        val nonce = frame.sliceArray(0..Nonce.LENGTH-1)
+        val data:ByteArray = frame.sliceArray(Nonce.LENGTH .. frame.size - 1)
         //TODO notify observers
         //TODO construct message
-        state.recieve(nonce, data)
+        state.recieve(nonce,data)
     }
 
     suspend fun connect(server: SignallingServer, path: SignallingPath, role:Node?=null) {
@@ -153,5 +158,6 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         val httpClient = HttpClient {
             install(WebSockets)
         }
+
     }
 }

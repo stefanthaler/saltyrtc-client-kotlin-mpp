@@ -51,16 +51,8 @@ class ClientAuthMessage: OutgoingSignallingMessage {
     }
 
     override fun validate(client:SaltyRTCClient) {
-        if (client.isInitiator()) {
-            require(nonce.source.toInt() == 1)
-        }
-        if (client.isResponder()) {
-            if (client.isInitiator()) {
-                require(nonce.source.toInt() in 2..255)
-            }
-        }
-        require(nonce.destination.toInt()==0)
-        require(nonce.cookie == client.server.yourCookie)
-
+        require(nonce.source.toInt() == 0, ) {"ClientAuth messages should have a source of 0 before authenticated"}
+        require(nonce.destination.toInt()==0, ) {"ClientAuth messages should go to the server"}
+        require(nonce.cookie == client.server.yourCookie, ) {"ClientAuth message's nonce should contain your cookie towards the server."}
     }
 }

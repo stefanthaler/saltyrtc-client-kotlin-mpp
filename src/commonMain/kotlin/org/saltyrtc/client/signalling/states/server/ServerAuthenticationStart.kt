@@ -1,19 +1,20 @@
 package org.saltyrtc.client.signalling.states.server
 
 import SaltyRTCClient
+import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.signalling.messages.incoming.server.authentication.ServerHelloMessage
+import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
+import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
 import org.saltyrtc.client.signalling.states.BaseState
 import kotlin.reflect.KClass
 
 class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloMessage>(client) {
-    override suspend fun sendNextProtocolMessage() {
-        throw ValidationError("SendNextMessage should not be called from start state - after connecting the WebSocket, the server should send a ServerHello message.")
-    }
 
     override fun isAuthenticated(): Boolean {
         return false
     }
+
 
     override suspend fun stateActions() {
         client.sessionPublicKey = getIncomingMessage().key
@@ -24,6 +25,23 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
         // The above number(s) SHALL be stored and updated separately for each other peer by its identity (source address in this case).
         client.server.nonce=getIncomingMessage().nonce
         client.server.theirCookie=getIncomingMessage().nonce.cookie
+    }
+
+    override suspend fun sendNextProtocolMessage() {
+        var nextNonce = client.server.nextNonce(0)
+        //As soon as the client has received the 'server-hello' message,
+        // it MUST ONLY respond with this message in case the client takes the role of a responder.
+        if (client.isResponder()) {
+            client.sendToWebSocket(ClientHelloMessage(nextNonce,client ).toByteArray(client))
+            nextNonce = client.server.nextNonce(0)
+        }
+
+        val message = ClientAuthMessage(nextNonce, client, 0)
+        if (client.sessionPublicKey==null) {
+            throw ValidationError("After ServerHello has been received, the session public key should not be null")
+        }
+        val nacl = NaCl(client.ownPermanentKey.privateKey, client.sessionPublicKey!!) //TODO perhaps create single instance in client
+        client.sendToWebSocket(message.toByteArray(client,nacl))
     }
 
     override suspend fun setNextState() {

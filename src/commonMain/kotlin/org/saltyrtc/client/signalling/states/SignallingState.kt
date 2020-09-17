@@ -29,7 +29,7 @@ interface State<T: IncomingSignallingMessage> {
     fun setIncomingMessage(incomingMessage: IncomingSignallingMessage)
 
     suspend fun sendNextProtocolMessage() // this will be called on next state
-    suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray)
+    suspend fun recieve(nonceBytes:ByteArray,dataBytes: ByteArray)
     suspend fun stateActions() //what to do with the message
     suspend fun setNextState() //set next messages
 
@@ -52,14 +52,15 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
     suspend fun handleMessage(incomingMessage: IncomingSignallingMessage) {
         setIncomingMessage(incomingMessage)
         stateActions()
-        setNextState()
         sendNextProtocolMessage() // this will be called on next state
+        setNextState()
     }
 
     /**
      * Template message for receiving data
      */
-    override suspend fun recieve(dataBytes: ByteArray, nonceBytes:ByteArray) {
+    override suspend fun recieve(nonceBytes:ByteArray,dataBytes: ByteArray) {
+        logWarn("recieved data:'${dataBytes.decodeToString()}', and nonce '${nonceBytes.toString()}")
         val message = SignallingMessage.parse(dataBytes, nonceBytes, client, getNaCL())
 
         with(client.lock) { // TODO  make sure there are no concurrency issues

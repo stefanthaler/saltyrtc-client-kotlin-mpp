@@ -3,6 +3,8 @@ package org.saltyrtc.client.signalling.messages
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.exceptions.ValidationError
+import org.saltyrtc.client.logging.logInfo
+import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.packPayloadMap
 import org.saltyrtc.client.signalling.unpackPayloadMap
@@ -37,20 +39,25 @@ abstract class SignallingMessage(val nonce: Nonce) {
                 dataBytes
             }
             // unpack from message packer object
-            val payloadMap =  unpackPayloadMap(payloadBytes)
-            val nonce = Nonce.from(nonceBytes)
+            try {
+                val payloadMap =  unpackPayloadMap(payloadBytes)
+                val nonce = Nonce.from(nonceBytes)
 
-            // construct message
-            val messageType = payloadMap.get("type") as String
-            val message = SignallingMessageTypes.from(messageType)?.create(nonce, client, payloadMap)// TODO add client role
-
-            if(message==null) {
-                throw ValidationError("Message of $messageType could not be created")
+                // construct message
+                val messageType = payloadMap.get("type") as String
+                logInfo("$messageType message recieved")
+                val message = SignallingMessageTypes.from(messageType)?.create(nonce, client, payloadMap)// TODO add client role
+                if(message==null) {
+                    throw ValidationError("Message of $messageType could not be created")
+                }
+                if (message !is IncomingSignallingMessage) {
+                    throw ValidationError("Message should be an IncommingSignallingMessage, was ${message::class.toString()}")
+                }
+                return message
+            } catch(e:Exception) {
+                logWarn("Deserialization and parsing failed for message in state '${client.state::class}'")
+                throw(e)
             }
-            if (message !is IncomingSignallingMessage) {
-                throw ValidationError("Message should be an IncommingSignallingMessage, was ${message::class.toString()}")
-            }
-            return message
         }
     }
 }

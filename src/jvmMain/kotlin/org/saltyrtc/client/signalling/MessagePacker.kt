@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.msgpack.jackson.dataformat.MessagePackFactory
 import java.io.IOException
 
+
 actual fun unpackPayloadMap(payload: ByteArray): Map<String, Any> {
     val objectMapper = ObjectMapper(MessagePackFactory())
     val map: Map<String, Any>  = try {
@@ -17,5 +18,6 @@ actual fun unpackPayloadMap(payload: ByteArray): Map<String, Any> {
 }
 
 actual fun packPayloadMap(payloadMap: HashMap<String, Any>): ByteArray {
-    TODO("Not yet implemented")
+    val objectMapper = ObjectMapper(MessagePackFactory())
+    return  objectMapper.writeValueAsBytes(payloadMap)
 }
