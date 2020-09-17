@@ -33,7 +33,6 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
             nextNonce = client.server.nextNonce(0)
         }
 
-
         val message = ClientAuthMessage(nextNonce, client, 0)
         if (client.sessionPublicKey==null) {
             throw ValidationError("After ServerHello has been received, the session public key should not be null")
