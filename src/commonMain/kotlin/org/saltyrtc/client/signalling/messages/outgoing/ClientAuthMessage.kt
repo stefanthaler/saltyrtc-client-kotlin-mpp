@@ -20,7 +20,6 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
     "ping_interval": 30,
     "your_key": b"2659296ce03993e876d5f2abcaa6d19f92295ff119ee5cb327498d2620efc979"
     }
-
  */
 
 class ClientAuthMessage: OutgoingSignallingMessage {
@@ -30,7 +29,7 @@ class ClientAuthMessage: OutgoingSignallingMessage {
         payloadMap["${SignallingMessageFields.TYPE}"] = TYPE
 
         // The client MUST set the your_cookie field to the cookie the server has used in the nonce of the 'server-hello' message.
-        payloadMap["${YOUR_COOKIE}"] = client.server.theirCookie!!.bytes
+        payloadMap["${YOUR_COOKIE}"] = client.server.incomingNonce!!.cookie.bytes
 
         if (client.signallingServer==null) {
             throw ValidationError("Signalling server has to be set in ClientAuthMessage")
@@ -53,6 +52,6 @@ class ClientAuthMessage: OutgoingSignallingMessage {
     override fun validate(client:SaltyRTCClient) {
         require(nonce.source.toInt() == 0, ) {"ClientAuth messages should have a source of 0 before authenticated"}
         require(nonce.destination.toInt()==0, ) {"ClientAuth messages should go to the server"}
-        require(nonce.cookie == client.server.yourCookie, ) {"ClientAuth message's nonce should contain your cookie towards the server."}
+
     }
 }

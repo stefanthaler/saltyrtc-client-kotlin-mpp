@@ -22,7 +22,10 @@ import kotlin.reflect.KClass
 class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>(client) {
 
     override suspend fun stateActions() {
-        client.server.identity=getIncomingMessage().nonce.destination
+        client.identity = getIncomingMessage().nonce.destination
+        client.server.outgoingNonce?.source=client.identity
+        client.server.incomingNonce = getIncomingMessage().nonce // their cookie
+
     }
 
     override suspend fun sendNextProtocolMessage() {
@@ -43,5 +46,9 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
 
     override fun allowedMessageTypes(): Array<KClass<out ServerAuthMessage>> {
         return arrayOf(ServerAuthMessage::class)
+    }
+    // The message SHALL be NaCl public-key encrypted by the server's session key pair and the client's permanent key pair.
+    override fun incomingNacl(): NaCl? {
+        return NaCl(client.ownPermanentKey.privateKey, client.sessionPublicKey!! )
     }
 }

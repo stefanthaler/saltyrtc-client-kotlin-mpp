@@ -10,7 +10,11 @@ import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.extensions.byteToHex
+import org.saltyrtc.client.extensions.toHexString
+import org.saltyrtc.client.extensions.toUShort
 import org.saltyrtc.client.logging.logDebug
+import org.saltyrtc.client.logging.logWarn
+import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.SignallingPath
 import org.saltyrtc.client.signalling.SignallingServer
 
@@ -20,6 +24,10 @@ import org.saltyrtc.client.signalling.SignallingServer
 //}
 
 fun main() = runBlocking<Unit> {
+    val b = ByteArray(2)
+    b[0]=1
+    b[1]=2
+    println("${b.toUShort()}")
 
     println("Hello")
     val s = SignallingServer("0.0.0.0",
@@ -31,6 +39,12 @@ fun main() = runBlocking<Unit> {
         NaClKeyPair("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E",
             "B3267C2BFEB00B27B4B006F024659076A1FA86F5046B6F9C401F64F3D9644A65")
     )
+
+    val n = Nonce()
+    logWarn("${n.sequenceNumber} ${n.overflowNumber} ${n.destination} ${n.source}")
+    val n2 = Nonce.from(n.toByteArray())
+    logWarn("${n2.sequenceNumber} ${n2.overflowNumber} ${n2.destination} ${n2.source}")
+    logWarn("${n.toByteArray().toHexString()} ${n2.toByteArray().toHexString()}")
 
     val sodium = LazySodiumJava(SodiumJava())
     val publicKeyBytes = ByteArray(NaCLConstants.PUBLIC_KEY_BYTES)

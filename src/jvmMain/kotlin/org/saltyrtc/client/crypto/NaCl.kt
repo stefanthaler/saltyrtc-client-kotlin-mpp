@@ -69,7 +69,17 @@ actual class NaCl {
 
     actual fun decrypt(ciphertext: ByteArray, nonce: ByteArray): ByteArray{
         val plaintext = ByteArray(ciphertext.size - MACBYTES)
+        logWarn("Decrypting - private key: ${this.ownPrivateKey.toHexString()}")
+        logWarn("Decrypting - public key: ${this.otherPublicKey.toHexString()}")
+        logWarn("Decrypting - SharedKey : ${this.sharedKey.toHexString()}")
+        logWarn("Decrypting - Nonce: ${nonce.toHexString()}")
+        logWarn("Decrypting - Ciphtertext: ${ciphertext.toHexString()}")
+
         val success = sodium.cryptoBoxOpenEasyAfterNm(plaintext, ciphertext, ciphertext.size.toLong(), nonce, sharedKey)
+
+
+        logWarn("Plaintext: ${plaintext.toHexString()}")
+
         if (!success) {
             throw CryptoException("Failed to decrypt incoming signalling message")
         }

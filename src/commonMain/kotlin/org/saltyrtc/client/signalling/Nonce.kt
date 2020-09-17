@@ -1,9 +1,20 @@
 package org.saltyrtc.client.signalling
 
 
+import org.saltyrtc.client.crypto.secureRandomInt
 import org.saltyrtc.client.extensions.*
+import org.saltyrtc.client.logging.logWarn
 
-class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val overflowNumber: UShort, val sequenceNumber: UInt ) {
+class Nonce(val cookie:Cookie= Cookie(), var source: Byte=0, var destination: Byte=0, var overflowNumber: UShort=0u, var sequenceNumber: UInt= secureRandomInt()) {
+
+    fun increaseSequenceNumber() {
+        if (sequenceNumber<UInt.MAX_VALUE) {
+            sequenceNumber = sequenceNumber+1u
+        } else {
+            overflowNumber= (overflowNumber+1u).toUShort()
+            sequenceNumber=0u
+        }
+    }
 
     fun toByteArray():ByteArray {
         val frame = ByteArray(LENGTH)
@@ -15,9 +26,6 @@ class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val over
         return frame
     }
 
-
-
-
     companion object{
         val LENGTH: Int = 24
 
@@ -26,8 +34,11 @@ class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val over
             val source = frame[16]
             val destination = frame[17]
             val overflowNumber:UShort = frame.sliceArray(18..19).toUShort()
-            val sequenceNumber:UInt =  frame.sliceArray(20..23).toUInt()
-            return Nonce(cookie, source,  destination, overflowNumber, sequenceNumber,)
+            val sequenceNumber:UInt = frame.sliceArray(20..23).toUInt()
+            logWarn("$overflowNumber")
+            logWarn("HERE ${sequenceNumber.toByteArray().size}")
+
+            return Nonce(cookie, source,  destination, overflowNumber, sequenceNumber)
         }
     }
 }

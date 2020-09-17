@@ -44,7 +44,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
     var signallingPath: SignallingPath? = null
     var websocketSession: WebSocketSession? = null
 
-    var identity:Byte by server::identity
+    var identity:Byte = 0
 
     /**
      * receive a data frame from the web socket. The frame s a byte array in BIG_ENDIAN.

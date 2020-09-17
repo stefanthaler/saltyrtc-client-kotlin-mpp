@@ -2,8 +2,8 @@ package org.saltyrtc.client.signalling.states
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
+import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.messages.SignallingMessage
 import org.saltyrtc.client.signalling.messages.incoming.client.CloseMessage
@@ -50,6 +50,7 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
     }
 
     suspend fun handleMessage(incomingMessage: IncomingSignallingMessage) {
+        // receive is first
         setIncomingMessage(incomingMessage)
         stateActions()
         sendNextProtocolMessage() // this will be called on next state
@@ -60,8 +61,8 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
      * Template message for receiving data
      */
     override suspend fun recieve(nonceBytes:ByteArray,dataBytes: ByteArray) {
-        logWarn("recieved data:'${dataBytes.decodeToString()}', and nonce '${nonceBytes.toString()}")
-        val message = SignallingMessage.parse(dataBytes, nonceBytes, client, getNaCL())
+        logWarn("recieved data:'${dataBytes.toHexString()}', and nonce '${nonceBytes.toHexString()}")
+        val message = SignallingMessage.parse(dataBytes, nonceBytes, client, incomingNacl())
 
         with(client.lock) { // TODO  make sure there are no concurrency issues
             // message types each state needs to handle
@@ -69,6 +70,7 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
                 when (message::class) {
                     DisconnectedMessage::class -> {
                         // validate
+
                         // clear out
                     }
                     CloseMessage::class -> {
@@ -106,7 +108,7 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
      * Obtains a NaCl clompliant crypto object. Depends on the state whether messages should be decrypted or not.
      * @see NaCl
      */
-    fun getNaCL():NaCl? {
+    open fun incomingNacl():NaCl? {
         return null
     }
 

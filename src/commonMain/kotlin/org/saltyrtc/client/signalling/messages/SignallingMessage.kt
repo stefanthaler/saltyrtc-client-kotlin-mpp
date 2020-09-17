@@ -3,6 +3,7 @@ package org.saltyrtc.client.signalling.messages
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.exceptions.ValidationError
+import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logInfo
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.Nonce
@@ -38,14 +39,16 @@ abstract class SignallingMessage(val nonce: Nonce) {
             } else {
                 dataBytes
             }
+
             // unpack from message packer object
             try {
                 val payloadMap =  unpackPayloadMap(payloadBytes)
                 val nonce = Nonce.from(nonceBytes)
+                logWarn("parsed ${nonce.toByteArray().toHexString()}, should be ${nonceBytes.toHexString()}")
 
                 // construct message
                 val messageType = payloadMap.get("type") as String
-                logInfo("$messageType message recieved")
+                logInfo("INCOMING: $messageType message recieved. Source: ${nonce.source} Destination:${nonce.destination} SeqeuenceNumber: ${nonce.sequenceNumber} - ${nonce.overflowNumber}")
                 val message = SignallingMessageTypes.from(messageType)?.create(nonce, client, payloadMap)// TODO add client role
                 if(message==null) {
                     throw ValidationError("Message of $messageType could not be created")
@@ -74,7 +77,7 @@ abstract class IncomingSignallingMessage: SignallingMessage {
         require(nonce.source.toInt()==0)
     }
 
-    fun validateDestination(client: SaltyRTCClient) { //TODO this is for incoming messages only
+    open fun validateDestination(client: SaltyRTCClient) { //TODO this is for incoming messages only
         // A client MUST check that the destination address targets its assigned identity (or 0x00 during authentication).
         // However, the client MUST validate that the identity fits its role –
         // initiators SHALL ONLY accept 0x01 and responders SHALL ONLY an identity from the range 0x02..0xff.
@@ -122,6 +125,11 @@ abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient): S
     fun payloadBytes():ByteArray {
         logWarn("Packing payload map: '${payloadMap}'")
         return packPayloadMap(payloadMap)
+    }
+
+    suspend fun send(client: SaltyRTCClient, naCl: NaCl?=null) {
+        logInfo("OUTGOING: Sending message $TYPE. Source: ${nonce.source} Destination: ${nonce.destination} Sequence: ${nonce.sequenceNumber} Overflow: Source: ${nonce.overflowNumber}")
+        client.sendToWebSocket(toByteArray(client,naCl))
     }
 
     /**

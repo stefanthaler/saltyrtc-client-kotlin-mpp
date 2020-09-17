@@ -9,5 +9,5 @@ import io.ktor.utils.io.core.*
 fun UInt.toByteArray(): ByteArray {
     val builder = BytePacketBuilder()
     builder.writeUInt(this)
-    return builder.build().readBytes(2)
+    return builder.build().readBytes(4)
 }

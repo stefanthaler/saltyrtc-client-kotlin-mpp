@@ -21,7 +21,7 @@ class Cookie {
     override fun equals(other: Any?): Boolean {
         if (other==null) return false
         if (other !is Cookie) return false
-        return super.equals(other) && this.bytes.contentEquals(other.bytes)
+        return this.bytes.contentEquals(other.bytes)
     }
 
     companion object{

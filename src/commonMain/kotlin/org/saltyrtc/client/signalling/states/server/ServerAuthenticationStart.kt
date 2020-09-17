@@ -4,6 +4,7 @@ import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.exceptions.ValidationError
+import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.messages.incoming.server.authentication.ServerHelloMessage
 import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
@@ -19,6 +20,8 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
 
 
     override suspend fun stateActions() {
+        logWarn("${getIncomingMessage().nonce.sequenceNumber}")
+
         client.sessionPublicKey = getIncomingMessage().key
         logWarn("Received session public key:${client.sessionPublicKey!!.toHexString()}")
         // In case this is the first message received from the sender, the peer:
@@ -26,17 +29,17 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
         // if the peer has already sent a message to the sender, MUST check that the sender's cookie is different than its own cookie, and
         // MUST store cookie, overflow number and sequence number (or the combined sequence number) for checks on further messages.
         // The above number(s) SHALL be stored and updated separately for each other peer by its identity (source address in this case).
-        client.server.nonce=getIncomingMessage().nonce
-        client.server.theirCookie=getIncomingMessage().nonce.cookie
+        client.server.incomingNonce=getIncomingMessage().nonce
+        logWarn("Server Cookie: ${client.server.incomingNonce!!.cookie.bytes.toHexString()}")
     }
 
     override suspend fun sendNextProtocolMessage() {
-        var nextNonce = client.server.nextNonce(0)
+        var nextNonce = client.server.outgoingNonce
         //As soon as the client has received the 'server-hello' message,
         // it MUST ONLY respond with this message in case the client takes the role of a responder.
         if (client.isResponder()) {
-            client.sendToWebSocket(ClientHelloMessage(nextNonce,client ).toByteArray(client))
-            nextNonce = client.server.nextNonce(0)
+            ClientHelloMessage(nextNonce,client ).send(client)
+            nextNonce = client.server.outgoingNonce
         }
 
         val message = ClientAuthMessage(nextNonce, client, 0)
@@ -47,7 +50,8 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
         // and the client's permanent key pair (public key as part of the WebSocket path or sent in 'client-hello').
 
         val nacl = NaCl( client.ownPermanentKey.privateKey ,client.sessionPublicKey!!) //TODO perhaps create single instance in client
-        client.sendToWebSocket(message.toByteArray(client,nacl))
+        message.send(client, nacl)
+
     }
 
     override suspend fun setNextState() {
