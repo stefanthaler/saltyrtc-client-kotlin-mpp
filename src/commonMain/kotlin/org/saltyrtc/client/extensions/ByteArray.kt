@@ -8,6 +8,12 @@ fun byteToHex(b:Byte):String{
     return "${hexChars[(c/ 16u).toInt()]}${hexChars[(c% 16u).toInt()]}"
 }
 
+fun ByteArray.overrideSlice(startIndex: Int, bytes: ByteArray) {
+    if (startIndex !in 0..this.size-1-bytes.size) throw IllegalArgumentException("startIndex must be a valid element within the bytearray[0-${this.size-1-bytes.size}], was ${startIndex}")
+    for (i in startIndex .. startIndex+bytes.size-1) {
+        this[i] = bytes[i-startIndex]
+    }
+}
 
 // always
 // TODO test

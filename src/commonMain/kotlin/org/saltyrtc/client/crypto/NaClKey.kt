@@ -4,6 +4,7 @@ import io.ktor.utils.io.charsets.*
 import io.ktor.utils.io.core.*
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.extensions.fromHexToByteArray
+import org.saltyrtc.client.extensions.toHexString
 
 abstract class NaClKey(val bytes: ByteArray) {
 
@@ -12,6 +13,10 @@ abstract class NaClKey(val bytes: ByteArray) {
     }
 
     abstract fun validate()
+
+    fun toHexString():String{
+        return bytes.toHexString()
+    }
 
     class NaClPublicKey(bytes: ByteArray): NaClKey(bytes) {
         override fun validate() {

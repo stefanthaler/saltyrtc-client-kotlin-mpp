@@ -30,13 +30,13 @@ class ClientAuthMessage: OutgoingSignallingMessage {
         payloadMap["${SignallingMessageFields.TYPE}"] = TYPE
 
         // The client MUST set the your_cookie field to the cookie the server has used in the nonce of the 'server-hello' message.
-        payloadMap["${YOUR_COOKIE}"] = client.server.theirCookie!!
+        payloadMap["${YOUR_COOKIE}"] = client.server.theirCookie!!.bytes
 
         if (client.signallingServer==null) {
             throw ValidationError("Signalling server has to be set in ClientAuthMessage")
         }
         //It SHALL also set the subprotocols field to the exact same Array of subprotocol strings it has provided to the WebSocket client implementation for subprotocol negotiation.
-        payloadMap["${SUBPROTOCOLS}"] = arrayOf(client.signallingServer!!.subProtocol)
+        payloadMap["${SUBPROTOCOLS}"] = listOf(client.signallingServer!!.subProtocol)
 
         //If the user application requests to be pinged (see RFC 6455 section 5.5.2) in a specific interval, the client SHALL set the field ping_interval to the requested interval in seconds. Otherwise, ping_interval MUST be set to 0 indicating that no WebSocket ping messages SHOULD be sent.
         if (pingInterval<0) {
@@ -46,7 +46,7 @@ class ClientAuthMessage: OutgoingSignallingMessage {
 
         // If the client has stored the server's public permanent key (32 bytes), it SHOULD set it in the your_key field.
         if (client.sessionPublicKey!=null) {
-            payloadMap["$YOUR_KEY"] = client.sessionPublicKey!!.bytes
+            payloadMap["$YOUR_KEY"] = client.signallingServer!!.permanentPublicKey.bytes
         }
     }
 

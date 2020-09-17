@@ -120,6 +120,7 @@ abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient): S
      * Message packed payload of the message
      */
     fun payloadBytes():ByteArray {
+        logWarn("Packing payload map: '${payloadMap}'")
         return packPayloadMap(payloadMap)
     }
 

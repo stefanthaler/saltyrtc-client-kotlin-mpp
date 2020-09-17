@@ -1,14 +1,18 @@
 package org.saltyrtc.client.signalling
 
-import org.saltyrtc.client.extensions.toByteArary
-import org.saltyrtc.client.extensions.toByteArray
-import org.saltyrtc.client.extensions.toUInt
-import org.saltyrtc.client.extensions.toUShort
+
+import org.saltyrtc.client.extensions.*
 
 class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val overflowNumber: UShort, val sequenceNumber: UInt ) {
 
     fun toByteArray():ByteArray {
-        return cookie.bytes + source.toByteArray() + destination.toByteArray() + overflowNumber.toByteArary() + sequenceNumber.toByteArray()
+        val frame = ByteArray(LENGTH)
+        frame.overrideSlice(0, cookie.bytes)
+        frame[16]=source
+        frame[17]=destination
+        frame.overrideSlice(18, overflowNumber.toByteArary() )
+        frame.overrideSlice(20, sequenceNumber.toByteArray() )
+        return frame
     }
 
 
@@ -27,6 +31,7 @@ class Nonce(val cookie:Cookie,val source: Byte,  val destination: Byte, val over
         }
     }
 }
+
 
 
 
