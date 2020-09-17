@@ -32,7 +32,6 @@ class ServerAuthMessage : IncomingSignallingMessage {
         if (client.isResponder()) {
             initiator_connected = payloadMap.get(SignallingMessageFields.INITIATOR_CONNECTED) as Boolean
         }
-
     }
 
     /**
