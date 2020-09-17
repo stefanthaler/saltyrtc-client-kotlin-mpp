@@ -22,10 +22,10 @@ class ClientHelloMessage: OutgoingSignallingMessage {
 
     constructor(nonce: Nonce, client:SaltyRTCClient) : super(nonce,client) {
         // The responder MUST set the public key (32 bytes) of the permanent key pair in the key field of this message.
-        payloadMap["${SignallingMessageFields.KEY}"]=client.ownPermanentKey.publicKey.bytes
+        payloadMap[SignallingMessageFields.KEY.toString()]=client.ownPermanentKey.publicKey.bytes
     }
 
     override fun validate(client: SaltyRTCClient) {
-
+        // The responder MUST set the public key (32 bytes) of the permanent key pair in the key field of this message. (validated when creating public key)
     }
 }

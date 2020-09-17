@@ -6,19 +6,19 @@ import io.ktor.utils.io.core.internal.*
 import org.saltyrtc.client.exceptions.ValidationError
 
 class NaClKeyPair {
-    lateinit var publicKey: NaClKey
+    var publicKey: NaClKey
         private set
-    lateinit var privateKey: NaClKey
+    var privateKey: NaClKey
         private set
 
-    constructor (publicKey:ByteArray, privatKey:ByteArray) {
+    constructor(publicKey:ByteArray, privatKey:ByteArray) {
         this.publicKey= NaClKey.NaClPublicKey(publicKey)
         this.privateKey= NaClKey.NaClPrivateKey(privatKey)
     }
 
     constructor(publicKeyHex:String, privatKeyHex:String) {
         this.publicKey= NaClKey.NaClPublicKey.from(publicKeyHex)
-        this.privateKey== NaClKey.NaClPrivateKey.from(privatKeyHex)
+        this.privateKey= NaClKey.NaClPrivateKey.from(privatKeyHex)
     }
 }
 

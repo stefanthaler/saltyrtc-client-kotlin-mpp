@@ -16,7 +16,7 @@ fun String.fromHexToByteArray(): ByteArray {
 
     // a byte consists of two hex chars, e.g. AF
     // byte value is int(A)*16^1 + int(F)*16^0
-    for (i in 0..this.length step 2) {
+    for (i in 0..this.length-1 step 2) {
         if (chars[i] !in lowerDigit.keys || chars[i+1] !in lowerDigit.keys) throw IllegalArgumentException("Illegal character in hex string: '$this' at position($i-${i+1}). Allowed: 0-9, A-F")
         out[i/2] = (upperDigit[chars[i]]!! + lowerDigit[chars[i+1]]!!).toByte()
     }
