@@ -2,11 +2,8 @@ package org.saltyrtc.client.signalling.states.server
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
-import org.saltyrtc.client.exceptions.ValidationError
-import org.saltyrtc.client.signalling.states.BaseState
-import org.saltyrtc.client.signalling.messages.outgoing.ClientAuthMessage
 import org.saltyrtc.client.signalling.messages.incoming.server.authentication.ServerAuthMessage
-import org.saltyrtc.client.signalling.messages.outgoing.ClientHelloMessage
+import org.saltyrtc.client.signalling.states.BaseState
 import kotlin.reflect.KClass
 
 /**
@@ -23,7 +20,7 @@ class ServerHelloReceived(client: SaltyRTCClient) : BaseState<ServerAuthMessage>
 
     override suspend fun stateActions() {
         client.identity = getIncomingMessage().nonce.destination
-        client.server.outgoingNonce?.source=client.identity
+        client.server.outgoingNonce.source=client.identity
         client.server.incomingNonce = getIncomingMessage().nonce // their cookie
 
     }

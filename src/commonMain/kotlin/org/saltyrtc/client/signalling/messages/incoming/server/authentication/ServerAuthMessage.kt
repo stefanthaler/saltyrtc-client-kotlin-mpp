@@ -69,7 +69,7 @@ class ServerAuthMessage : IncomingSignallingMessage {
         val messageYourCookies = payloadMap.get(SignallingMessageFields.YOUR_COOKIE.value)!!
         require(messageYourCookies!= null)
         require(messageYourCookies is ByteArray)
-        require(messageYourCookies.contentEquals(client.server.outgoingNonce.cookie?.bytes))
+        require(messageYourCookies.contentEquals(client.server.outgoingNonce.cookie.bytes))
 
         //If the client has knowledge of the server's public permanent key,
         // it SHALL decrypt the signed_keys field by using the message's nonce,

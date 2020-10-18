@@ -2,7 +2,6 @@ package org.saltyrtc.client.signalling.states.server
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
-import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logWarn
@@ -17,7 +16,6 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
     override fun isAuthenticated(): Boolean {
         return false
     }
-
 
     override suspend fun stateActions() {
         logWarn("${getIncomingMessage().nonce.sequenceNumber}")
@@ -51,7 +49,6 @@ class ServerAuthenticationStart(client: SaltyRTCClient) : BaseState<ServerHelloM
 
         val nacl = NaCl( client.ownPermanentKey.privateKey ,client.sessionPublicKey!!) //TODO perhaps create single instance in client
         message.send(client, nacl)
-
     }
 
     override suspend fun setNextState() {

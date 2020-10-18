@@ -14,7 +14,7 @@ class NewResponder: IncomingSignallingMessage {
     var id: Byte = 0
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
-        id = (payloadMap[SignallingMessageFields.ID] as Byte)!! // The field id MUST be set to the assigned identity of the newly connected responder.
+        id = (payloadMap[SignallingMessageFields.ID] as Byte) // The field id MUST be set to the assigned identity of the newly connected responder.
         //TODO validate reason number
     }
 

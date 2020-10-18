@@ -9,7 +9,7 @@ class SendError: IncomingSignallingMessage {
     lateinit var id: ByteArray
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
-        id = (payloadMap["id"] as ByteArray)!!
+        id = (payloadMap["id"] as ByteArray)
         //TODO validate reason number
     }
 

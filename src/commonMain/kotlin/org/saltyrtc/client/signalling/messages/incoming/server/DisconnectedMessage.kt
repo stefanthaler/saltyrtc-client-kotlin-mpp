@@ -9,7 +9,7 @@ class DisconnectedMessage: IncomingSignallingMessage {
     var id:Byte=0
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
-        id = (payloadMap["id"] as Byte)!!
+        id = (payloadMap["id"] as Byte)
         //TODO validate byte number
 
     }

@@ -19,6 +19,7 @@ import org.saltyrtc.client.signalling.peers.Node
 import org.saltyrtc.client.signalling.peers.Responder
 import org.saltyrtc.client.signalling.states.State
 import org.saltyrtc.client.signalling.states.server.ServerAuthenticationStart
+import kotlin.reflect.KClass
 
 
 /**
@@ -58,12 +59,21 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         state.recieve(nonce,data)
     }
 
-    suspend fun connect(server: SignallingServer, path: SignallingPath, role:Node?=null) {
-        this.server = if (role==null) Initiator(0,ServerAuthenticationStart(this)) else role
+    suspend fun connectAsInitiator(server: SignallingServer, path: SignallingPath) {
+        val role = Initiator(0,ServerAuthenticationStart(this))
         openWebSocket(server, path)
     }
 
-    suspend fun openWebSocket(server: SignallingServer, path:SignallingPath) {
+    suspend fun connectAsResponder(server: SignallingServer, path: SignallingPath) {
+        val role = Responder(0,ServerAuthenticationStart(this))
+        openWebSocket(server, path)
+    }
+
+    private suspend fun connect(server: SignallingServer, path: SignallingPath,  role: Node) {
+        openWebSocket(server, path)
+    }
+
+    private suspend fun openWebSocket(server: SignallingServer, path:SignallingPath) {
         //TODO check for memory leaks
         //TODO maybe check for synchronization issues
         //TODO cleanup
@@ -140,8 +150,6 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
             if (destination.toInt()!=0) throw ValidationError("A client MUST check that the destination address targets 0x00 during authentication,was $destination")
             if (server.identity.toInt()!=0) throw ValidationError("A client MUST check that its identity is 0x00 during authentication, was $identity")
         }
-
-
     }
 
     fun isAuthenticatedTowardsServer(): Boolean {

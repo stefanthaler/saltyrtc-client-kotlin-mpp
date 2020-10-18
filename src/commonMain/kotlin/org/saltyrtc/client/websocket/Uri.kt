@@ -21,7 +21,6 @@ class Uri(
     }
 
     companion object{
-        final val SCHEME = "wss"
-
+        const val SCHEME = "wss"
     }
 }
