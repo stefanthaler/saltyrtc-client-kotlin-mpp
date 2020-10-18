@@ -39,3 +39,27 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 ## Start initiator / responder
 * run jvmMain (SaltyRTCClient)
 
+# TODO SaltyRTC – End-to-End-Encrypted Signalling
+* https://github.com/saltyrtc/saltyrtc-meta/blob/master/Protocol.md
+## Client2Server
+* Path Cleaning
+* 'drop-responder' Message
+* 'disconnected' Message
+* 'send-error' Message
+## Client2Client
+* 'token' Message
+* 'key' Message
+* 'auth' Message
+* 'application' Message
+* 'close' Message
+
+## Other
+* Unit Tests
+* Other build targets (Android, JVM, JS, ...)
+
+# TODO - Tasks
+## Relayed Data 
+## WebRTC 
+## ORTC 
+
+
