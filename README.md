@@ -4,12 +4,14 @@ SaltyRTC is an end-2-end encrypted signalling protocol for WebRTC clients.
 Kotlin multiplatform programming implementation of the SaltyRTC client. 
 
 
+
 # Status 
 
 
 | Feature                      | Common       | JVM          | JS |
 | -------------                | -------------| -------------|------------- |
-| Server Authentication        |  Done        | Done         | |
+| Documentation                |              |              | |
+| Server Authentication        |  Implemented | Implementated| |
 | Server Authentication - Tests|              |              | |
 | Client Authentication        |              |              | |
 | Client Authentication - Tests|              |              | |
@@ -27,5 +29,13 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 * [SaltyRTC Clients](https://saltyrtc.org/pages/implementations.html) 
 * [SaltyRTC Protocol](https://github.com/saltyrtc/saltyrtc-meta/blob/master/Protocol.md) 
 
+# Usage [IN DEVELOPMENT]
 
+
+## Start server 
+* set -x SALTYRTC_SAFETY_OFF yes-and-i-know-what-im-doing
+* saltyrtc-server -v7 -c serve  -k keys/permanent-key -p 8765
+
+## Start initiator / responder
+* run jvmMain (SaltyRTCClient)
 
