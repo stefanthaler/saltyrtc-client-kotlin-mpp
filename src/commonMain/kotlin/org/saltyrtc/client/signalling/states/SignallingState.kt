@@ -83,8 +83,10 @@ abstract class BaseState<T: IncomingSignallingMessage>(val client:SaltyRTCClient
                 if (message::class in allowedMessageTypes()) {
                     handleMessage(message)
                 } else if (message::class in CLIENT_HANDSHAKE_MESSAGE_TYPES) {
+                    // if authenticated towards server, pass on message to state for handling
+                    // TODO move this logic to AuthenticatedTowardsServer state
                     val nodeState = if (client.isInitiator()) { // TODO proper null check
-                        client.responders.get(message.nonce.source)!!.state as BaseState
+                        client.responders[message.nonce.source]!!.state as BaseState
                     } else {
                         client.initiator!!.state as BaseState
                     }

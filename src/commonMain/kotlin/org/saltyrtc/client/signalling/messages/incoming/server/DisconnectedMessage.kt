@@ -17,5 +17,4 @@ class DisconnectedMessage: IncomingSignallingMessage {
     override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
         TODO("Not yet implemented")
     }
-
 }

@@ -8,7 +8,12 @@ import org.saltyrtc.client.signalling.states.client.initiator.HandshakeStartStat
 import kotlin.reflect.KClass
 
 
+/**
+ *
+ */
 class InitiatorAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<NewResponder>(client) {
+    private val responderQueue:MutableList<Byte> = ArrayList<Byte>() // TODO create typealias for messageid
+    //TODO create an actual queue
 
     override suspend fun sendNextProtocolMessage() {
         // wait for new responders
@@ -24,9 +29,19 @@ class InitiatorAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<Ne
      * Furthermore, the initiator MUST keep its path clean by following the procedure described in the Path Cleaning section.
      */
     override suspend fun stateActions() {
-        client.responders[getIncomingMessage().id] = Responder(getIncomingMessage().id, HandshakeStartState(client))
+        val messageId = getIncomingMessage().id
+        client.responders[messageId] = Responder(getIncomingMessage().id, HandshakeStartState(client))
+        //TODO delegate message to state
+        cleanPath(messageId)
+
+
 
         // clean path
+
+
+        // drop responder when congested (oldest responder after 253)
+        // drop after inactivity of 60 seconds
+
     }
 
     override suspend fun setNextState() {
@@ -39,5 +54,13 @@ class InitiatorAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<Ne
 
     override fun allowedMessageTypes(): Array<KClass<out NewResponder>> {
         return arrayOf(NewResponder::class)
+    }
+
+    suspend fun cleanPath(messageId:Byte) {
+        if (responderQueue.contains(messageId)) {
+            responderQueue.remove(messageId)
+        }
+        responderQueue.add(getIncomingMessage().id)
+
     }
 }
