@@ -1,6 +1,7 @@
 package org.saltyrtc.client.signalling.states.server
 
 import SaltyRTCClient
+import kotlinx.coroutines.*
 import org.saltyrtc.client.signalling.states.BaseState
 import org.saltyrtc.client.signalling.messages.incoming.server.NewResponder
 import org.saltyrtc.client.signalling.peers.Responder
@@ -12,7 +13,7 @@ import kotlin.reflect.KClass
  *
  */
 class InitiatorAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<NewResponder>(client) {
-    private val responderQueue:MutableList<Byte> = ArrayList<Byte>() // TODO create typealias for messageid
+    private val responderQueue:MutableMap<Byte, Job> = LinkedHashMap() // TODO create typealias for messageid
     //TODO create an actual queue
 
     override suspend fun sendNextProtocolMessage() {
@@ -29,19 +30,11 @@ class InitiatorAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<Ne
      * Furthermore, the initiator MUST keep its path clean by following the procedure described in the Path Cleaning section.
      */
     override suspend fun stateActions() {
-        val messageId = getIncomingMessage().id
-        client.responders[messageId] = Responder(getIncomingMessage().id, HandshakeStartState(client))
+        val responderId = getIncomingMessage().id
+        client.responders[responderId] = Responder(getIncomingMessage().id, HandshakeStartState(client))
+
+        cleanPath(responderId)
         //TODO delegate message to state
-        cleanPath(messageId)
-
-
-
-        // clean path
-
-
-        // drop responder when congested (oldest responder after 253)
-        // drop after inactivity of 60 seconds
-
     }
 
     override suspend fun setNextState() {
@@ -56,11 +49,22 @@ class InitiatorAuthenticatedTowardsServer(client: SaltyRTCClient) : BaseState<Ne
         return arrayOf(NewResponder::class)
     }
 
-    suspend fun cleanPath(messageId:Byte) {
-        if (responderQueue.contains(messageId)) {
-            responderQueue.remove(messageId)
-        }
-        responderQueue.add(getIncomingMessage().id)
+    private suspend fun cleanPath(responderId:Byte) {
+        responderQueue[responderId]?.cancel()
+        responderQueue.remove(responderId)
 
+        val cleanJob = coroutineScope {
+            launch {
+                delay(PATH_CLEAN_TIMEOUT_IN_SECONDS*1000)
+                responderQueue.remove(responderId)
+                client.dropResponder(responderId)
+                // TODO drop responder
+            }
+        }
+        responderQueue[responderId] = cleanJob
+
+    }
+    companion object {
+        private const val PATH_CLEAN_TIMEOUT_IN_SECONDS = 60L // TODO make configurable
     }
 }

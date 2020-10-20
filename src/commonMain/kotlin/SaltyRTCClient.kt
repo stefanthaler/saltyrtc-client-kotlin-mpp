@@ -162,6 +162,10 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         return true
     }
 
+    fun dropResponder(responderId: Byte) {
+        // TODO implement
+    }
+
     companion object {
         val httpClient = HttpClient {
             install(WebSockets)
