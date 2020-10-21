@@ -1,23 +1,31 @@
 package org.saltyrtc.client.signalling.messages.outgoing
 
 import SaltyRTCClient
-import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
+import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
+import org.saltyrtc.client.signalling.messages.SignallingMessageFields
 
-class DropResponder : IncomingSignallingMessage {
+class DropResponder(
+    nonce: Nonce,
+    client: SaltyRTCClient,
+    private val closeReason: CLOSE_REASON,
+    private val responderId: Byte,
+) : OutgoingSignallingMessage(nonce, client) {
+
     override val TYPE: String = "drop-responder"
-    lateinit var reason: CLOSE_REASON
 
-    constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
-        reason = CLOSE_REASON.from(payloadMap["reason"] as Int)!!
-        //TODO validate reason number
+    init {
+        payloadMap[SignallingMessageFields.TYPE.toString()] = TYPE
+        payloadMap[SignallingMessageFields.ID.toString()] = responderId
+        payloadMap[SignallingMessageFields.REASON.toString()] = closeReason
     }
 
-    override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
-        TODO("Not yet implemented")
+    override fun validate(client: SaltyRTCClient) {
+        // TODO
     }
 
-    enum class CLOSE_REASON(val reason:Int) {
+
+    enum class CLOSE_REASON(val reason: Int) {
         PROTOCL_ERROR(3001),
         INTERNAL_ERROR(3002),
         DROPPED_BY_INITIATOR(3004),

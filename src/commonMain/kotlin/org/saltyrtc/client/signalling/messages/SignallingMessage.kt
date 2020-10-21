@@ -156,7 +156,8 @@ enum class SignallingMessageFields(val value:String) {
     SIGNED_KEYS("signed_keys"),
     RESPONDERS("responders"),
     ID("id"), //
-    INITIATOR_CONNECTED("initiator_connected");
+    INITIATOR_CONNECTED("initiator_connected"),
+    REASON("reason");// close reason in drop responder
 
     override fun toString(): String {
         return value
