@@ -15,7 +15,7 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
  * The message SHALL NOT be encrypted.
  */
 class ServerHelloMessage: IncomingSignallingMessage {
-    override val TYPE: String = SignallingMessageTypes.SERVER_HELLO.type
+    override val TYPE = Type(SignallingMessageTypes.SERVER_HELLO.type)
 
     lateinit var key:NaClKey.NaClPublicKey
 

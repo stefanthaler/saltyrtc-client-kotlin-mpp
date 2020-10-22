@@ -23,7 +23,7 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
  */
 
 class ClientAuthMessage: OutgoingSignallingMessage {
-    override val TYPE: String = SignallingMessageTypes.CLIENT_AUTH.type
+    override val TYPE = Type(SignallingMessageTypes.CLIENT_AUTH.type)
 
     constructor(nonce: Nonce, client:SaltyRTCClient, pingInterval:Int=0) : super(nonce,client) {
         payloadMap["${SignallingMessageFields.TYPE}"] = TYPE

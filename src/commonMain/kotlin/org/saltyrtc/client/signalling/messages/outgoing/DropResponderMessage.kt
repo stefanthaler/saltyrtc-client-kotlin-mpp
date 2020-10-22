@@ -12,7 +12,7 @@ class DropResponder(
     private val responderId: Byte,
 ) : OutgoingSignallingMessage(nonce, client) {
 
-    override val TYPE: String = "drop-responder"
+    override val TYPE = Type("drop-responder") //TODO create
 
     init {
         payloadMap[SignallingMessageFields.TYPE.toString()] = TYPE
@@ -23,7 +23,6 @@ class DropResponder(
     override fun validate(client: SaltyRTCClient) {
         // TODO
     }
-
 
     enum class CLOSE_REASON(val reason: Int) {
         PROTOCL_ERROR(3001),

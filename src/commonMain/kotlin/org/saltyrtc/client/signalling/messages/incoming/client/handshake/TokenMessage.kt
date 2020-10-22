@@ -10,7 +10,7 @@ abstract class TokenOrKeyMessage(nonce: Nonce, client: SaltyRTCClient, payloadMa
 }
 
 class TokenMessage: TokenOrKeyMessage {
-    override val TYPE: String = SignallingMessageTypes.TOKEN.type
+    override val TYPE = Type (SignallingMessageTypes.TOKEN.type)
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce, client, payloadMap) {
 

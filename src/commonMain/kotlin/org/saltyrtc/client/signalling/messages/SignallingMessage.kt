@@ -16,8 +16,16 @@ import org.saltyrtc.client.signalling.unpackPayloadMap
  * @property payload the message payload. Can be either an NaCl public-key authenticated encrypted MessagePack object, an NaCl secret-key authenticated encrypted MessagePack object or an unencrypted MessagePack object, encoded as bytearray.
  * @see Nonce
  */
+
+
 abstract class SignallingMessage(val nonce: Nonce) {
-    abstract val TYPE:String
+    data class Type(val name:String) {
+        override fun toString(): String {
+            return name
+        }
+    }
+    abstract val TYPE:Type
+
 
     /**
      * Client-to-client messages are distinguishable from client-to-server messages by looking at the address fields of the nonce.

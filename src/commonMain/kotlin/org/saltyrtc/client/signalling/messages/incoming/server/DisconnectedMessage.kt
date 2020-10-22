@@ -5,7 +5,7 @@ import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
 
 class DisconnectedMessage: IncomingSignallingMessage {
-    override val TYPE: String = "disconnected"
+    override val TYPE = Type( "disconnected" )
     var id:Byte=0
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {

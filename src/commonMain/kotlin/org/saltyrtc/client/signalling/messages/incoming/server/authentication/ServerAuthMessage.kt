@@ -14,7 +14,7 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
  * @see https://github.com/saltyrtc/saltyrtc-meta/blob/master/Protocol.md
  */
 class ServerAuthMessage : IncomingSignallingMessage {
-    override val TYPE: String = SignallingMessageTypes.SERVER_AUTH.type
+    override val TYPE  = Type(SignallingMessageTypes.SERVER_AUTH.type)
     var responders:MutableList<Byte>? = null
     var initiator_connected:Boolean? = null
 
