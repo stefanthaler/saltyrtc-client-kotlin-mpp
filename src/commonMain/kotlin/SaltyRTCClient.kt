@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 
 /**
  * SaltyRTCClient
- * TODO register/remove state ovserver
+ * TODO register/remove state observer
  * TODO testing
  * @property state The current signalling state.
  * @property server The role this client assumes towards the server - either initiator of a WebRTC connection, or repsonder.
@@ -77,6 +77,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
         //TODO check for memory leaks
         //TODO maybe check for synchronization issues
         //TODO cleanup
+        //TODO refactor as produce flow
         // connect to web rtc connection
         signallingPath=path
         signallingServer=server
