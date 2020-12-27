@@ -1,14 +1,14 @@
 package org.saltyrtc.client.signalling
 
 
-import org.saltyrtc.client.crypto.secureRandomeBytes
+import org.saltyrtc.client.crypto.secureRandomBytes
 import org.saltyrtc.client.exceptions.ValidationError
 
 class Cookie {
     val bytes:ByteArray
 
     constructor() {
-        bytes = secureRandomeBytes(COOKIE_LENGTH)
+        bytes = secureRandomBytes(COOKIE_LENGTH)
     }
 
     constructor(bytes:ByteArray) {

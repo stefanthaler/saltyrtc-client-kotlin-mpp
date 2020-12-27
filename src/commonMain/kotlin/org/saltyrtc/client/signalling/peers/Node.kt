@@ -1,10 +1,6 @@
 package org.saltyrtc.client.signalling.peers
 
 import org.saltyrtc.client.crypto.NaClKey
-import org.saltyrtc.client.crypto.secureRandomInt
-import org.saltyrtc.client.crypto.secureRandomeBytes
-import org.saltyrtc.client.logging.logInfo
-import org.saltyrtc.client.signalling.Cookie
 import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.states.State
