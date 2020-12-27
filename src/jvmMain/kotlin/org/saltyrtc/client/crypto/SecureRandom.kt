@@ -7,7 +7,7 @@ val random = SecureRandom();
 /**
  * Securely random bytes
  */
-actual fun secureRandomeBytes(numBytes: Int): ByteArray {
+actual fun secureRandomBytes(numBytes: Int): ByteArray {
     val randomBytes = ByteArray(numBytes)
     random.nextBytes(randomBytes)
     return randomBytes
