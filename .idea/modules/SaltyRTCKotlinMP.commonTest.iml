@@ -2,7 +2,7 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="Common (experimental) " allPlatforms="JS []/JVM [1.6]/Native []/Native [general]" useProjectSettings="false" isTestModule="true" externalProjectId="SaltyRTCKotlinMP">
+      <configuration version="3" platform="Common (experimental) " allPlatforms="JS []/JVM [1.6]/Native []/Native [general]" useProjectSettings="false" isTestModule="true" externalProjectId="SaltyRTCKotlinMP" pureKotlinSourceFolders="$MODULE_DIR$/../../src/jvmMain/kotlin;/home/sthaler/saltyrtc-client-kotlin-mpp/src/jvmTest/kotlin;/home/sthaler/saltyrtc-client-kotlin-mpp/src/commonMain/kotlin">
         <newMppModelJpsModuleKind>SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>
           <externalSystemTestTask>jvmTest|SaltyRTCKotlinMP:jvmTest|jvm</externalSystemTestTask>
