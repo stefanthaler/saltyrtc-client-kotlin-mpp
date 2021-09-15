@@ -36,7 +36,7 @@ fun main() = runBlocking<Unit> {
     // server
     val server = SignallingServer("0.0.0.0",
         8765,
-        NaClKey.NaClPublicKey.from("493142be65211e5df93d28cab67504f74d20535334b7a3301a43a6896c68a819"))
+        NaClKey.NaClPublicKey.from("56708c9821673c0f989f593b33d0e047f15ffebc7ab6c40413c58dc55a1f222a"))
     val signallingPath = SignallingPath("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E")
 
     //initiator

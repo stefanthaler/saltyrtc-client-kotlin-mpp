@@ -6,11 +6,9 @@ import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 
 class AuthMessage: IncomingSignallingMessage {
-    override val TYPE = Type(SignallingMessageTypes.KEY.type)
+    override val type = Type(SignallingMessageTypes.KEY.type)
 
-    constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce, client, payloadMap) {
-
-    }
+    constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce, client, payloadMap)
 
     override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {
         TODO("Not yet implemented")

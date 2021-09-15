@@ -31,7 +31,9 @@ import kotlin.reflect.KClass
  * @property identity: A client SHALL use its assigned identity as source address. If it has not been assigned an identity yet, the source address MUST be set to 0x00
  * @see https://github.com/saltyrtc/saltyrtc-meta
  */
-class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
+class SaltyRTCClient(
+    val ownPermanentKey:NaClKeyPair
+    ) {
     val lock = Mutex()
 
     val responders =  HashMap<Byte, Responder>()

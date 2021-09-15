@@ -24,8 +24,7 @@ abstract class SignallingMessage(val nonce: Nonce) {
             return name
         }
     }
-    abstract val TYPE:Type
-
+    abstract val type:Type
 
     /**
      * Client-to-client messages are distinguishable from client-to-server messages by looking at the address fields of the nonce.
@@ -123,11 +122,7 @@ abstract class OutgoingSignallingMessage(
      * @return A bytearray containing either the encrypted or the unencrypted databaytes of the message.
      */
     fun getDataBytes(naCl: NaCl?=null):ByteArray {
-        return if( naCl!=null) {
-            naCl.encrypt(this)
-        } else {
-            payloadBytes()
-        }
+        return naCl?.encrypt(this) ?: payloadBytes()
     }
 
     /**
@@ -139,7 +134,7 @@ abstract class OutgoingSignallingMessage(
     }
 
     suspend fun send(client: SaltyRTCClient, naCl: NaCl?=null) {
-        logInfo("OUTGOING: Sending message $TYPE. Source: ${nonce.source} Destination: ${nonce.destination} Sequence: ${nonce.sequenceNumber} Overflow: Source: ${nonce.overflowNumber}")
+        logInfo("OUTGOING: Sending message $type. Source: ${nonce.source} Destination: ${nonce.destination} Sequence: ${nonce.sequenceNumber} Overflow: Source: ${nonce.overflowNumber}")
         client.sendToWebSocket(toByteArray(client,naCl))
     }
 

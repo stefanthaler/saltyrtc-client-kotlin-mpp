@@ -23,10 +23,10 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
  */
 
 class ClientAuthMessage: OutgoingSignallingMessage {
-    override val TYPE = Type(SignallingMessageTypes.CLIENT_AUTH.type)
+    override val type = Type(SignallingMessageTypes.CLIENT_AUTH.type)
 
     constructor(nonce: Nonce, client:SaltyRTCClient, pingInterval:Int=0) : super(nonce,client) {
-        payloadMap["${SignallingMessageFields.TYPE}"] = TYPE
+        payloadMap["${SignallingMessageFields.TYPE}"] = type
 
         // The client MUST set the your_cookie field to the cookie the server has used in the nonce of the 'server-hello' message.
         payloadMap["${YOUR_COOKIE}"] = client.server.incomingNonce!!.cookie.bytes

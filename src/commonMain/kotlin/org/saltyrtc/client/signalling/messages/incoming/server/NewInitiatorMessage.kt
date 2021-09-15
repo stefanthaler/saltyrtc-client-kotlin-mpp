@@ -5,7 +5,7 @@ import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
 
 class NewInitiatorMessage: IncomingSignallingMessage {
-    override val TYPE  = Type( "new-initiator")
+    override val type  = Type( "new-initiator")
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce,client, payloadMap) {
         //TODO validate reason number

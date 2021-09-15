@@ -18,7 +18,7 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageFields
 
  */
 class ClientHelloMessage: OutgoingSignallingMessage {
-    override val TYPE = Type("client-hello")
+    override val type = Type("client-hello")
 
     constructor(nonce: Nonce, client:SaltyRTCClient) : super(nonce,client) {
         // The responder MUST set the public key (32 bytes) of the permanent key pair in the key field of this message.

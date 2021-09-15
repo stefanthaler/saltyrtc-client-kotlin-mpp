@@ -5,7 +5,7 @@ import org.saltyrtc.client.signalling.Nonce
 import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 
 class KeyMessage: TokenOrKeyMessage {
-    override val TYPE = Type(SignallingMessageTypes.KEY.type)
+    override val type = Type(SignallingMessageTypes.KEY.type)
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce, client, payloadMap) {
 

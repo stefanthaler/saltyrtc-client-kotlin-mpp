@@ -2,7 +2,6 @@ package org.saltyrtc.client.signalling.messages.incoming.server.authentication
 
 import SaltyRTCClient
 import org.saltyrtc.client.crypto.NaCl
-import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.signalling.messages.IncomingSignallingMessage
 import org.saltyrtc.client.signalling.Nonce
@@ -16,14 +15,14 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
 class ServerAuthMessage
 
     : IncomingSignallingMessage {
-    override val TYPE  = Type(SignallingMessageTypes.SERVER_AUTH.type)
+    override val type  = Type(SignallingMessageTypes.SERVER_AUTH.type)
     var responders:MutableList<Byte>? = null
-    var initiator_connected:Boolean? = null
+    var isInitiatorConntected:Boolean? = null
 
 
     constructor(nonce: Nonce, client: SaltyRTCClient, payloadMap: Map<String, Any>) : super(nonce, client, payloadMap) {
         if (client.isInitiator()) {
-            this.responders = ArrayList<Byte>()
+            this.responders = ArrayList()
 
             val destinations = payloadMap[SignallingMessageFields.RESPONDERS.value] as ArrayList<*>
             for (d in destinations) {
@@ -32,7 +31,7 @@ class ServerAuthMessage
         }
 
         if (client.isResponder()) {
-            initiator_connected = payloadMap[SignallingMessageFields.INITIATOR_CONNECTED.value] as Boolean
+            isInitiatorConntected = payloadMap[SignallingMessageFields.INITIATOR_CONNECTED.value] as Boolean
         }
     }
 
@@ -52,7 +51,6 @@ class ServerAuthMessage
         if (client.isResponder()) {
             require(nonce.destination.toInt() in 2..255)
         }
-
     }
 
     override fun validate(client: SaltyRTCClient, payloadMap: Map<String, Any>) {

@@ -12,10 +12,10 @@ class DropResponder(
     private val responderId: Byte,
 ) : OutgoingSignallingMessage(nonce, client) {
 
-    override val TYPE = Type("drop-responder") //TODO create
+    override val type = Type("drop-responder") //TODO create
 
     init {
-        payloadMap[SignallingMessageFields.TYPE.toString()] = TYPE
+        payloadMap[SignallingMessageFields.TYPE.toString()] = type
         payloadMap[SignallingMessageFields.ID.toString()] = responderId
         payloadMap[SignallingMessageFields.REASON.toString()] = closeReason
     }
