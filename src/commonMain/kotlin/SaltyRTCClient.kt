@@ -159,7 +159,7 @@ class SaltyRTCClient(val ownPermanentKey:NaClKeyPair) {
 
     fun knowsResponder(source: Byte): Boolean {
         if (!responders.containsKey(source)) return false
-        if (responders.get(source)==null) return false
+        if (responders[source] ==null) return false
         return true
     }
 

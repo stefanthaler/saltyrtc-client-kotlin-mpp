@@ -52,6 +52,5 @@ class ClientAuthMessage: OutgoingSignallingMessage {
     override fun validate(client:SaltyRTCClient) {
         require(nonce.source.toInt() == 0, ) {"ClientAuth messages should have a source of 0 before authenticated"}
         require(nonce.destination.toInt()==0, ) {"ClientAuth messages should go to the server"}
-
     }
 }

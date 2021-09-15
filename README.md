@@ -11,7 +11,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 | Feature                      | Common       | JVM          | JS |
 | -------------                | -------------| -------------|------------- |
 | Documentation                |              |              | |
-| Server Authentication        |  Implemented | Implementated| |
+| Server Authentication        |  Implemented | Implemented  | |
 | Server Authentication - Tests|              |              | |
 | Client Authentication        |              |              | |
 | Client Authentication - Tests|              |              | |
@@ -34,7 +34,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 ## Start server 
 * set -x SALTYRTC_SAFETY_OFF yes-and-i-know-what-im-doing
-* saltyrtc-server -v7 -c serve  -k keys/permanent-key -p 8765
+* saltyrtc-server -v7 -c serve -k keys/permanent-key -p 8765
 
 ## Start initiator / responder
 * run jvmMain (SaltyRTCClient)

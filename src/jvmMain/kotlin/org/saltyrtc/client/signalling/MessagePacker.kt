@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.msgpack.jackson.dataformat.MessagePackFactory
 import java.io.IOException
 
-
 actual fun unpackPayloadMap(payload: ByteArray): Map<String, Any> {
     val objectMapper = ObjectMapper(MessagePackFactory())
     val map: Map<String, Any>  = try {

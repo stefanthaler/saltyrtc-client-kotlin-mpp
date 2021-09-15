@@ -5,7 +5,7 @@ val ktor_version: String by extra
 val coroutines_version: String by extra
 
 plugins {
-    kotlin("multiplatform") version "1.4.0"
+    kotlin("multiplatform") version "1.5.30"
 }
 group = "net.thaler-it.saltyrtc.kotlin-mpp"
 version = "0.0.1-SNAPSHOT"
