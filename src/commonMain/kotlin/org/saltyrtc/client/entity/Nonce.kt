@@ -6,7 +6,7 @@ import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.crypto.secureRandomInt
 import org.saltyrtc.client.extensions.*
 
-private const val length = 24
+const val NONCE_LENGTH = 24
 
 fun Nonce(frame: ByteArray): Nonce {
     val cookie = Cookie(frame.sliceArray(0..15))
@@ -26,7 +26,7 @@ data class NonceImpl(
 ) : Nonce {
 
     override val bytes: ByteArray by lazy {
-        val frame = ByteArray(length)
+        val frame = ByteArray(NONCE_LENGTH)
         frame.overrideSlice(0, cookie.bytes)
         frame[16] = source
         frame[17] = destination

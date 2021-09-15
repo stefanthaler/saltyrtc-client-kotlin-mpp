@@ -1,6 +1,7 @@
 package org.saltyrtc.client
 
 import org.saltyrtc.client.crypto.NaClKeyPair
+import org.saltyrtc.client.crypto.PublicKey
 
 /**
  *  A SaltyRTC compliant client. The client uses the signalling channel to establish a WebRTC or ORTC peer-to-peer connection.
@@ -16,7 +17,10 @@ interface Client {
  * A SaltyRTC compliant server. The server provides the signalling channel clients may communicate with one another.
  */
 interface Server {
-
+    val host: String
+    val port: Int
+    val permanentPublicKey: PublicKey
+    val subProtocol: String
 }
 
 interface Task
@@ -30,8 +34,13 @@ interface Task
  */
 interface Message {
     val nonce: Nonce
-    val data: ByteArray
+    val data: MessageData
+
+    val bytes: ByteArray
 }
+
+value class MessageData(val data:ByteArray)
+
 
 interface Cookie {
     val bytes: ByteArray
