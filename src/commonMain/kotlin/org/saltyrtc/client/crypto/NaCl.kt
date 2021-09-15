@@ -1,39 +1,30 @@
 package org.saltyrtc.client.crypto
 
-import org.saltyrtc.client.signalling.messages.OutgoingSignallingMessage
+import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.entity.Payload
 
+value class SharedKey(val bytes: ByteArray)
+value class CipherText(val bytes: ByteArray)
+value class PlainText(val bytes: ByteArray)
 
-/**
- * Provides NaCL compliant public-private key encryption and symmetric encryption.
- */
-expect class NaCl {
-    constructor(ownPrivateKey: NaClKey.NaClPrivateKey, otherPublicKey: NaClKey.NaClPublicKey)
+expect fun encrypt(payload: Payload, nonce: Nonce, sharedKey: SharedKey): CipherText
+expect fun decrypt(ciphertext: CipherText, nonce: Nonce, sharedKey: SharedKey): PlainText
 
-    fun encrypt(outgoingSignallingMessage: OutgoingSignallingMessage):ByteArray
+expect fun generateKeyPair(): NaClKeyPair
 
-    /**
-     *  @param ciphertext
-     *  @param nonce
-     *  @return plaintext
-     */
-    fun decrypt(ciphertext:ByteArray, nonce:ByteArray):ByteArray
+expect fun derivePublicKey(privateKey: NaClKey): NaClKey
 
-    fun generateKeyPair():NaClKeyPair
+expect fun sharedKey(
+    ownPrivateKey: PrivateKey,
+    otherPublicKey: PublicKey,
+): SharedKey
 
-    fun derivePublicKey(privateKey:NaClKey):NaClKey
-
-    class CryptoException(message:String): Exception {}
-
-}
-
-interface NaCLConstants {
-    companion object {
-        const val PUBLIC_KEY_BYTES = 32
-        const val PRIVATE_KEY_BYTES = 32
-        const val SYMMETRIC_KEY_BYTES = 32
-        const val NONCE_BYTES = 24
-        const val BOX_OVERHEAD = 16
-    }
+object NaClConstants {
+    const val PUBLIC_KEY_BYTES = 32
+    const val PRIVATE_KEY_BYTES = 32
+    const val SYMMETRIC_KEY_BYTES = 32
+    const val NONCE_BYTES = 24
+    const val BOX_OVERHEAD = 16
 }
 
 

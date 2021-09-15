@@ -3,11 +3,9 @@ package org.saltyrtc.client.crypto
 /**
  * Securely random bytes
  */
-
-expect fun secureRandomBytes(numBytes:Int):ByteArray
+expect fun secureRandomBytes(numBytes: Int): ByteArray
 
 /**
  * Next securely random Int
  */
-
-expect fun secureRandomInt():UInt
+expect fun secureRandomInt(): UInt

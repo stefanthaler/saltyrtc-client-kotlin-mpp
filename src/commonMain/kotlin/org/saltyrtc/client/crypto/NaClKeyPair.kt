@@ -1,24 +1,16 @@
 package org.saltyrtc.client.crypto
 
-import io.ktor.utils.io.charsets.*
-import io.ktor.utils.io.core.*
-import io.ktor.utils.io.core.internal.*
-import org.saltyrtc.client.exceptions.ValidationError
+fun NaClKeyPair(publicKeyHex: String, privatKeyHex: String): NaClKeyPair = NaClKeyPair(
+    publicKey = PublicKey(publicKeyHex),
+    privateKey = PrivateKey(privatKeyHex)
+)
 
-class NaClKeyPair {
-    var publicKey: NaClKey.NaClPublicKey
-        private set
-    var privateKey: NaClKey.NaClPrivateKey
-        private set
+fun NaClKeyPair(publicKey: ByteArray, privatKey: ByteArray): NaClKeyPair = NaClKeyPair(
+    publicKey = PublicKey(publicKey),
+    privateKey = PrivateKey(privatKey)
+)
 
-    constructor(publicKey:ByteArray, privatKey:ByteArray) {
-        this.publicKey= NaClKey.NaClPublicKey(publicKey)
-        this.privateKey= NaClKey.NaClPrivateKey(privatKey)
-    }
-
-    constructor(publicKeyHex:String, privatKeyHex:String) {
-        this.publicKey= NaClKey.NaClPublicKey.from(publicKeyHex)
-        this.privateKey= NaClKey.NaClPrivateKey.from(privatKeyHex)
-    }
-}
-
+data class NaClKeyPair(
+    val publicKey: PublicKey,
+    val privateKey: PrivateKey,
+)

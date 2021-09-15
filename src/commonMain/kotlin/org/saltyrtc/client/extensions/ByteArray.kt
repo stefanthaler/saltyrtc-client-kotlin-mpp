@@ -15,8 +15,6 @@ fun ByteArray.overrideSlice(startIndex: Int, bytes: ByteArray) {
     }
 }
 
-
-
 // always
 // TODO test
 // TODO input validation

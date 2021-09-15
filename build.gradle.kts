@@ -1,21 +1,24 @@
 // https://github.com/gradle/kotlin-dsl-samples/tree/master/samples
 //
 apply(from = "versions.gradle.kts")
-val ktor_version: String by extra
-val coroutines_version: String by extra
+val ktorVersion: String by extra
+val coroutinesVersion: String by extra
 
 plugins {
-    kotlin("multiplatform") version "1.5.30"
+    kotlin("multiplatform") version ("1.5.30")
 }
 group = "net.thaler-it.saltyrtc.kotlin-mpp"
 version = "0.0.1-SNAPSHOT"
 
-
-
-
 repositories {
     mavenCentral()
+    gradlePluginPortal()
     jcenter()
+}
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
+    }
 }
 kotlin {
 
@@ -55,14 +58,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // KTOR Web Sockets dependencies
-                implementation("io.ktor:ktor-websockets:$ktor_version")
-                implementation("io.ktor:ktor-client-websockets:$ktor_version")
-                implementation("io.ktor:ktor-client-cio:$ktor_version")
-               // implementation("io.ktor:ktor-client-js:$ktor_version")
+                implementation("io.ktor:ktor-websockets:$ktorVersion")
+                implementation("io.ktor:ktor-client-websockets:$ktorVersion")
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                // implementation("io.ktor:ktor-client-js:$ktor_version")
                 //implementation("io.ktor:ktor-client-okhttp:$ktor_version")
 
                 // coroutines version
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             }
         }
         val commonTest by getting {
@@ -73,19 +76,20 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
                 // JVM message packing
                 implementation("org.msgpack:msgpack-core:0.8.+")
                 implementation("org.msgpack:jackson-dataformat-msgpack:0.8.+")
 
                 // Override some jackson-dataformat-msgpack 2.9 dependencies due to security vulnerabilities
-                implementation ("com.fasterxml.jackson.core:jackson-databind:2.10.+")
+                implementation("com.fasterxml.jackson.core:jackson-databind:2.10.+")
 
                 // NaCl library
-                implementation ("co.libly:resource-loader:1.3.7")
-                implementation ("net.java.dev.jna:jna:5.5.0")
-                implementation ("com.goterl.lazycode:lazysodium-java:4.2.5")
+                implementation("co.libly:resource-loader:1.3.7")
+                implementation("net.java.dev.jna:jna:5.5.0")
+                implementation("com.goterl.lazycode:lazysodium-java:4.2.5")
 
-                implementation( "io.github.microutils:kotlin-logging:1.8.3")
+                implementation("io.github.microutils:kotlin-logging:1.8.3")
                 implementation("org.slf4j:slf4j-simple:1.7.29")
             }
         }

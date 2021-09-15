@@ -1,56 +1,85 @@
 package org.saltyrtc.client.crypto
 
-import io.ktor.utils.io.charsets.*
-import io.ktor.utils.io.core.*
-import org.saltyrtc.client.exceptions.ValidationError
 import org.saltyrtc.client.extensions.fromHexToByteArray
-import org.saltyrtc.client.extensions.toHexString
 
-abstract class NaClKey(val bytes: ByteArray) {
+interface NaClKey {
+    val bytes: ByteArray
+}
 
+fun PublicKey(hexString: String): PublicKey = PublicKey(hexString.fromHexToByteArray())
+fun PrivateKey(hexString: String): PrivateKey = PrivateKey(hexString.fromHexToByteArray())
+
+data class PublicKey(
+    override val bytes: ByteArray
+) : NaClKey {
     init {
-        validate()
-    }
-
-    abstract fun validate()
-
-    fun toHexString():String{
-        return bytes.toHexString()
-    }
-
-    class NaClPublicKey(bytes: ByteArray): NaClKey(bytes) {
-        override fun validate() {
-            if (bytes.size!=NaCLConstants.PUBLIC_KEY_BYTES) {
-                throw ValidationError("Public key must be exactly ${NaCLConstants.PUBLIC_KEY_BYTES} bytes long, was ${bytes.size}")
-            }
-        }
-
-        companion object {
-            fun from(hexString:String):NaClPublicKey {
-                return NaClPublicKey(hexString.fromHexToByteArray())
-            }
+        if (bytes.size != NaClConstants.PUBLIC_KEY_BYTES) {
+            "Public key must be exactly ${NaClConstants.PUBLIC_KEY_BYTES} bytes long, was ${bytes.size}"
         }
     }
 
-    class NaClPrivateKey(bytes: ByteArray): NaClKey(bytes) {
-        override fun validate() {
-            if (bytes.size!=NaCLConstants.PRIVATE_KEY_BYTES) {
-                throw ValidationError("Private key must be exactly ${NaCLConstants.PRIVATE_KEY_BYTES} bytes long, was ${bytes.size}")
-            }
-        }
-        companion object {
-            fun from(hexString:String):NaClPrivateKey {
-                return NaClPrivateKey(hexString.fromHexToByteArray())
-            }
-        }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as PublicKey
+
+        if (!bytes.contentEquals(other.bytes)) return false
+
+        return true
     }
 
-    class NaClSymmetricKey(bytes: ByteArray): NaClKey(bytes) {
-        override fun validate() {
-            if (bytes.size!=NaCLConstants.SYMMETRIC_KEY_BYTES) {
-                throw ValidationError("Symmetric key must be exactly ${NaCLConstants.PRIVATE_KEY_BYTES} bytes long, was ${bytes.size}")
-            }
-        }
+    override fun hashCode(): Int {
+        return bytes.contentHashCode()
     }
 }
 
+data class PrivateKey(
+    override val bytes: ByteArray
+) : NaClKey {
+    init {
+        require(bytes.size != NaClConstants.PRIVATE_KEY_BYTES) {
+            "Private key must be exactly ${NaClConstants.PRIVATE_KEY_BYTES} bytes long, was ${bytes.size}"
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as PublicKey
+
+        if (!bytes.contentEquals(other.bytes)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return bytes.contentHashCode()
+    }
+}
+
+data class SymmetricKey(
+    override val bytes: ByteArray
+) : NaClKey {
+    init {
+        require(bytes.size != NaClConstants.SYMMETRIC_KEY_BYTES) {
+            "Symmetric key must be exactly ${NaClConstants.PRIVATE_KEY_BYTES} bytes long, was ${bytes.size}"
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as PublicKey
+
+        if (!bytes.contentEquals(other.bytes)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return bytes.contentHashCode()
+    }
+}
