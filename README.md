@@ -7,7 +7,6 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 # Status 
 
-
 | Feature                      | Common       | JVM          | JS |
 | -------------                | -------------| -------------|------------- |
 | Documentation                |              |              | |
@@ -33,9 +32,15 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 
 ## Start server
-*
+* python3 -m pip install virtualenv
+* python3 -m venv .env
+* . .env/bin/activate.fish
+* pip install saltyrtc.server
+* pip install saltyrtc.server[logging]
+* saltyrtc-server generate /path/to/permanent-key
 * set -x SALTYRTC_SAFETY_OFF yes-and-i-know-what-im-doing
 * saltyrtc-server -v7 -c serve -k keys/permanent-key -p 8765
+
 
 ## Start initiator / responder
 * run jvmMain (SaltyRTCClient)
@@ -57,6 +62,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 ## Other
 * Unit Tests
 * Other build targets (Android, JVM, JS, ...)
+* Support multiple WebSocket clients
 
 # TODO - Tasks
 ## Relayed Data 
