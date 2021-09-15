@@ -13,7 +13,9 @@ import org.saltyrtc.client.signalling.messages.SignallingMessageTypes
  * Once the server has received the 'client-auth' message, it SHALL reply with this message. Depending on the client's role, the server SHALL choose and assign an identity to the client by setting the destination address accordingly:
  * @see https://github.com/saltyrtc/saltyrtc-meta/blob/master/Protocol.md
  */
-class ServerAuthMessage : IncomingSignallingMessage {
+class ServerAuthMessage
+
+    : IncomingSignallingMessage {
     override val TYPE  = Type(SignallingMessageTypes.SERVER_AUTH.type)
     var responders:MutableList<Byte>? = null
     var initiator_connected:Boolean? = null
@@ -23,14 +25,14 @@ class ServerAuthMessage : IncomingSignallingMessage {
         if (client.isInitiator()) {
             this.responders = ArrayList<Byte>()
 
-            val destinations = payloadMap.get(SignallingMessageFields.RESPONDERS.value) as ArrayList<*>
+            val destinations = payloadMap[SignallingMessageFields.RESPONDERS.value] as ArrayList<*>
             for (d in destinations) {
                 this.responders!!.add(d as Byte)
             }
         }
 
         if (client.isResponder()) {
-            initiator_connected = payloadMap.get(SignallingMessageFields.INITIATOR_CONNECTED) as Boolean
+            initiator_connected = payloadMap[SignallingMessageFields.INITIATOR_CONNECTED.value] as Boolean
         }
     }
 

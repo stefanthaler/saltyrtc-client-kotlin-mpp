@@ -111,8 +111,11 @@ abstract class IncomingSignallingMessage: SignallingMessage {
 
 }
 
-abstract class OutgoingSignallingMessage(nonce: Nonce, client:SaltyRTCClient): SignallingMessage(nonce)  {
-    var payloadMap = HashMap<String,Any>()
+abstract class OutgoingSignallingMessage(
+    nonce: Nonce,
+    client:SaltyRTCClient,
+): SignallingMessage(nonce)  {
+    val payloadMap = HashMap<String,Any>()
 
     /**
      * method that creates
