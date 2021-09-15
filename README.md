@@ -32,7 +32,8 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 # Usage [IN DEVELOPMENT]
 
 
-## Start server 
+## Start server
+*
 * set -x SALTYRTC_SAFETY_OFF yes-and-i-know-what-im-doing
 * saltyrtc-server -v7 -c serve -k keys/permanent-key -p 8765
 
