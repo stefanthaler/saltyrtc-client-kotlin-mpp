@@ -13,15 +13,17 @@ enum class MessageField {
     SIGNED_KEYS,
     INITIATOR_CONNECTED,
     RESPONDERS,
+    ID,
 
     ;
 
     companion object {
-        fun type(payloadMap: Map<MessageField, Any>) = payloadMap[TYPE] as String
+        fun type(payloadMap: Map<MessageField, Any>) = MessageType.valueOfType(payloadMap[TYPE] as String)
         fun key(payloadMap: Map<MessageField, Any>) = payloadMap[KEY] as ByteArray
         fun yourCookie(payloadMap: Map<MessageField, Any>) = cookie(payloadMap[YOUR_COOKIE] as ByteArray)
         fun isInitiatorConnected(payloadMap: Map<MessageField, Any>) = payloadMap[INITIATOR_CONNECTED] as Boolean?
         fun responders(payloadMap: Map<MessageField, Any>) = payloadMap[RESPONDERS] as List<Identity>?
         fun signedKeys(payloadMap: Map<MessageField, Any>) = payloadMap[SIGNED_KEYS] as ByteArray
+        fun id(payloadMap: Map<MessageField, Any>) = Identity(payloadMap[ID] as Byte)
     }
 }

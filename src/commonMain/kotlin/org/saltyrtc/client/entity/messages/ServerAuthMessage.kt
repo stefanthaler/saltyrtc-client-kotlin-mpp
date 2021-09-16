@@ -19,7 +19,7 @@ fun serverAuthMessage(
     val payloadMap = unpack(Payload(decrypted.bytes))
 
     require(payloadMap.containsKey(MessageField.TYPE))
-    require(MessageField.type(payloadMap) == MessageType.SERVER_AUTH.type)
+    require(MessageField.type(payloadMap) == MessageType.SERVER_AUTH)
 
     require(payloadMap.containsKey(MessageField.YOUR_COOKIE))
     require(payloadMap.containsKey(MessageField.SIGNED_KEYS))

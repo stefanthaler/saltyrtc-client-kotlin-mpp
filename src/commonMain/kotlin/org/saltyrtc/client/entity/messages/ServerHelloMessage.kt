@@ -9,7 +9,7 @@ fun serverHelloMessage(message: Message): ServerHelloMessage {
 
     require(payloadMap.containsKey(MessageField.TYPE))
     require(payloadMap.containsKey(MessageField.KEY))
-    require(MessageField.type(payloadMap) == MessageType.SERVER_HELLO.type)
+    require(MessageField.type(payloadMap) == MessageType.SERVER_HELLO)
 
     return ServerHelloMessage(
         key = PublicKey(MessageField.key(payloadMap))
@@ -17,6 +17,6 @@ fun serverHelloMessage(message: Message): ServerHelloMessage {
 }
 
 data class ServerHelloMessage(
-    val type: String = MessageType.SERVER_HELLO.type,
+    val type: MessageType = MessageType.SERVER_HELLO,
     val key: PublicKey
 )

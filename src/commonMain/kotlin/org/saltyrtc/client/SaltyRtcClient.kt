@@ -11,17 +11,13 @@ import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.sharedKey
-import org.saltyrtc.client.entity.ClientServerAuthState
-import org.saltyrtc.client.entity.firstNonce
-import org.saltyrtc.client.entity.messages.clientAuthMessage
-import org.saltyrtc.client.entity.messages.clientHelloMessage
-import org.saltyrtc.client.entity.messages.serverAuthMessage
-import org.saltyrtc.client.entity.messages.serverHelloMessage
-import org.saltyrtc.client.entity.withIncreasedSequenceNumber
+import org.saltyrtc.client.entity.*
+import org.saltyrtc.client.entity.messages.*
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.state.ClientState
+import org.saltyrtc.client.state.LastMessageSentTimeStamp
 import org.saltyrtc.client.state.ServerIdentity
 import org.saltyrtc.client.state.initialClientState
 
@@ -90,7 +86,8 @@ private fun Message.isClientServer(): Boolean {
 
 private fun SaltyRtcClient.handleMessage(it: Message) {
     logDebug("[$debugName] received message (server: ${it.isClientServer()}): $it, ")
-    //TODO  handle error message
+    //TODO  handle error message and other messages
+
     if (it.isClientServer()) {
         handleClientServerMessage(it)
     } else {
@@ -107,10 +104,72 @@ private fun SaltyRtcClient.handleClientServerMessage(it: Message) {
             handleServerAuth(it)
         }
         ClientServerAuthState.AUTHENTICATED -> {
-
+            handleAuthenticatedMessages(it)
         }
     }
 }
+
+private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
+    val sharedKey = current.sessionSharedKey
+    requireNotNull(sharedKey)
+    val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
+    val payloadMap = unpack(Payload(plainText.bytes))
+    require(payloadMap.containsKey(MessageField.TYPE))
+    val type = MessageField.type(payloadMap)
+    logDebug("[$debugName] Handling authenticated message: $type")
+
+    if (current.isInitiator) {
+        when (type) {
+            MessageType.NEW_RESPONDER -> {
+                val message = newResponderMessage(it)
+            }
+            MessageType.DROP_RESPONDER -> TODO()
+            MessageType.SEND_ERROR -> TODO()
+            MessageType.DISCONNECTED -> TODO()
+            else -> {
+                throw IllegalArgumentException("")
+            }
+        }
+
+    } else {
+        when (type) {
+            MessageType.NEW_INITIATOR -> TODO()
+            MessageType.DISCONNECTED -> TODO()
+            MessageType.SEND_ERROR -> TODO()
+            else -> {
+                throw IllegalArgumentException("")
+            }
+        }
+    }
+}
+
+/**
+ * As soon as a new responder has authenticated itself towards the server on path, the server MUST send this message to
+ * an authenticated initiator on the same path. The field id MUST be set to the assigned identity of the newly connected
+ * responder. The server MUST ensure that a 'new-responder' message has been sent before the corresponding responder
+ * is able to send messages to the initiator.
+
+ * An initiator who receives a 'new-responder' message SHALL validate that the id field contains a valid responder
+ * address (0x02..0xff). It SHOULD store the responder's identity in its internal list of responders.
+ * If a responder with the same id already exists, all currently cached information about and for the previous responder
+ * (such as cookies and the sequence number) MUST be deleted first. Furthermore, the initiator MUST keep its path clean
+ * by following the procedure described in the Path Cleaning section.
+
+ * The message SHALL be NaCl public-key encrypted by the server's session key pair and the initiator's permanent key pair.
+ */
+private fun SaltyRtcClient.handleNewResponder(it: Message) {
+    val message = newResponderMessage(it)
+    require(message.id.address.toInt() in 2..255)
+
+    val responders = current.responders.toMutableMap().apply {
+        put(message.id, LastMessageSentTimeStamp(0)) // TODO path cleaning
+    }
+
+    current = current.copy(
+        responders = responders
+    )
+}
+
 
 /**
  * This message MUST be sent by the server after a client connected to the server using a valid signalling path.

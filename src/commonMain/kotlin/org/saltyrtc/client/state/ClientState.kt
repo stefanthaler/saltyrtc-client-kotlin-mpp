@@ -24,6 +24,7 @@ fun initialClientState(): ClientState {
         sessionCookie = null,
         cookies = mapOf(),
         identity = null,
+        responders = mapOf(),
     )
 }
 
@@ -36,5 +37,9 @@ data class ClientState(
     val sessionPublicKey: PublicKey?,
     val sessionCookie: Cookie?,
     val cookies: Map<Identity, Cookie>,
-    val identity: Identity?
+    val identity: Identity?,
+    val responders: Map<Identity, LastMessageSentTimeStamp>
 )
+
+@JvmInline
+value class LastMessageSentTimeStamp(val time: Long)
