@@ -2,9 +2,15 @@ package org.saltyrtc.client.crypto
 
 import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.entity.Payload
+import kotlin.jvm.JvmInline
 
+@JvmInline
 value class SharedKey(val bytes: ByteArray)
+
+@JvmInline
 value class CipherText(val bytes: ByteArray)
+
+@JvmInline
 value class PlainText(val bytes: ByteArray)
 
 expect fun encrypt(payload: Payload, nonce: Nonce, sharedKey: SharedKey): CipherText

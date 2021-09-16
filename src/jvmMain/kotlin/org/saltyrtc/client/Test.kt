@@ -3,11 +3,16 @@ package org.saltyrtc.client
 
 import com.goterl.lazycode.lazysodium.LazySodiumJava
 import com.goterl.lazycode.lazysodium.SodiumJava
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.saltyrtc.client.crypto.NaClKey
 import org.saltyrtc.client.crypto.NaClKeyPair
+import org.saltyrtc.client.crypto.PublicKey
+import org.saltyrtc.client.entity.signallingPath
+import org.saltyrtc.client.entity.signallingServer
 import org.saltyrtc.client.logging.logDebug
 
 /**
@@ -27,13 +32,29 @@ import org.saltyrtc.client.logging.logDebug
 //    println("${pair.privateKey.toHexString()} ${pair.publicKey.toHexString()}")
 //}
 
-//fun main() = runBlocking<Unit> {
-//
-//    // server
-//    val server = SignallingServer("0.0.0.0",
-//        8765,
-//        NaClKey.NaClPublicKey.from("56708c9821673c0f989f593b33d0e047f15ffebc7ab6c40413c58dc55a1f222a"))
-//    val signallingPath = SignallingPath("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E")
+fun main()  {
+    val server = signallingServer(
+        host="0.0.0.0",
+        port = 8765,
+        permanentPublicKey=PublicKey("56708c9821673c0f989f593b33d0e047f15ffebc7ab6c40413c58dc55a1f222a")
+    )
+    val clientPublicKey  = PublicKey("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E")
+    val signallingPath = signallingPath(clientPublicKey)
+
+    val socket = webSocket(server)
+    socket.open(signallingPath)
+    val job = GlobalScope.launch {
+        socket.frame.collect {
+            logDebug("[Client] received: $it")
+        }
+    }
+
+    runBlocking {
+        job.join()
+    }
+
+
+
 //
 //    //initiator
 //    coroutineScope {
@@ -65,4 +86,4 @@ import org.saltyrtc.client.logging.logDebug
 //            }
 //        }
 //    }
-//}
+}

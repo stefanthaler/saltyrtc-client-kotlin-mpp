@@ -6,15 +6,13 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.*
+import org.saltyrtc.client.entity.WebSocketUri
 import org.saltyrtc.client.entity.webSocketMessage
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
 
-fun WebSocket(server: Server):WebSocket {
+fun webSocket(server: Server):WebSocket {
     return WebSocketImpl(server)
 }
 
@@ -32,7 +30,7 @@ private class WebSocketImpl(
     private val supervisor = SupervisorJob()
     private val scope=CoroutineScope(Dispatchers.Default+supervisor) // TODO check scope
 
-    private val _frame = MutableSharedFlow<Message>()
+    private val _frame = MutableSharedFlow<Message>(extraBufferCapacity = 10)
     override val frame: SharedFlow<Message> = _frame
 
 
@@ -51,12 +49,14 @@ private class WebSocketImpl(
                 }
             ) {
                 session = this
-                logDebug("[WebSocket] $server:$path opened")
-                incoming.consumeAsFlow().collect { frame ->
-                    handle(frame)  // TODO handle exception
+
+                logDebug("[WebSocket] Socket opened on $path $server: ")
+                incoming.consumeAsFlow()
+                    .filterIsInstance<Frame.Binary>()
+                    .map { webSocketMessage(it.data) }
+                    .collect { _frame.emit(it) }
                 }
-            }
-        }.invokeOnCompletion {
+            }.invokeOnCompletion {
             GlobalScope.launch(NonCancellable) {
                 try {
                     session?.close()
@@ -65,21 +65,6 @@ private class WebSocketImpl(
                 } catch (e:Exception) {
                     // TODO handle
                 }
-            }
-        }
-    }
-
-    private fun handle(frame: Frame) {
-        when (frame) {
-            is Frame.Binary -> {
-                val message = webSocketMessage(frame.data)
-                val isSuccessful = _frame.tryEmit(message)
-                if (!isSuccessful) {
-                    logWarn("[WebSocket] Frame could not be send to server")
-                }
-            }
-            else -> {
-                // only handle binary frames
             }
         }
     }

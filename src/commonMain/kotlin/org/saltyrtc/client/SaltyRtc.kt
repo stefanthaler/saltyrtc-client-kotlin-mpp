@@ -2,6 +2,7 @@ package org.saltyrtc.client
 
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
+import kotlin.jvm.JvmInline
 
 /**
  *  A SaltyRTC compliant client. The client uses the signalling channel to establish a WebRTC or ORTC peer-to-peer connection.
@@ -39,6 +40,7 @@ interface Message {
     val bytes: ByteArray
 }
 
+@JvmInline
 value class MessageData(val data:ByteArray)
 
 

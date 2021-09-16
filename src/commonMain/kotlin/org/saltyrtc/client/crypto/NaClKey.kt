@@ -1,9 +1,11 @@
 package org.saltyrtc.client.crypto
 
 import org.saltyrtc.client.extensions.fromHexToByteArray
+import org.saltyrtc.client.extensions.toHexString
 
 interface NaClKey {
     val bytes: ByteArray
+    val hex:String
 }
 
 fun PublicKey(hexString: String): PublicKey = PublicKey(hexString.fromHexToByteArray())
@@ -18,6 +20,10 @@ data class PublicKey(
         }
     }
 
+    override val hex: String by lazy {
+        bytes.toHexString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -29,9 +35,8 @@ data class PublicKey(
         return true
     }
 
-    override fun hashCode(): Int {
-        return bytes.contentHashCode()
-    }
+    override fun hashCode(): Int = bytes.contentHashCode()
+    override fun toString(): String = hex
 }
 
 data class PrivateKey(
@@ -43,6 +48,10 @@ data class PrivateKey(
         }
     }
 
+    override val hex: String by lazy {
+        bytes.toHexString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -57,6 +66,8 @@ data class PrivateKey(
     override fun hashCode(): Int {
         return bytes.contentHashCode()
     }
+
+    override fun toString(): String = hex
 }
 
 data class SymmetricKey(
@@ -68,6 +79,10 @@ data class SymmetricKey(
         }
     }
 
+    override val hex: String by lazy {
+        bytes.toHexString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -82,4 +97,6 @@ data class SymmetricKey(
     override fun hashCode(): Int {
         return bytes.contentHashCode()
     }
+
+    override fun toString(): String = hex
 }

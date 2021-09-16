@@ -4,7 +4,7 @@ import org.saltyrtc.client.Server
 
 import org.saltyrtc.client.crypto.PublicKey
 
-fun Server(
+fun signallingServer(
     host: String,
     port: Int,
     permanentPublicKey: PublicKey,

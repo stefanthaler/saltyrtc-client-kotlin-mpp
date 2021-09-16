@@ -1,5 +1,7 @@
 package org.saltyrtc.client.entity
 
+import org.saltyrtc.client.SignallingPath
+
 /**
  * <scheme>://<server-host>:<server-port>/<signalling-path>
 ?<server-permanent-public-key>#<authentication-token-hex>
