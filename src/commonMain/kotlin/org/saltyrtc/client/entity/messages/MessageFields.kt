@@ -26,7 +26,7 @@ enum class MessageField {
         fun isInitiatorConnected(payloadMap: Map<MessageField, Any>) = payloadMap[INITIATOR_CONNECTED] as Boolean?
         fun responders(payloadMap: Map<MessageField, Any>) = payloadMap[RESPONDERS] as List<Identity>?
         fun signedKeys(payloadMap: Map<MessageField, Any>) = payloadMap[SIGNED_KEYS] as ByteArray
-        fun id(payloadMap: Map<MessageField, Any>) = Identity(payloadMap[ID] as Byte)
+        fun id(payloadMap: Map<MessageField, Any>) = Identity((payloadMap[ID] as Int).toByte())
         fun reason(payloadMap: Map<MessageField, Any>) = CloseReason.valueOf(payloadMap[REASON] as String)
     }
 }

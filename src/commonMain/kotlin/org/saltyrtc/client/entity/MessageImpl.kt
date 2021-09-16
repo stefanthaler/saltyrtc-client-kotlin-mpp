@@ -10,7 +10,7 @@ fun webSocketMessage(
     val nonceData = frame.sliceArray(0 until NONCE_LENGTH)
     val data = frame.sliceArray(NONCE_LENGTH until frame.size)
 
-    return message(
+    return RawMessage(
         Nonce(nonceData),
         Payload(data)
     )

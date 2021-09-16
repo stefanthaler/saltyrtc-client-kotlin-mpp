@@ -119,9 +119,9 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
 
     if (current.isInitiator) {
         when (type) {
-            MessageType.NEW_RESPONDER -> handleNewResponder(it)
-            MessageType.SEND_ERROR -> TODO()
-            MessageType.DISCONNECTED -> handleDisconnected(it)
+            MessageType.NEW_RESPONDER -> handleNewResponder(payloadMap)
+            MessageType.SEND_ERROR -> handleSendError(payloadMap)
+            MessageType.DISCONNECTED -> handleDisconnected(payloadMap)
             else -> {
                 throw IllegalArgumentException("")
             }
@@ -129,9 +129,9 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
 
     } else {
         when (type) {
-            MessageType.NEW_INITIATOR -> TODO()
-            MessageType.DISCONNECTED -> handleDisconnected(it)
-            MessageType.SEND_ERROR -> handleDisconnected(it)
+            MessageType.NEW_INITIATOR -> handleNewInitiator()
+            MessageType.DISCONNECTED -> handleDisconnected(payloadMap)
+            MessageType.SEND_ERROR -> handleSendError(payloadMap)
             else -> {
                 throw IllegalArgumentException("")
             }
@@ -153,8 +153,8 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
 
  * The message SHALL be NaCl public-key encrypted by the server's session key pair and the initiator's permanent key pair.
  */
-private fun SaltyRtcClient.handleNewResponder(it: Message) {
-    val message = newResponderMessage(it)
+private fun SaltyRtcClient.handleNewResponder(payloadMap: Map<MessageField, Any>) {
+    val message = newResponderMessage(payloadMap)
     requireResponderId(message.id)
 
     val responders = current.responders.toMutableMap().apply {
@@ -180,8 +180,8 @@ private fun SaltyRtcClient.handleNewResponder(it: Message) {
 
  * The message SHALL be NaCl public-key encrypted by the server's session key pair and the client's permanent key pair.
  */
-private fun SaltyRtcClient.handleSendError(it: Message) {
-    val message = sendErrorMessage(it)
+private fun SaltyRtcClient.handleSendError(payloadMap: Map<MessageField, Any>) {
+    val message = sendErrorMessage(payloadMap)
     if (current.isInitiator) {
         requireResponderId(message.id)
     } else {
@@ -229,8 +229,8 @@ private fun SaltyRtcClient.clearInitiatorPath() {
 
  * The message SHALL be NaCl public-key encrypted by the server's session key pair and the client's permanent key pair.
  */
-private fun SaltyRtcClient.handleDisconnected(it: Message) {
-    val message = disconnectedMessage(it)
+private fun SaltyRtcClient.handleDisconnected(payloadMap: Map<MessageField, Any>) {
+    val message = disconnectedMessage(payloadMap)
     if (current.isInitiator) {
         requireResponderId(message.id)
         clearResponderPath(message.id)
