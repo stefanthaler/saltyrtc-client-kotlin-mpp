@@ -1,15 +1,10 @@
 package org.saltyrtc.client
 
 
-import com.goterl.lazycode.lazysodium.LazySodiumJava
-import com.goterl.lazycode.lazysodium.SodiumJava
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.saltyrtc.client.crypto.NaClKey
-import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.entity.signallingPath
 import org.saltyrtc.client.entity.signallingServer
@@ -44,7 +39,7 @@ fun main()  {
     val socket = webSocket(server)
     socket.open(signallingPath)
     val job = GlobalScope.launch {
-        socket.frame.collect {
+        socket.message.collect {
             logDebug("[Client] received: $it")
         }
     }

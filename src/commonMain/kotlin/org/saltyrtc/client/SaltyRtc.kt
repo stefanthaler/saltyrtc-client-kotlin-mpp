@@ -12,6 +12,7 @@ interface Client {
      * The permanent key pair is a NaCl key pair for public key authenticated encryption. Each client MUST have or generate a permanent key pair that is valid beyond sessions.
      */
     val ownPermanentKey: NaClKeyPair
+
 }
 
 /**

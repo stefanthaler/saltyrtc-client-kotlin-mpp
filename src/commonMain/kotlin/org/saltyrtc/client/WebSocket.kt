@@ -7,7 +7,6 @@ import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import org.saltyrtc.client.entity.WebSocketUri
 import org.saltyrtc.client.entity.webSocketMessage
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
@@ -17,7 +16,7 @@ fun webSocket(server: Server):WebSocket {
 }
 
 interface WebSocket {
-    val frame: SharedFlow<Message>
+    val message: SharedFlow<Message>
     fun open(path:SignallingPath)
     fun close()
     suspend fun send(message: Message)
@@ -31,7 +30,7 @@ private class WebSocketImpl(
     private val scope=CoroutineScope(Dispatchers.Default+supervisor) // TODO check scope
 
     private val _frame = MutableSharedFlow<Message>(extraBufferCapacity = 10)
-    override val frame: SharedFlow<Message> = _frame
+    override val message: SharedFlow<Message> = _frame
 
 
     override fun open(path:SignallingPath) {
@@ -80,7 +79,6 @@ private class WebSocketImpl(
             val frame = Frame.Binary(true, message.bytes)
             session?.outgoing?.send(frame)
         }
-
     }
 }
 

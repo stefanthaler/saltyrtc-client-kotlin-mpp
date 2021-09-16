@@ -1,16 +1,18 @@
 package org.saltyrtc.client.state
 
-interface ClientState {
-    val isConnected:Boolean
-}
+import org.saltyrtc.client.WebSocket
 
-fun InitialClientState():ClientState {
-    return ClientStateImpl(
+
+fun initialClientState():ClientState {
+    return ClientState(
         isConnected=false,
+        isInitiator=false,
+        socket = null,
     )
-
 }
 
-data class ClientStateImpl(
-    override val isConnected:Boolean
-) : ClientState
+data class ClientState(
+     val isConnected:Boolean,
+     val isInitiator: Boolean,
+     val socket: WebSocket?,
+)
