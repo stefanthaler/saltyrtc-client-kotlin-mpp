@@ -1,12 +1,12 @@
 package org.saltyrtc.client.entity.messages
 
+import org.saltyrtc.client.api.requireFields
+import org.saltyrtc.client.api.requireType
 import org.saltyrtc.client.state.Identity
 
 fun sendErrorMessage(payloadMap: Map<MessageField, Any>): SendErrorMessage {
-    require(payloadMap.containsKey(MessageField.TYPE))
-    require(payloadMap.containsKey(MessageField.ID))
-
-    require(MessageField.type(payloadMap) == MessageType.SEND_ERROR)
+    payloadMap.requireType(MessageType.SEND_ERROR)
+    payloadMap.requireFields(MessageField.ID)
 
     return SendErrorMessage(
         id = MessageField.id(payloadMap),

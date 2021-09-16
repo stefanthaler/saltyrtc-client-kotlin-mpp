@@ -2,6 +2,9 @@ package org.saltyrtc.client.entity.messages
 
 import org.saltyrtc.client.Cookie
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.requireFields
+import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.api.requireType
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.decrypt
@@ -18,20 +21,18 @@ fun serverAuthMessage(
     val decrypted = decrypt(CipherText(message.data.bytes), message.nonce, sharedKey)
     val payloadMap = unpack(Payload(decrypted.bytes))
 
-    require(payloadMap.containsKey(MessageField.TYPE))
-    require(MessageField.type(payloadMap) == MessageType.SERVER_AUTH)
+    payloadMap.requireType(MessageType.SERVER_AUTH)
+    payloadMap.requireFields(MessageField.YOUR_COOKIE, MessageField.SIGNED_KEYS)
 
-    require(payloadMap.containsKey(MessageField.YOUR_COOKIE))
-    require(payloadMap.containsKey(MessageField.SIGNED_KEYS))
     if (isInitiator) {
-        require(payloadMap.containsKey(MessageField.RESPONDERS))
+        payloadMap.requireFields(MessageField.RESPONDERS)
         require(message.nonce.destination == InitiatorIdentity.address)
         MessageField.responders(payloadMap)!!.forEach {
-            require(it.address.toInt() in 2..255) { "[ServerAuthMessage] Invalid responder received: $it" }
+            requireResponderId(it)
         }
     } else {
-        require(payloadMap.containsKey(MessageField.INITIATOR_CONNECTED))
-        require(message.nonce.destination.toInt() in 2..255) { "[ServerAuthMessage] destination needs to be " }
+        payloadMap.requireFields(MessageField.INITIATOR_CONNECTED)
+        requireResponderId(Identity(message.nonce.destination))
     }
 
     return ServerAuthMessage(
@@ -56,7 +57,6 @@ fun serverAuthMessage(
  * }
  */
 data class ServerAuthMessage(
-    val type: String = MessageType.SERVER_AUTH.type,
     val yourCookie: Cookie,
     val identity: Identity,
     val isInitiatorConnected: Boolean? = null,

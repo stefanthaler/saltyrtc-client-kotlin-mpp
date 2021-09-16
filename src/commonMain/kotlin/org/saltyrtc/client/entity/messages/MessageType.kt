@@ -15,6 +15,10 @@ enum class MessageType(val type: String) {
     DROP_RESPONDER("drop-responder"),
     SEND_ERROR("send-error"),
     DISCONNECTED("disconnected"),
+
+    // client2client
+    TOKEN("token"), // TODO
+    KEY("key"),
     ;
 
     companion object {

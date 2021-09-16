@@ -51,7 +51,7 @@ actual fun encrypt(
 }
 
 actual fun decrypt(ciphertext: CipherText, nonce: Nonce, sharedKey: SharedKey): PlainText {
-    val ciphertextSize= ciphertext.bytes.size
+    val ciphertextSize = ciphertext.bytes.size
     val plaintext = ByteArray(ciphertextSize - MACBYTES)
 
     val success = sodium.cryptoBoxOpenEasyAfterNm(

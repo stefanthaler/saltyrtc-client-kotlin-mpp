@@ -1,6 +1,8 @@
 package org.saltyrtc.client.entity.messages
 
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.requireFields
+import org.saltyrtc.client.api.requireType
 import org.saltyrtc.client.entity.CloseReason
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.state.Identity
@@ -8,11 +10,9 @@ import org.saltyrtc.client.state.Identity
 fun dropResponderMessage(message: Message): DropResponderMessage {
     val payloadMap = unpack(message.data)
 
-    require(payloadMap.containsKey(MessageField.TYPE))
-    require(payloadMap.containsKey(MessageField.ID))
-
-    require(MessageField.type(payloadMap) == MessageType.NEW_RESPONDER)
-
+    payloadMap.requireType(MessageType.NEW_RESPONDER)
+    payloadMap.requireFields(MessageField.ID)
+    
     val reason = if (payloadMap.containsKey(MessageField.REASON)) {
         MessageField.reason(payloadMap)
     } else {
