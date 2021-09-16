@@ -8,6 +8,7 @@ import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.encrypt
 import org.saltyrtc.client.entity.Payload
+import org.saltyrtc.client.entity.message
 import org.saltyrtc.client.entity.pack
 
 /**
@@ -28,7 +29,7 @@ fun clientAuthMessage(
     serverCookie: Cookie,
     serverPublicKey: PublicKey,
     sharedKey: SharedKey,
-): ClientAuthMessage {
+): Message {
     val payloadMap: Map<MessageField, Any> = buildMap {
         put(MessageField.TYPE, MessageType.CLIENT_AUTH.type)
         put(MessageField.YOUR_COOKIE, serverCookie.bytes)
@@ -39,17 +40,8 @@ fun clientAuthMessage(
     val payload = pack(payloadMap)
     val encryptedData = encrypt(payload, nonce, sharedKey)
 
-    return ClientAuthMessage(
+    return message(
         nonce = nonce,
         data = Payload(encryptedData.bytes),
     )
-}
-
-data class ClientAuthMessage(
-    override val nonce: Nonce,
-    override val data: Payload,
-) : Message {
-    override val bytes: ByteArray by lazy {
-        nonce.bytes + data.bytes
-    }
 }

@@ -2,7 +2,6 @@ package org.saltyrtc.client.api
 
 import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.entity.Payload
-import kotlin.jvm.JvmInline
 
 /**
  *
