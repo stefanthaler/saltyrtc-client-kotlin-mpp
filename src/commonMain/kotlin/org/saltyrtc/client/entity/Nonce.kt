@@ -9,7 +9,7 @@ import org.saltyrtc.client.extensions.*
 const val NONCE_LENGTH = 24
 
 fun Nonce(frame: ByteArray): Nonce {
-    val cookie = Cookie(frame.sliceArray(0..15))
+    val cookie = cookie(frame.sliceArray(0..15))
     val source = frame[16]
     val destination = frame[17]
     val overflowNumber: UShort = frame.sliceArray(18..19).toUShort()
@@ -17,8 +17,12 @@ fun Nonce(frame: ByteArray): Nonce {
     return NonceImpl(cookie, source, destination, overflowNumber, sequenceNumber)
 }
 
+fun firstNonce(): Nonce {
+    return NonceImpl()
+}
+
 data class NonceImpl(
-    override val cookie: Cookie = Cookie(),
+    override val cookie: Cookie = cookie(),
     override val source: Byte = 0,
     override val destination: Byte = 0,
     override val overflowNumber: UShort = 0u,

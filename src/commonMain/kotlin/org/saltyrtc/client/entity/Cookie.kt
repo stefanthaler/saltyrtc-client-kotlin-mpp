@@ -6,11 +6,11 @@ import org.saltyrtc.client.crypto.secureRandomBytes
 
 private const val cookieLength = 16
 
-fun Cookie(): Cookie {
+fun cookie(): Cookie {
     return CookieImpl(secureRandomBytes(cookieLength))
 }
 
-fun Cookie(bytes: ByteArray): Cookie {
+fun cookie(bytes: ByteArray): Cookie {
     return CookieImpl(bytes)
 }
 

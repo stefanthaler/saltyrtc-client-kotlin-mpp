@@ -2,7 +2,6 @@ package org.saltyrtc.client
 
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
-import kotlin.jvm.JvmInline
 
 /**
  *  A SaltyRTC compliant client. The client uses the signalling channel to establish a WebRTC or ORTC peer-to-peer connection.
@@ -13,7 +12,7 @@ interface Client {
      */
     val ownPermanentKey: NaClKeyPair
 
-    fun connect(isInitiator:Boolean, path: SignallingPath)
+    fun connect(isInitiator: Boolean, path: SignallingPath)
 }
 
 /**
@@ -28,6 +27,9 @@ interface Server {
 
 interface Task
 
+object Subprotocols {
+    val V1_SALTYRTC_ORG = "v1.saltyrtc.org"
+}
 
 
 interface Cookie {

@@ -14,11 +14,11 @@ actual fun unpack(payload: Payload): Map<MessageField, Any> {
     } catch (e: IOException) {
         throw Exception("Deserialization failed", e)
     }
-    return map.map { MessageField.valueOf(it.key) to it.value }.toMap()
+    return map.map { MessageField.valueOf(it.key.uppercase()) to it.value }.toMap()
 }
 
 actual fun pack(payloadMap: Map<MessageField, Any>): Payload {
-    val map = payloadMap.map { it.key.name to it.value }.toMap()
+    val map = payloadMap.map { it.key.name.lowercase() to it.value }.toMap()
     val objectMapper = ObjectMapper(MessagePackFactory())
     return Payload(objectMapper.writeValueAsBytes(map))
 }

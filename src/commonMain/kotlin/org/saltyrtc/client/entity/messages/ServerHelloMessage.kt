@@ -7,8 +7,8 @@ import org.saltyrtc.client.entity.unpack
 fun serverHelloMessage(message: Message): ServerHelloMessage {
     val payloadMap = unpack(message.data)
 
-    require(payloadMap.containsValue(MessageField.TYPE))
-    require(payloadMap.containsValue(MessageField.KEY))
+    require(payloadMap.containsKey(MessageField.TYPE))
+    require(payloadMap.containsKey(MessageField.KEY))
     require(MessageField.type(payloadMap) == MessageType.SERVER_HELLO.type)
 
     return ServerHelloMessage(

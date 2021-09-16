@@ -1,17 +1,28 @@
 package org.saltyrtc.client.state
 
+import org.saltyrtc.client.Cookie
 import org.saltyrtc.client.WebSocket
 import org.saltyrtc.client.crypto.PublicKey
+import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.entity.ClientServerAuthState
+import kotlin.jvm.JvmInline
 
+@JvmInline
+value class Identity(val address: Byte)
+
+val ServerIdentity = Identity(address = 0)
+val InitiatorIdentity = Identity(address = 1)
 
 fun initialClientState(): ClientState {
     return ClientState(
         isConnected = false,
         isInitiator = false,
         socket = null,
-        authState = ClientServerAuthState.DISCONNECTED,
-        sessionKey = null
+        authState = ClientServerAuthState.UNAUTHENTICATED,
+        sessionSharedKey = null,
+        sessionPublicKey = null,
+        cookies = mapOf(),
+        identity = null,
     )
 }
 
@@ -20,5 +31,8 @@ data class ClientState(
     val isInitiator: Boolean,
     val socket: WebSocket?,
     val authState: ClientServerAuthState,
-    val sessionKey: PublicKey?
+    val sessionSharedKey: SharedKey?,
+    val sessionPublicKey: PublicKey?,
+    val cookies: Map<Identity, Cookie>,
+    val identity: Identity?
 )
