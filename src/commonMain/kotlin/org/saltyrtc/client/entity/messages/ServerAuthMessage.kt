@@ -26,11 +26,12 @@ fun serverAuthMessage(
     if (isInitiator) {
         require(payloadMap.containsKey(MessageField.RESPONDERS))
         require(message.nonce.destination == InitiatorIdentity.address)
+        MessageField.responders(payloadMap)!!.forEach {
+            require(it.address.toInt() in 2..255) { "[ServerAuthMessage] Invalid responder received: $it" }
+        }
     } else {
         require(payloadMap.containsKey(MessageField.INITIATOR_CONNECTED))
-        MessageField.responders(payloadMap)!!.forEach {
-            require(it.address in 2.toByte()..255.toByte()) { "[ServerAuthMessage] Invalid responder received: $it" }
-        }
+        require(message.nonce.destination.toInt() in 2..255) { "[ServerAuthMessage] destination needs to be " }
     }
 
     return ServerAuthMessage(

@@ -21,6 +21,7 @@ fun initialClientState(): ClientState {
         authState = ClientServerAuthState.UNAUTHENTICATED,
         sessionSharedKey = null,
         sessionPublicKey = null,
+        sessionCookie = null,
         cookies = mapOf(),
         identity = null,
     )
@@ -33,6 +34,7 @@ data class ClientState(
     val authState: ClientServerAuthState,
     val sessionSharedKey: SharedKey?,
     val sessionPublicKey: PublicKey?,
+    val sessionCookie: Cookie?,
     val cookies: Map<Identity, Cookie>,
     val identity: Identity?
 )

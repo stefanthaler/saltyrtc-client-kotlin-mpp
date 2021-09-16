@@ -12,9 +12,12 @@ import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.sharedKey
 import org.saltyrtc.client.entity.ClientServerAuthState
+import org.saltyrtc.client.entity.firstNonce
 import org.saltyrtc.client.entity.messages.clientAuthMessage
+import org.saltyrtc.client.entity.messages.clientHelloMessage
 import org.saltyrtc.client.entity.messages.serverAuthMessage
 import org.saltyrtc.client.entity.messages.serverHelloMessage
+import org.saltyrtc.client.entity.withIncreasedSequenceNumber
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
@@ -23,6 +26,7 @@ import org.saltyrtc.client.state.ServerIdentity
 import org.saltyrtc.client.state.initialClientState
 
 class SaltyRtcClient(
+    val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair
 ) : Client {
@@ -45,7 +49,8 @@ class SaltyRtcClient(
         }
     }
 
-    private fun handle(it: ClientIntent) {
+    private suspend fun handle(it: ClientIntent) {
+        logDebug("[$debugName] handling intent $it")
         when (it) {
             is ClientIntent.Connect -> connect(it)
             is ClientIntent.MessageReceived -> handleMessage(it.message)
@@ -60,14 +65,12 @@ class SaltyRtcClient(
     internal val messageSupervisor = SupervisorJob()
     internal val messageScope = CoroutineScope(Dispatchers.Default + messageSupervisor)
 
-    private fun send(message: Message) {
+    private suspend fun send(message: Message) = withContext(messageScope.coroutineContext) {
         val socket = current.socket
         if (socket == null) {
-            logWarn("Attempted to send message to unitialized socket")
+            logWarn("[$debugName] Attempted to send message to unitialized socket")
         } else {
-            messageScope.launch {
-                socket.send(message)
-            }
+            socket.send(message)
         }
     }
 
@@ -82,12 +85,11 @@ class SaltyRtcClient(
 }
 
 private fun Message.isClientServer(): Boolean {
-    logDebug("Nonce: ${nonce}")
     return nonce.source == ServerIdentity.address
 }
 
 private fun SaltyRtcClient.handleMessage(it: Message) {
-    logDebug("[SaltyRtcClient] received message (server: ${it.isClientServer()}): $it, ")
+    logDebug("[$debugName] received message (server: ${it.isClientServer()}): $it, ")
     //TODO  handle error message
     if (it.isClientServer()) {
         handleClientServerMessage(it)
@@ -125,17 +127,21 @@ private fun SaltyRtcClient.handleServerHello(it: Message) {
     val message = serverHelloMessage(it)
     require(message.key != signallingServer.permanentPublicKey)
 
+    val nonce = firstNonce()
 
     current = current.copy(
         authState = ClientServerAuthState.SERVER_AUTH,
         sessionSharedKey = sharedKey(ownPermanentKey.privateKey, message.key),
         sessionPublicKey = message.key,
+        sessionCookie = nonce.cookie
     )
 
     if (current.isInitiator) {
-        sendClientAuth(it.nonce.cookie)
+        sendClientAuth(nonce, it.nonce.cookie)
     } else {
-        // TODO
+        sendClientHello(nonce)
+        val nextNonce = nonce.withIncreasedSequenceNumber()
+        sendClientAuth(nextNonce, it.nonce.cookie)
     }
 }
 
@@ -168,11 +174,8 @@ private fun SaltyRtcClient.handleServerAuth(it: Message) {
     requireNotNull(sessionKey)
     val sessionPublicKey = current.sessionPublicKey
     requireNotNull(sessionPublicKey)
-
     val message = serverAuthMessage(it, current.isInitiator, sessionKey)
-
-    val serverCookie = current.cookies[ServerIdentity]
-    require(message.yourCookie == serverCookie)
+    require(message.yourCookie == current.sessionCookie)
 
     val decryptedSignedKeys = decrypt(
         ciphertext = CipherText(message.signedKeys),
@@ -186,7 +189,7 @@ private fun SaltyRtcClient.handleServerAuth(it: Message) {
         authState = ClientServerAuthState.AUTHENTICATED,
         identity = message.identity
     )
-    logDebug("[SaltyRtcClient] Authenticated towards server (Initiator:${current.isInitiator}")
+    logDebug("[$debugName] Authenticated towards server (Initiator:${current.isInitiator})")
 }
 
 /**
@@ -194,11 +197,18 @@ private fun SaltyRtcClient.handleServerAuth(it: Message) {
  * client takes the role of a responder. The initiator MUST skip this message.
  * The responder MUST set the public key (32 bytes) of the permanent key pair in the key field of this message.
  *
- * A receiving server MUST check that the message contains a valid NaCl public key (the size of the key MUST be exactly 32 bytes). Note that the server does not know whether the client will send a 'client-hello' message (the client is a responder) or a 'client-auth' message (the client is the initiator). Therefore, the server MUST be prepared to handle both message types at that particular point in the message flow. This is also the intended way to differentiate between initiator and responder.
+ * A receiving server MUST check that the message contains a valid NaCl public key (the size of the key MUST be exactly 32 bytes).
+ * Note that the server does not know whether the client will send a 'client-hello' message (the client is a responder)
+ * or a 'client-auth' message (the client is the initiator). Therefore, the server MUST be prepared to handle both message
+ * types at that particular point in the message flow. This is also the intended way to differentiate between initiator and responder.
+ *
  * The message SHALL NOT be encrypted.
  */
-private fun SaltyRtcClient.sendClientHello() {
-
+private fun SaltyRtcClient.sendClientHello(nonce: Nonce) {
+    logDebug("[$debugName] sending 'client-hello' message")
+    require(!current.isInitiator)
+    val message = clientHelloMessage(ownPermanentKey.publicKey, nonce)
+    queue(ClientIntent.SendMessage(message))
 }
 
 /**
@@ -252,18 +262,21 @@ private fun SaltyRtcClient.sendClientHello() {
  * and the client's permanent key pair (public key as part of the WebSocket path or sent in 'client-hello').
  */
 private fun SaltyRtcClient.sendClientAuth(
+    nonce: Nonce,
     serverCookie: Cookie,
 ) {
+    logDebug("[$debugName] sending 'client-auth' message")
     val sharedKey = current.sessionSharedKey
     requireNotNull(sharedKey)
     val authMessage = clientAuthMessage(
+        nonce = nonce,
         serverCookie = serverCookie,
         serverPublicKey = signallingServer.permanentPublicKey,
         sharedKey = sharedKey,
     )
 
     val newCookies = current.cookies.toMutableMap().apply {
-        put(ServerIdentity, authMessage.nonce.cookie)
+        put(ServerIdentity, serverCookie)
     }
     current = current.copy(
         cookies = newCookies
@@ -301,7 +314,7 @@ private fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
 fun SaltyRtcClient.close() {
     val socket = current.socket
     if (socket == null) {
-        logWarn("Attempted to close an uninitialized socket")
+        logWarn("[$debugName] Attempted to close an uninitialized socket")
     } else {
         socket.close()
     }

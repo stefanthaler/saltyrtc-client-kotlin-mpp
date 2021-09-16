@@ -8,7 +8,6 @@ import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.encrypt
 import org.saltyrtc.client.entity.Payload
-import org.saltyrtc.client.entity.firstNonce
 import org.saltyrtc.client.entity.pack
 
 /**
@@ -25,6 +24,7 @@ import org.saltyrtc.client.entity.pack
  */
 @OptIn(ExperimentalStdlibApi::class)
 fun clientAuthMessage(
+    nonce: Nonce,
     serverCookie: Cookie,
     serverPublicKey: PublicKey,
     sharedKey: SharedKey,
@@ -37,7 +37,6 @@ fun clientAuthMessage(
         put(MessageField.YOUR_KEY, serverPublicKey.bytes)
     }
     val payload = pack(payloadMap)
-    val nonce = firstNonce()
     val encryptedData = encrypt(payload, nonce, sharedKey)
 
     return ClientAuthMessage(

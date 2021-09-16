@@ -21,6 +21,10 @@ fun firstNonce(): Nonce {
     return NonceImpl()
 }
 
+fun firstNonce(cookie: Cookie): Nonce {
+    return NonceImpl(cookie = cookie)
+}
+
 data class NonceImpl(
     override val cookie: Cookie = cookie(),
     override val source: Byte = 0,
