@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.requireInitiatorId
+import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.decrypt
@@ -16,10 +18,7 @@ import org.saltyrtc.client.entity.messages.*
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.state.ClientState
-import org.saltyrtc.client.state.LastMessageSentTimeStamp
-import org.saltyrtc.client.state.ServerIdentity
-import org.saltyrtc.client.state.initialClientState
+import org.saltyrtc.client.state.*
 
 class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
@@ -120,12 +119,9 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
 
     if (current.isInitiator) {
         when (type) {
-            MessageType.NEW_RESPONDER -> {
-                val message = newResponderMessage(it)
-            }
-            MessageType.DROP_RESPONDER -> TODO()
+            MessageType.NEW_RESPONDER -> handleNewResponder(it)
             MessageType.SEND_ERROR -> TODO()
-            MessageType.DISCONNECTED -> TODO()
+            MessageType.DISCONNECTED -> handleDisconnected(it)
             else -> {
                 throw IllegalArgumentException("")
             }
@@ -134,8 +130,8 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
     } else {
         when (type) {
             MessageType.NEW_INITIATOR -> TODO()
-            MessageType.DISCONNECTED -> TODO()
-            MessageType.SEND_ERROR -> TODO()
+            MessageType.DISCONNECTED -> handleDisconnected(it)
+            MessageType.SEND_ERROR -> handleDisconnected(it)
             else -> {
                 throw IllegalArgumentException("")
             }
@@ -159,7 +155,7 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
  */
 private fun SaltyRtcClient.handleNewResponder(it: Message) {
     val message = newResponderMessage(it)
-    require(message.id.address.toInt() in 2..255)
+    requireResponderId(message.id)
 
     val responders = current.responders.toMutableMap().apply {
         put(message.id, LastMessageSentTimeStamp(0)) // TODO path cleaning
@@ -167,6 +163,89 @@ private fun SaltyRtcClient.handleNewResponder(it: Message) {
 
     current = current.copy(
         responders = responders
+    )
+}
+
+/**
+ * In case the server could not relay a client-to-client message (meaning that the connection between server and the
+ * receiver has been severed), the server MUST send this message to the original sender of the message that should have
+ * been relayed. The server SHALL set the id field to the concatenation of the source address, the destination address,
+ * the overflow number and the sequence number (or the combined sequence number) of the nonce section from the original
+ * message.
+
+ * A receiving client MUST treat this incident by raising an error event to the user's application and deleting all
+ * cached information about and for the other client (such as cookies and sequence numbers). The client MAY stay on the
+ * path and wait for a new initiator/responder to connect. However, the client-to-client handshake MUST start from the
+ * beginning.
+
+ * The message SHALL be NaCl public-key encrypted by the server's session key pair and the client's permanent key pair.
+ */
+private fun SaltyRtcClient.handleSendError(it: Message) {
+    val message = sendErrorMessage(it)
+    if (current.isInitiator) {
+        requireResponderId(message.id)
+    } else {
+        requireInitiatorId(message.id)
+    }
+    clearResponderPath(message.id)
+}
+
+/**
+ * When a new initiator has authenticated itself towards the server on a path, the server MUST send this message to all
+ * currently authenticated responders on the same path. No additional field needs to be set. The server MUST ensure that a
+ * 'new-initiator' message has been sent before the corresponding initiator is able to send messages to any responder.
+
+ * A responder who receives a 'new-initiator' message MUST proceed by deleting all currently cached information about
+ * and for the previous initiator (such as cookies and the sequence numbers) and continue by sending a 'token' or 'key'
+ * client-to-client message described in the Client-to-Client Messages section.
+
+ * The message SHALL be NaCl public-key encrypted by the server's session key pair and the responder's permanent key pair.
+ */
+private fun SaltyRtcClient.handleNewInitiator() {
+    require(!current.isInitiator)
+    clearInitiatorPath()
+}
+
+private fun SaltyRtcClient.clearInitiatorPath() {
+    //TODO
+}
+
+/**
+ * If an initiator that has been authenticated towards the server terminates the connection with the server, the server
+ * SHALL send this message towards all connected and authenticated responders.
+
+ * If a responder that has been authenticated towards the server terminates the connection with the server, the server
+ * SHALL send this message towards the initiator (if present).
+
+ * An initiator who receives a 'disconnected' message SHALL validate that the id field contains a valid responder address
+ * (0x02..0xff).
+
+ * A responder who receives a 'disconnected' message SHALL validate that the id field contains a valid initiator address
+ * (0x01).
+
+ * A receiving client MUST delete all cached information about and for the other client with the identity of the id field
+ * (such as cookies and sequence numbers). The client MAY stay on the path and wait for a new initiator/responder to connect.
+ * However, the client-to-client handshake MUST start from the beginning. In addition, the client MUST notify the user application that the client with the identity id has disconnected.
+
+ * The message SHALL be NaCl public-key encrypted by the server's session key pair and the client's permanent key pair.
+ */
+private fun SaltyRtcClient.handleDisconnected(it: Message) {
+    val message = disconnectedMessage(it)
+    if (current.isInitiator) {
+        requireResponderId(message.id)
+        clearResponderPath(message.id)
+    } else {
+        requireInitiatorId(message.id)
+        clearInitiatorPath()
+    }
+}
+
+private fun SaltyRtcClient.clearResponderPath(identity: Identity) {
+    current = current.copy(
+        cookies = current.cookies.toMutableMap().apply {
+            remove(identity)
+        }
+        // TODO clear responders
     )
 }
 
@@ -182,7 +261,9 @@ private fun SaltyRtcClient.handleNewResponder(it: Message) {
  *
  * The message SHALL NOT be encrypted.
  */
-private fun SaltyRtcClient.handleServerHello(it: Message) {
+private
+
+fun SaltyRtcClient.handleServerHello(it: Message) {
     val message = serverHelloMessage(it)
     require(message.key != signallingServer.permanentPublicKey)
 

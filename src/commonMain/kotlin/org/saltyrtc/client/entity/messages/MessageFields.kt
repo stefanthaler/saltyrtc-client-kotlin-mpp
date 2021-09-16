@@ -1,5 +1,6 @@
 package org.saltyrtc.client.entity.messages
 
+import org.saltyrtc.client.entity.CloseReason
 import org.saltyrtc.client.entity.cookie
 import org.saltyrtc.client.state.Identity
 
@@ -14,6 +15,7 @@ enum class MessageField {
     INITIATOR_CONNECTED,
     RESPONDERS,
     ID,
+    REASON
 
     ;
 
@@ -25,5 +27,6 @@ enum class MessageField {
         fun responders(payloadMap: Map<MessageField, Any>) = payloadMap[RESPONDERS] as List<Identity>?
         fun signedKeys(payloadMap: Map<MessageField, Any>) = payloadMap[SIGNED_KEYS] as ByteArray
         fun id(payloadMap: Map<MessageField, Any>) = Identity(payloadMap[ID] as Byte)
+        fun reason(payloadMap: Map<MessageField, Any>) = CloseReason.valueOf(payloadMap[REASON] as String)
     }
 }
