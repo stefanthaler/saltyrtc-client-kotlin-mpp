@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.logging.logDebug
+import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.state.ClientState
 
 import org.saltyrtc.client.state.initialClientState
@@ -26,7 +27,7 @@ class SaltyRtcClient(
         }
 
     private val intents = Channel<ClientIntent>(capacity = Channel.UNLIMITED)
-    private val intentScope = CoroutineScope(Dispatchers.Main) // TODO
+    private val intentScope = CoroutineScope(Dispatchers.Default) // TODO
     init {
         intentScope.launch {
             intents.receiveAsFlow().collect {
@@ -44,14 +45,18 @@ class SaltyRtcClient(
         intents.trySend(intent)
     }
     internal val messageSupervisor = SupervisorJob()
-    internal val messageScope = CoroutineScope(Dispatchers.Main + messageSupervisor)
+    internal val messageScope = CoroutineScope(Dispatchers.Default + messageSupervisor)
 
     internal fun handle(it:Message) {
         logDebug("[SaltyRtcClient] received message: $it")
     }
 
-
-
+    override fun connect(isInitiator:Boolean, path: SignallingPath) {
+        queue(ClientIntent.Connect(
+            isInitiator = isInitiator,
+            path = path,
+        ))
+    }
 }
 
 
@@ -75,5 +80,10 @@ private fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
 }
 
 fun SaltyRtcClient.close() {
-
+    val socket = current.socket
+    if (socket == null) {
+        logWarn("Attempted to close an uninitialized socket")
+    } else {
+        socket.close()
+    }
 }

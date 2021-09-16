@@ -3,9 +3,12 @@ package org.saltyrtc.client
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
+import org.saltyrtc.client.crypto.naClKeyPair
 import org.saltyrtc.client.entity.signallingPath
 import org.saltyrtc.client.entity.signallingServer
 import org.saltyrtc.client.logging.logDebug
@@ -36,17 +39,26 @@ fun main()  {
     val clientPublicKey  = PublicKey("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E")
     val signallingPath = signallingPath(clientPublicKey)
 
-    val socket = webSocket(server)
-    socket.open(signallingPath)
-    val job = GlobalScope.launch {
-        socket.message.collect {
-            logDebug("[Client] received: $it")
+    val initiatorKeys =
+        naClKeyPair(
+            publicKeyHex = "DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E",
+            privatKeyHex = "B3267C2BFEB00B27B4B006F024659076A1FA86F5046B6F9C401F64F3D9644A65",
+        )
+
+    val initiator = SaltyRtcClient(server, initiatorKeys)
+    initiator.connect(isInitiator = true, path=signallingPath)
+
+    val initiatorJob = GlobalScope.launch {
+        initiator.state.collect {
+            logDebug("[Initiator] State changed: $it")
         }
     }
 
     runBlocking {
-        job.join()
+        initiatorJob.join()
     }
+
+
 
 
 

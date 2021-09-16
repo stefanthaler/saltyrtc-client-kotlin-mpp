@@ -79,7 +79,7 @@ actual fun generateKeyPair(): NaClKeyPair { //TODO make static?
         throw CryptoException("Could not generate keypair")
     }
 
-    return NaClKeyPair(publicKeyBytes, privateKeyBytes)
+    return naClKeyPair(publicKeyBytes, privateKeyBytes)
 }
 
 actual fun derivePublicKey(privateKey: NaClKey): NaClKey {

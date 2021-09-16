@@ -13,6 +13,7 @@ interface Client {
      */
     val ownPermanentKey: NaClKeyPair
 
+    fun connect(isInitiator:Boolean, path: SignallingPath)
 }
 
 /**

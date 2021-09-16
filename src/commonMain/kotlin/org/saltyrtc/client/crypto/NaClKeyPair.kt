@@ -1,11 +1,14 @@
 package org.saltyrtc.client.crypto
 
-fun NaClKeyPair(publicKeyHex: String, privatKeyHex: String): NaClKeyPair = NaClKeyPair(
+fun naClKeyPair(
+    publicKeyHex: String,
+    privatKeyHex: String
+): NaClKeyPair = NaClKeyPair(
     publicKey = PublicKey(publicKeyHex),
     privateKey = PrivateKey(privatKeyHex)
 )
 
-fun NaClKeyPair(publicKey: ByteArray, privatKey: ByteArray): NaClKeyPair = NaClKeyPair(
+fun naClKeyPair(publicKey: ByteArray, privatKey: ByteArray): NaClKeyPair = NaClKeyPair(
     publicKey = PublicKey(publicKey),
     privateKey = PrivateKey(privatKey)
 )
