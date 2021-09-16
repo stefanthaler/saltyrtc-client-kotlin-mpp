@@ -19,6 +19,7 @@ enum class MessageType(val type: String) {
     // client2client
     TOKEN("token"), // TODO
     KEY("key"),
+    AUTH("auth")
     ;
 
     companion object {

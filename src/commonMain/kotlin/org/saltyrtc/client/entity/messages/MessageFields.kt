@@ -15,7 +15,10 @@ enum class MessageField {
     INITIATOR_CONNECTED,
     RESPONDERS,
     ID,
-    REASON
+    REASON,
+    TASKS,
+    TASK,
+    DATA,
 
     ;
 
