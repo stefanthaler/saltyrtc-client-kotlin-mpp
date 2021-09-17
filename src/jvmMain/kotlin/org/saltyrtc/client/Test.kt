@@ -45,10 +45,17 @@ fun main() {
             privatKeyHex = "B3267C2BFEB00B27B4B006F024659076A1FA86F5046B6F9C401F64F3D9644A65",
         )
 
+    val responderKeys =
+        naClKeyPair(
+            publicKeyHex = "3D4D823D72A7E6A4A49DECD2F54E3C128DE8D82151DF433D6B06BBEABCF46470",
+            privatKeyHex = "DAD2D193A86B065DA4EA2B5D4D7532505FA550F6C0A7EFAFB2BF91F40F910B08",
+        )
+
+
     val initiator = SaltyRtcClient("Initiator", server, initiatorKeys)
     GlobalScope.launch {
         delay(1_000)
-        initiator.connect(isInitiator = true, path = signallingPath, task = Task.V1_ORTC)
+        initiator.connect(isInitiator = true, path = signallingPath, task = Task.V1_ORTC, responderKeys.publicKey)
     }
 
 
@@ -58,14 +65,8 @@ fun main() {
         }
     }
 
-    val responderKeys =
-        naClKeyPair(
-            publicKeyHex = "3D4D823D72A7E6A4A49DECD2F54E3C128DE8D82151DF433D6B06BBEABCF46470",
-            privatKeyHex = "DAD2D193A86B065DA4EA2B5D4D7532505FA550F6C0A7EFAFB2BF91F40F910B08",
-        )
-
     val responder = SaltyRtcClient("Responder", server, responderKeys)
-    responder.connect(isInitiator = false, path = signallingPath, task = Task.V1_ORTC)
+    responder.connect(isInitiator = false, path = signallingPath, task = Task.V1_ORTC, initiatorKeys.publicKey)
 
     val responderJob = GlobalScope.launch {
         responder.state.collect {

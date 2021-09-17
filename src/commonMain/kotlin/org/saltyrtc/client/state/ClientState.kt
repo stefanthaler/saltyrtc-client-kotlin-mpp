@@ -1,12 +1,13 @@
 package org.saltyrtc.client.state
 
-import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.WebSocket
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.entity.*
+import org.saltyrtc.client.logging.logDebug
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -29,7 +30,7 @@ fun initialClientState(): ClientState {
         isInitiatorConnected = null,
         clientAuthStates = mapOf(),
         sessionSharedKeys = mapOf(),
-        otherPermanentPublicKeys = mapOf(),
+        otherPermanentPublicKey = null,
         sessionOwnKeyPair = mapOf(),
         task = null
     )
@@ -37,7 +38,7 @@ fun initialClientState(): ClientState {
 
 data class ClientState(
     val isInitiator: Boolean,
-    val otherPermanentPublicKeys: Map<Identity, PublicKey>,
+    val otherPermanentPublicKey: PublicKey?,
     val socket: WebSocket?,
     val authState: ClientServerAuthState,
     val serverSessionPublicKey: PublicKey?,
@@ -61,12 +62,13 @@ data class ClientState(
     }
 
     val responderShouldSendKey: Boolean by lazy {
-        isResponder && isInitiatorConnected == true && otherPermanentPublicKeys.containsKey(InitiatorIdentity)
+        logDebug("Responder should send key: $isResponder $isInitiatorConnected $otherPermanentPublicKey")
+        isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
     }
 
-    fun initiatorShouldSendToken(responder: Identity): Boolean {
+    fun initiatorShouldSendToken(responder: Identity): Boolean { // TODO
         requireResponderId(responder)
-        return isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKeys[responder] == null
+        return isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKey == null
     }
 
     fun nextSendingNonce(destination: Identity): Nonce {

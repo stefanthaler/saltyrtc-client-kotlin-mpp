@@ -3,6 +3,7 @@ package org.saltyrtc.client.protocol
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.clearInitiatorPath
 import org.saltyrtc.client.entity.nonce
+import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.state.InitiatorIdentity
 
 /**
@@ -23,5 +24,7 @@ internal fun SaltyRtcClient.handleNewInitiator() {
 
     if (current.responderShouldSendKey) {
         sendClientSessionKey(nonce(source = current.identity!!, destination = InitiatorIdentity))
+    } else {
+        logWarn("[$debugName] Public key of initiator unknown")
     }
 }

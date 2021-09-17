@@ -1,6 +1,7 @@
 package org.saltyrtc.client.api
 
 import org.saltyrtc.client.crypto.NaClKeyPair
+import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.entity.Task
 
 /**
@@ -12,7 +13,12 @@ interface Client {
      */
     val ownPermanentKey: NaClKeyPair
 
-    fun connect(isInitiator: Boolean, path: SignallingPath, task: Task)
+    fun connect(
+        isInitiator: Boolean,
+        path: SignallingPath,
+        task: Task,
+        otherPermanentPublicKey: PublicKey?,
+    )
 }
 
 object Subprotocols {

@@ -69,7 +69,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 * Unit Tests
 * Other build targets (Android, JVM, JS, ...)
 * Support multiple WebSocket clients (Ktor, other?)
-*
+* Test compatibility with other SaltyRTC clients
 
 # TODO - Tasks
 

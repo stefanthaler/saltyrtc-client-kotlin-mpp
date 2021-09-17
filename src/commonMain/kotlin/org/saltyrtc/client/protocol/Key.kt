@@ -1,11 +1,7 @@
 package org.saltyrtc.client.protocol
 
-import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.SaltyRtcClient
-import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.requireAuthenticatedToServer
-import org.saltyrtc.client.api.requireInitiatorId
-import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.api.*
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.generateKeyPair
 import org.saltyrtc.client.crypto.sharedKey
@@ -34,7 +30,7 @@ import org.saltyrtc.client.state.Identity
  */
 internal fun SaltyRtcClient.sendClientSessionKey(nonce: Nonce) {
     val destination = nonce.destination
-    val otherPermanentPublicKey = current.otherPermanentPublicKeys[destination]
+    val otherPermanentPublicKey = current.otherPermanentPublicKey
     requireNotNull(otherPermanentPublicKey)
     requireAuthenticatedToServer(current)
 
@@ -65,7 +61,7 @@ internal fun SaltyRtcClient.handleClientSessionKeyMessage(it: Message) {
     } else {
         requireInitiatorId(otherIdentity)
     }
-    val otherPermanentKey = current.otherPermanentPublicKeys[otherIdentity]
+    val otherPermanentKey = current.otherPermanentPublicKey
     requireNotNull(otherPermanentKey)
     val permanentSharedKey = sharedKey(ownPermanentKey.privateKey, otherPermanentKey)
     val incomingMessage = clientSessionKeyMessage(it, permanentSharedKey, it.nonce)

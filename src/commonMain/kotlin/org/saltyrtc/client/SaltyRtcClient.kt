@@ -6,21 +6,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.saltyrtc.client.api.*
-import org.saltyrtc.client.crypto.CipherText
+import org.saltyrtc.client.api.Client
+import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.Server
+import org.saltyrtc.client.api.SignallingPath
 import org.saltyrtc.client.crypto.NaClKeyPair
-import org.saltyrtc.client.crypto.decrypt
-import org.saltyrtc.client.entity.*
+import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.entity.Task
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.MessageType
 import org.saltyrtc.client.intents.ClientIntent
+import org.saltyrtc.client.intents.connect
+import org.saltyrtc.client.intents.handleMessage
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.protocol.*
 import org.saltyrtc.client.state.ClientState
 import org.saltyrtc.client.state.Identity
-import org.saltyrtc.client.state.ServerIdentity
 import org.saltyrtc.client.state.initialClientState
 
 class SaltyRtcClient(
@@ -72,74 +71,20 @@ class SaltyRtcClient(
         }
     }
 
-    override fun connect(isInitiator: Boolean, path: SignallingPath, task: Task) {
+    override fun connect(
+        isInitiator: Boolean,
+        path: SignallingPath,
+        task: Task,
+        otherPermanentPublicKey: PublicKey?
+    ) {
         queue(
             ClientIntent.Connect(
                 isInitiator = isInitiator,
                 path = path,
-                task = task
+                task = task,
+                otherPermanentPublicKey = otherPermanentPublicKey
             )
         )
-    }
-}
-
-private fun Message.isClientServer(): Boolean {
-    logDebug("[Message ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination} ")
-    return nonce.source == ServerIdentity
-}
-
-private fun SaltyRtcClient.handleMessage(it: Message) {
-    logDebug("[$debugName] received message (server: ${it.isClientServer()}): $it, ")
-    //TODO  handle error message and other messages
-
-    if (it.isClientServer()) {
-        handleClientServerMessage(it)
-    } else {
-        handleClientClientMessage(it)
-    }
-}
-
-private fun SaltyRtcClient.handleClientServerMessage(it: Message) {
-    when (current.authState) {
-        ClientServerAuthState.UNAUTHENTICATED -> {
-            handleServerHello(it)
-        }
-        ClientServerAuthState.SERVER_AUTH -> {
-            handleServerAuth(it)
-        }
-        ClientServerAuthState.AUTHENTICATED -> {
-            handleAuthenticatedMessages(it)
-        }
-    }
-}
-
-private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
-    val sharedKey = current.serverSessionSharedKey
-    requireNotNull(sharedKey)
-    val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
-    val payloadMap = unpack(Payload(plainText.bytes))
-    require(payloadMap.containsKey(MessageField.TYPE))
-    val type = MessageField.type(payloadMap)
-    logDebug("[$debugName] Handling authenticated message: $type")
-
-    if (current.isInitiator) {
-        when (type) {
-            MessageType.NEW_RESPONDER -> handleNewResponder(payloadMap)
-            MessageType.SEND_ERROR -> handleSendError(payloadMap)
-            MessageType.DISCONNECTED -> handleDisconnected(payloadMap)
-            else -> {
-                throw IllegalArgumentException("")
-            }
-        }
-    } else {
-        when (type) {
-            MessageType.NEW_INITIATOR -> handleNewInitiator()
-            MessageType.DISCONNECTED -> handleDisconnected(payloadMap)
-            MessageType.SEND_ERROR -> handleSendError(payloadMap)
-            else -> {
-                throw IllegalArgumentException("")
-            }
-        }
     }
 }
 
@@ -155,55 +100,6 @@ internal fun SaltyRtcClient.clearResponderPath(identity: Identity) {
         }
         // TODO clear responders
     )
-}
-
-
-private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
-    val source = it.nonce.source
-    if (current.isInitiator) {
-        requireResponderId(source)
-    } else {
-        requireInitiatorId(source)
-    }
-    // TODO validate that this is a correct source
-    val authState = current.clientAuthStates[source]
-    requireNotNull(authState)
-    when (authState) {
-        ClientClientAuthState.UNAUTHENTICATED -> {
-            if (current.isInitiator) {
-                handleClientSessionKeyMessage(it)
-                //TODO handle token message and disconnect
-            } else {
-                handleClientSessionKeyMessage(it)
-            }
-        }
-        ClientClientAuthState.CLIENT_AUTH -> {
-            handleClientAuthMessage(it)
-        }
-        ClientClientAuthState.AUTHENTICATED -> TODO()
-    }
-
-}
-
-private fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
-    messageSupervisor.cancelChildren()
-    current.socket?.close()
-
-    val socket = webSocket(signallingServer)
-    messageScope.launch {
-        socket.message.collect {
-            queue(ClientIntent.MessageReceived(it))
-        }
-    }
-
-    current = current.copy(
-        socket = socket,
-        isInitiator = intent.isInitiator,
-        authState = ClientServerAuthState.UNAUTHENTICATED,
-        task = intent.task
-    )
-
-    socket.open(intent.path)
 }
 
 fun SaltyRtcClient.close() {
