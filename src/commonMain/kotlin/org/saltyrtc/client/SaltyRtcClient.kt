@@ -242,7 +242,7 @@ private fun SaltyRtcClient.handleDisconnected(payloadMap: Map<MessageField, Any>
 
 private fun SaltyRtcClient.clearResponderPath(identity: Identity) {
     current = current.copy(
-        cookies = current.cookies.toMutableMap().apply {
+        nonces = current.nonces.toMutableMap().apply {
             remove(identity)
         }
         // TODO clear responders
@@ -277,11 +277,11 @@ fun SaltyRtcClient.handleServerHello(it: Message) {
     )
 
     if (current.isInitiator) {
-        sendClientAuth(nonce, it.nonce.cookie)
+        sendClientAuth(nonce, it.nonce)
     } else {
         sendClientHello(nonce)
         val nextNonce = nonce.withIncreasedSequenceNumber()
-        sendClientAuth(nextNonce, it.nonce.cookie)
+        sendClientAuth(nextNonce, it.nonce)
     }
 }
 
@@ -403,23 +403,23 @@ private fun SaltyRtcClient.sendClientHello(nonce: Nonce) {
  */
 private fun SaltyRtcClient.sendClientAuth(
     nonce: Nonce,
-    serverCookie: Cookie,
+    serverNonce: Nonce,
 ) {
     logDebug("[$debugName] sending 'client-auth' message")
     val sharedKey = current.sessionSharedKey
     requireNotNull(sharedKey)
     val authMessage = clientAuthMessage(
         nonce = nonce,
-        serverCookie = serverCookie,
+        serverCookie = serverNonce.cookie,
         serverPublicKey = signallingServer.permanentPublicKey,
         sharedKey = sharedKey,
     )
 
-    val newCookies = current.cookies.toMutableMap().apply {
-        put(ServerIdentity, serverCookie)
+    val newNonces = current.nonces.toMutableMap().apply {
+        put(ServerIdentity, serverNonce)
     }
     current = current.copy(
-        cookies = newCookies
+        nonces = newNonces
     )
 
     queue(ClientIntent.SendMessage(authMessage))

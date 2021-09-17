@@ -1,9 +1,11 @@
 package org.saltyrtc.client.state
 
 import org.saltyrtc.client.Cookie
+import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.WebSocket
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
+import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.ClientServerAuthState
 import kotlin.jvm.JvmInline
 
@@ -22,9 +24,10 @@ fun initialClientState(): ClientState {
         sessionSharedKey = null,
         sessionPublicKey = null,
         sessionCookie = null,
-        cookies = mapOf(),
+        nonces = mapOf(),
         identity = null,
         responders = mapOf(),
+        clientAuthStates = mapOf(),
     )
 }
 
@@ -36,9 +39,10 @@ data class ClientState(
     val sessionSharedKey: SharedKey?,
     val sessionPublicKey: PublicKey?,
     val sessionCookie: Cookie?,
-    val cookies: Map<Identity, Cookie>,
     val identity: Identity?,
-    val responders: Map<Identity, LastMessageSentTimeStamp>
+    val nonces: Map<Identity, Nonce>,
+    val responders: Map<Identity, LastMessageSentTimeStamp>,
+    val clientAuthStates: Map<Identity, ClientClientAuthState>
 )
 
 @JvmInline

@@ -20,12 +20,11 @@ fun requireServerId(id: Identity) {
 
 fun Map<MessageField, Any>.requireType(type: MessageType) {
     require(containsKey(MessageField.TYPE))
-    require(this[MessageField.TYPE] == type)
+    require(MessageField.type(this) == type) { "Required: '$type' was '${this[MessageField.TYPE]}' " }
 }
 
 fun Map<MessageField, Any>.requireFields(vararg fields: MessageField) {
     fields.forEach {
         require(containsKey(it))
     }
-
 }
