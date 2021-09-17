@@ -3,8 +3,8 @@ package org.saltyrtc.client.protocol
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.entity.ClientClientAuthState
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.newResponderMessage
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.newResponderMessage
 import org.saltyrtc.client.state.LastMessageSentTimeStamp
 import org.saltyrtc.client.util.currentTimeInMs
 

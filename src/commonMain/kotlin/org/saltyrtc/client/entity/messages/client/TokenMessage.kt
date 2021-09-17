@@ -5,8 +5,8 @@ import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.message
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.MessageType
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.MessageType
 import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.entity.pack
 import org.saltyrtc.client.state.Identity

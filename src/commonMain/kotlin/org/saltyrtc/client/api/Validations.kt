@@ -1,8 +1,8 @@
 package org.saltyrtc.client.api
 
 import org.saltyrtc.client.entity.ClientServerAuthState
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.MessageType
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.MessageType
 import org.saltyrtc.client.state.ClientState
 import org.saltyrtc.client.state.Identity
 import org.saltyrtc.client.state.InitiatorIdentity

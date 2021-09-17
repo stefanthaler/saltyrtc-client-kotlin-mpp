@@ -3,13 +3,16 @@ package org.saltyrtc.client.entity
 enum class Task(val taskUrl: String) {
     V1_ORTC("v1.ortc.tasks.saltyrtc.org"),
     V1_WEBRTC("v1.webrtc.tasks.saltyrtc.org"),
+    V0_RELAYED_DATA("v0.relayed-data.tasks.saltyrtc.org"),
     // TODO
     ;
 
     companion object {
-        val ALL by lazy { Task.values().toList() }
+        val ALL by lazy { values().toList() }
 
         fun valueOfUrl(url: String): Task = byUrl[url]!!
+
+
     }
 }
 

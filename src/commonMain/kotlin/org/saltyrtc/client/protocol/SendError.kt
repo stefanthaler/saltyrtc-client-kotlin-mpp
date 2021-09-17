@@ -4,8 +4,8 @@ import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.requireInitiatorId
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.clearResponderPath
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.sendErrorMessage
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.sendErrorMessage
 
 /**
  * In case the server could not relay a client-to-client message (meaning that the connection between server and the

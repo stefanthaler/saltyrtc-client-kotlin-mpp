@@ -1,4 +1,4 @@
-package org.saltyrtc.client.entity.messages
+package org.saltyrtc.client.entity.messages.server
 
 enum class MessageType(val type: String) {
     //client2server

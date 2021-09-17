@@ -5,8 +5,8 @@ import org.saltyrtc.client.api.requireInitiatorId
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.clearInitiatorPath
 import org.saltyrtc.client.clearResponderPath
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.disconnectedMessage
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.disconnectedMessage
 
 /**
  * If an initiator that has been authenticated towards the server terminates the connection with the server, the server

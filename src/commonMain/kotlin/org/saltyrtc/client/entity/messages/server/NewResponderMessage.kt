@@ -1,4 +1,4 @@
-package org.saltyrtc.client.entity.messages
+package org.saltyrtc.client.entity.messages.server
 
 import org.saltyrtc.client.api.requireFields
 import org.saltyrtc.client.api.requireType

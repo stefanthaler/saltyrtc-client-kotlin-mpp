@@ -10,8 +10,8 @@ import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.encrypt
 import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.message
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.MessageType
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.MessageType
 import org.saltyrtc.client.entity.pack
 import org.saltyrtc.client.entity.unpack
 

@@ -4,7 +4,7 @@ import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.crypto.sharedKey
 import org.saltyrtc.client.entity.ClientServerAuthState
-import org.saltyrtc.client.entity.messages.serverHelloMessage
+import org.saltyrtc.client.entity.messages.server.serverHelloMessage
 import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.entity.withIncreasedSequenceNumber
 import org.saltyrtc.client.state.ServerIdentity

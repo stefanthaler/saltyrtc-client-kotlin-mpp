@@ -9,8 +9,8 @@ import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.encrypt
 import org.saltyrtc.client.entity.*
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.MessageType
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.MessageType
 
 fun closeMessage(
     it: Message,

@@ -3,7 +3,7 @@ package org.saltyrtc.client.entity
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.msgpack.jackson.dataformat.MessagePackFactory
-import org.saltyrtc.client.entity.messages.MessageField
+import org.saltyrtc.client.entity.messages.server.MessageField
 import java.io.IOException
 
 actual fun unpack(payload: Payload): Map<MessageField, Any> {

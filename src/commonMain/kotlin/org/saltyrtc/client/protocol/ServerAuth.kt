@@ -7,7 +7,7 @@ import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.sharedKey
 import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.ClientServerAuthState
-import org.saltyrtc.client.entity.messages.serverAuthMessage
+import org.saltyrtc.client.entity.messages.server.serverAuthMessage
 import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.state.InitiatorIdentity

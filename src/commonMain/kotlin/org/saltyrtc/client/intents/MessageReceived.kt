@@ -10,8 +10,8 @@ import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.ClientServerAuthState
 import org.saltyrtc.client.entity.Payload
-import org.saltyrtc.client.entity.messages.MessageField
-import org.saltyrtc.client.entity.messages.MessageType
+import org.saltyrtc.client.entity.messages.server.MessageField
+import org.saltyrtc.client.entity.messages.server.MessageType
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
@@ -97,7 +97,6 @@ private fun messageType(it: Message, sharedKey: SharedKey): MessageType {
     val payloadMap = unpack(Payload(plainText.bytes))
     return MessageField.type(payloadMap)
 }
-
 
 private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
     val sharedKey = current.serverSessionSharedKey

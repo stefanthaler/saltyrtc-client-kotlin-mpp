@@ -1,4 +1,4 @@
-package org.saltyrtc.client.entity.messages
+package org.saltyrtc.client.entity.messages.server
 
 import org.saltyrtc.client.entity.CloseReason
 import org.saltyrtc.client.entity.Task
