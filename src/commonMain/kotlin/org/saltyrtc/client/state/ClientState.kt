@@ -66,20 +66,25 @@ data class ClientState(
             logDebug("Responder should send key: $isResponder $isInitiatorConnected $otherPermanentPublicKey")
             return isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
         }
-
-    fun initiatorShouldSendToken(responder: Identity): Boolean { // TODO
-        requireResponderId(responder)
-        return isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKey == null
-    }
-
-    fun nextSendingNonce(destination: Identity): Nonce {
-        val ownId = identity
-        requireNotNull(ownId)
-
-        val nextNonce = sendingNonces[destination] ?: nonce(ownId, destination)
-        return nextNonce.withIncreasedSequenceNumber()
-    }
 }
+
+fun ClientState.initiatorShouldSendToken(responder: Identity): Boolean { // TODO
+    requireResponderId(responder)
+    return isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKey == null
+}
+
+fun ClientState.nextSendingNonce(destination: Identity): Nonce {
+    val ownId = identity
+    requireNotNull(ownId)
+
+    val nextNonce = sendingNonces[destination] ?: nonce(ownId, destination)
+    return nextNonce.withIncreasedSequenceNumber()
+}
+
 
 @JvmInline
 value class LastMessageSentTimeStamp(val time: Long)
+
+inline fun <K, V> Map<K, V>.mutableApply(block: MutableMap<K, V>.() -> Unit): Map<K, V> {
+    return toMutableMap().apply(block = block)
+}

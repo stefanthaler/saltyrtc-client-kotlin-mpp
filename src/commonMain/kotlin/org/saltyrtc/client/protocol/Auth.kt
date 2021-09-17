@@ -52,7 +52,6 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
     }
 
     // TODO error handling
-
     if (current.isInitiator) {
         sendInitiatorAuth(source)
     }
