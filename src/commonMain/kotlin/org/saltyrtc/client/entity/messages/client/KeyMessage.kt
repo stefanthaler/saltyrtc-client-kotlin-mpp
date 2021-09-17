@@ -12,7 +12,7 @@ import org.saltyrtc.client.entity.messages.MessageType
 import org.saltyrtc.client.entity.pack
 import org.saltyrtc.client.entity.unpack
 
-fun keyMessage(
+fun clientSessionKeyMessage(
     it: Message,
     sharedKey: SharedKey,
     nonce: Nonce,
@@ -28,7 +28,7 @@ fun keyMessage(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-fun keyMessage(
+fun clientSessionKeyMessage(
     clientSessionKey: PublicKey,
     sharedKey: SharedKey,
     nonce: Nonce,

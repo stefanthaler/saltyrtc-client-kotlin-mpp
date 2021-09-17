@@ -12,29 +12,28 @@ import org.saltyrtc.client.entity.webSocketMessage
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
 
-fun webSocket(server: Server):WebSocket {
+fun webSocket(server: Server): WebSocket {
     return WebSocketImpl(server)
 }
 
 interface WebSocket {
     val message: SharedFlow<Message>
-    fun open(path:SignallingPath)
+    fun open(path: SignallingPath)
     fun close()
     suspend fun send(message: Message)
 }
 
 private class WebSocketImpl(
     private val server: Server
-):WebSocket {
+) : WebSocket {
     private var session: WebSocketSession? = null
     private val supervisor = SupervisorJob()
-    private val scope=CoroutineScope(Dispatchers.Default+supervisor) // TODO check scope
+    private val scope = CoroutineScope(Dispatchers.Default + supervisor) // TODO check scope
 
     private val _frame = MutableSharedFlow<Message>(extraBufferCapacity = 10)
     override val message: SharedFlow<Message> = _frame
 
-
-    override fun open(path:SignallingPath) {
+    override fun open(path: SignallingPath) {
         supervisor.cancelChildren()
         scope.launch {
             logDebug("[WebSocket] connecting to $server:$path")
@@ -55,14 +54,14 @@ private class WebSocketImpl(
                     .filterIsInstance<Frame.Binary>()
                     .map { webSocketMessage(it.data) }
                     .collect { _frame.emit(it) }
-                }
-            }.invokeOnCompletion {
+            }
+        }.invokeOnCompletion {
             GlobalScope.launch(NonCancellable) {
                 try {
                     session?.close()
                     session = null
                     logDebug("[WebSocket] $server:$path closed")
-                } catch (e:Exception) {
+                } catch (e: Exception) {
                     // TODO handle
                 }
             }
@@ -74,7 +73,7 @@ private class WebSocketImpl(
     }
 
     override suspend fun send(message: Message) {
-        if (session==null) {
+        if (session == null) {
             logWarn("[WebSocket] attempting to send message to closed socket")
         } else {
             val frame = Frame.Binary(true, message.bytes)

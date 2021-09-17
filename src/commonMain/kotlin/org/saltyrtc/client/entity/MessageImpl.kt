@@ -11,7 +11,7 @@ fun webSocketMessage(
     val data = frame.sliceArray(NONCE_LENGTH until frame.size)
 
     return RawMessage(
-        Nonce(nonceData),
+        nonce(nonceData),
         Payload(data)
     )
 }
@@ -37,7 +37,7 @@ enum class CloseReason(val reason: Int) {
     WEB_SOCKET_GOING_AWAY(1001), //WebSocket internal close code
     WEB_SOCKET_PROTOCOL_ERROR(1002), //WebSocket internal close code
     PATH_FULL(3000),
-    PROTOCL_ERROR(3001),
+    PROTOCOL_ERROR(3001),
     INTERNAL_ERROR(3002),
     HANDOVER_OF_THE_SIGNALLING_CHANNEL(3003),
     DROPPED_BY_INITIATOR(3004),
@@ -46,4 +46,3 @@ enum class CloseReason(val reason: Int) {
     INVALID_KEY(3007),
     TIMEOUT(3008);
 }
-

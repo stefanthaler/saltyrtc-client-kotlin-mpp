@@ -17,6 +17,14 @@ expect fun encrypt(payload: Payload, nonce: Nonce, sharedKey: SharedKey): Cipher
 expect fun decrypt(ciphertext: CipherText, nonce: Nonce, sharedKey: SharedKey): PlainText
 
 expect fun generateKeyPair(): NaClKeyPair
+fun generateKeyPair(exclude: NaClKeyPair): NaClKeyPair {
+    while (true) {
+        val generated = generateKeyPair()
+        if (generated != exclude) {
+            return generated
+        }
+    }
+}
 
 expect fun derivePublicKey(privateKey: NaClKey): NaClKey
 

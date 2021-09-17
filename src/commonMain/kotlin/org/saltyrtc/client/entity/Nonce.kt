@@ -4,56 +4,82 @@ package org.saltyrtc.client.entity
 import org.saltyrtc.client.Cookie
 import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.crypto.secureRandomInt
+import org.saltyrtc.client.state.Identity
+import org.saltyrtc.client.state.ServerIdentity
 import org.saltyrtc.client.util.*
+import kotlin.jvm.JvmInline
 
 const val NONCE_LENGTH = 24
 
-fun Nonce(frame: ByteArray): Nonce {
+@JvmInline
+value class OverflowNumber(val number: UShort)
+
+@JvmInline
+value class SequenceNumber(val number: UInt)
+
+fun nonce(frame: ByteArray): Nonce {
     val cookie = cookie(frame.sliceArray(0..15))
-    val source = frame[16]
-    val destination = frame[17]
-    val overflowNumber: UShort = frame.sliceArray(18..19).toUShort()
-    val sequenceNumber: UInt = frame.sliceArray(20..23).toUInt()
+    val source = Identity(frame[16])
+    val destination = Identity(frame[17])
+    val overflowNumber = OverflowNumber(frame.sliceArray(18..19).toUShort())
+    val sequenceNumber = SequenceNumber(frame.sliceArray(20..23).toUInt())
     return NonceImpl(cookie, source, destination, overflowNumber, sequenceNumber)
 }
 
-fun firstNonce(): Nonce {
-    return NonceImpl()
+fun nonce(): Nonce = nonce(ServerIdentity, ServerIdentity)
+
+fun nonce(
+    source: Identity,
+    destination: Identity,
+): Nonce {
+    return NonceImpl(
+        cookie = cookie(),
+        source = source,
+        destination = destination,
+        overflowNumber = OverflowNumber(0.toUShort()),
+        sequenceNumber = SequenceNumber(secureRandomInt()),
+    )
 }
 
-fun firstNonce(cookie: Cookie): Nonce {
-    return NonceImpl(cookie = cookie)
+fun nonce(cookie: Cookie): Nonce {
+    return NonceImpl(
+        cookie = cookie,
+        source = ServerIdentity,
+        destination = ServerIdentity,
+        overflowNumber = OverflowNumber(0.toUShort()),
+        sequenceNumber = SequenceNumber(secureRandomInt()),
+    )
 }
 
 data class NonceImpl(
-    override val cookie: Cookie = cookie(),
-    override val source: Byte = 0,
-    override val destination: Byte = 0,
-    override val overflowNumber: UShort = 0u,
-    override val sequenceNumber: UInt = secureRandomInt()
+    override val cookie: Cookie,
+    override val source: Identity,
+    override val destination: Identity,
+    override val overflowNumber: OverflowNumber,
+    override val sequenceNumber: SequenceNumber,
 ) : Nonce {
 
     override val bytes: ByteArray by lazy {
         val frame = ByteArray(NONCE_LENGTH)
         frame.overrideSlice(0, cookie.bytes)
-        frame[16] = source
-        frame[17] = destination
-        frame.overrideSlice(18, overflowNumber.toByteArary())
-        frame.overrideSlice(20, sequenceNumber.toByteArray())
+        frame[16] = source.address
+        frame[17] = destination.address
+        frame.overrideSlice(18, overflowNumber.number.toByteArary())
+        frame.overrideSlice(20, sequenceNumber.number.toByteArray())
         frame
     }
 }
 
 fun Nonce.withIncreasedSequenceNumber(): Nonce {
     this as NonceImpl
-    return if (sequenceNumber < UInt.MAX_VALUE) {
+    return if (sequenceNumber.number < UInt.MAX_VALUE) {
         copy(
-            sequenceNumber = sequenceNumber + 1u
+            sequenceNumber = SequenceNumber(sequenceNumber.number + 1u)
         )
     } else {
         copy(
-            sequenceNumber = 0u,
-            overflowNumber = (overflowNumber + 1u).toUShort()
+            sequenceNumber = SequenceNumber(0u),
+            overflowNumber = OverflowNumber((overflowNumber.number + 1u).toUShort())
         )
     }
 }

@@ -2,6 +2,9 @@ package org.saltyrtc.client
 
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
+import org.saltyrtc.client.entity.OverflowNumber
+import org.saltyrtc.client.entity.SequenceNumber
+import org.saltyrtc.client.state.Identity
 
 /**
  *  A SaltyRTC compliant client. The client uses the signalling channel to establish a WebRTC or ORTC peer-to-peer connection.
@@ -49,22 +52,22 @@ interface Nonce {
     /**
      * 1 byte. Contains the SaltyRTC address of the sender.
      */
-    val source: Byte
+    val source: Identity
 
     /**
      * 1 byte. Contains the SaltyRTC address of the receiver.
      */
-    val destination: Byte
+    val destination: Identity
 
     /**
      * 2 byte. This field contains the 16 bit unsigned overflow number used in combination with the sequence number. Starts with 0.
      */
-    val overflowNumber: UShort
+    val overflowNumber: OverflowNumber
 
     /**
      * 4 byte. Contains the 32 bit unsigned sequence number. Starts with a cryptographically secure random number and MUST be incremented by 1 for each message.
      */
-    val sequenceNumber: UInt
+    val sequenceNumber: SequenceNumber
 
     val bytes: ByteArray
 }

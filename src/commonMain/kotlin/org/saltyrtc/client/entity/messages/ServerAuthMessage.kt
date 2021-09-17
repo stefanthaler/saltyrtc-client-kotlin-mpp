@@ -1,17 +1,13 @@
 package org.saltyrtc.client.entity.messages
 
 import org.saltyrtc.client.Cookie
-import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.requireFields
-import org.saltyrtc.client.api.requireResponderId
-import org.saltyrtc.client.api.requireType
+import org.saltyrtc.client.api.*
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.state.Identity
-import org.saltyrtc.client.state.InitiatorIdentity
 import org.saltyrtc.client.state.LastMessageSentTimeStamp
 import org.saltyrtc.client.util.currentTimeInMs
 
@@ -28,13 +24,13 @@ fun serverAuthMessage(
 
     if (isInitiator) {
         payloadMap.requireFields(MessageField.RESPONDERS)
-        require(message.nonce.destination == InitiatorIdentity.address)
+        requireInitiatorId(message.nonce.destination)
         MessageField.responders(payloadMap)!!.forEach {
             requireResponderId(it)
         }
     } else {
         payloadMap.requireFields(MessageField.INITIATOR_CONNECTED)
-        requireResponderId(Identity(message.nonce.destination))
+        requireResponderId(message.nonce.destination)
     }
 
     val responders = MessageField.responders(payloadMap)?.associate {
@@ -43,7 +39,7 @@ fun serverAuthMessage(
 
     return ServerAuthMessage(
         yourCookie = MessageField.yourCookie(payloadMap),
-        identity = Identity(message.nonce.destination),
+        identity = message.nonce.destination,
         isInitiatorConnected = MessageField.isInitiatorConnected(payloadMap),
         responders = responders,
         signedKeys = MessageField.signedKeys(payloadMap),

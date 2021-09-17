@@ -19,7 +19,6 @@ enum class MessageField {
     TASKS,
     TASK,
     DATA,
-
     ;
 
     companion object {
@@ -27,7 +26,9 @@ enum class MessageField {
         fun key(payloadMap: Map<MessageField, Any>) = payloadMap[KEY] as ByteArray
         fun yourCookie(payloadMap: Map<MessageField, Any>) = cookie(payloadMap[YOUR_COOKIE] as ByteArray)
         fun isInitiatorConnected(payloadMap: Map<MessageField, Any>) = payloadMap[INITIATOR_CONNECTED] as Boolean?
-        fun responders(payloadMap: Map<MessageField, Any>) = payloadMap[RESPONDERS] as List<Identity>?
+        fun responders(payloadMap: Map<MessageField, Any>) =
+            (payloadMap[RESPONDERS] as List<Int>?)?.map { Identity(it.toByte()) }
+
         fun signedKeys(payloadMap: Map<MessageField, Any>) = payloadMap[SIGNED_KEYS] as ByteArray
         fun id(payloadMap: Map<MessageField, Any>) = Identity((payloadMap[ID] as Int).toByte())
         fun reason(payloadMap: Map<MessageField, Any>) = CloseReason.valueOf(payloadMap[REASON] as String)

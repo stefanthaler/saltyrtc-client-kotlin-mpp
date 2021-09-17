@@ -1,4 +1,7 @@
+@file:JvmName("JvmNacl")
+
 package org.saltyrtc.client.crypto
+
 
 import com.goterl.lazycode.lazysodium.LazySodiumJava
 import com.goterl.lazycode.lazysodium.SodiumJava
@@ -9,8 +12,6 @@ import org.saltyrtc.client.crypto.NaClConstants.PRIVATE_KEY_BYTES
 import org.saltyrtc.client.crypto.NaClConstants.PUBLIC_KEY_BYTES
 import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.exceptions.CryptoException
-import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.util.toHexString
 
 
 /**
@@ -61,9 +62,6 @@ actual fun decrypt(ciphertext: CipherText, nonce: Nonce, sharedKey: SharedKey): 
         nonce.bytes,
         sharedKey.bytes
     )
-
-    logWarn("Plaintext: ${plaintext.toHexString()}")
-
     if (!success) {
         throw CryptoException("Failed to decrypt incoming signalling message")
     }

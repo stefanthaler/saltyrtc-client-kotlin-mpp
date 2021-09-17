@@ -2,6 +2,7 @@ package org.saltyrtc.client
 
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -43,8 +44,12 @@ fun main() {
             privatKeyHex = "B3267C2BFEB00B27B4B006F024659076A1FA86F5046B6F9C401F64F3D9644A65",
         )
 
-    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys)
-    initiator.connect(isInitiator = true, path = signallingPath)
+    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, null)
+    GlobalScope.launch {
+        delay(1_000)
+        initiator.connect(isInitiator = true, path = signallingPath)
+    }
+
 
     val initiatorJob = GlobalScope.launch {
         initiator.state.collect {
@@ -58,7 +63,7 @@ fun main() {
             privatKeyHex = "DAD2D193A86B065DA4EA2B5D4D7532505FA550F6C0A7EFAFB2BF91F40F910B08",
         )
 
-    val responder = SaltyRtcClient("Responder", server, responderKeys)
+    val responder = SaltyRtcClient("Responder", server, responderKeys, null)
     responder.connect(isInitiator = false, path = signallingPath)
 
     val responderJob = GlobalScope.launch {
