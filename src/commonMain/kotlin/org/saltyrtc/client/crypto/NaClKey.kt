@@ -1,11 +1,11 @@
 package org.saltyrtc.client.crypto
 
-import org.saltyrtc.client.extensions.fromHexToByteArray
-import org.saltyrtc.client.extensions.toHexString
+import org.saltyrtc.client.util.fromHexToByteArray
+import org.saltyrtc.client.util.toHexString
 
 interface NaClKey {
     val bytes: ByteArray
-    val hex:String
+    val hex: String
 }
 
 fun PublicKey(hexString: String): PublicKey = PublicKey(hexString.fromHexToByteArray())
@@ -15,7 +15,7 @@ data class PublicKey(
     override val bytes: ByteArray
 ) : NaClKey {
     init {
-        require (bytes.size == NaClConstants.PUBLIC_KEY_BYTES) {
+        require(bytes.size == NaClConstants.PUBLIC_KEY_BYTES) {
             "Public key must be exactly ${NaClConstants.PUBLIC_KEY_BYTES} bytes long, was ${bytes.size}"
         }
     }

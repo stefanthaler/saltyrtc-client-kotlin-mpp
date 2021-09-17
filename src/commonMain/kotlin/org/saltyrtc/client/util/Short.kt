@@ -1,4 +1,4 @@
-package org.saltyrtc.client.extensions
+package org.saltyrtc.client.util
 
 fun Short.reverseBytes(): Short {
     val v0 = ((this.toInt() ushr 0) and 0xFF)

@@ -9,8 +9,8 @@ import org.saltyrtc.client.crypto.NaClConstants.PRIVATE_KEY_BYTES
 import org.saltyrtc.client.crypto.NaClConstants.PUBLIC_KEY_BYTES
 import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.exceptions.CryptoException
-import org.saltyrtc.client.extensions.toHexString
 import org.saltyrtc.client.logging.logWarn
+import org.saltyrtc.client.util.toHexString
 
 
 /**

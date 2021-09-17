@@ -1,4 +1,4 @@
-package org.saltyrtc.client.extensions
+package org.saltyrtc.client.util
 
 import io.ktor.utils.io.core.*
 

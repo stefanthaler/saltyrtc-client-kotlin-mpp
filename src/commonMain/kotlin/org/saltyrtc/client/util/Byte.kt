@@ -1,4 +1,4 @@
-package org.saltyrtc.client.extensions
+package org.saltyrtc.client.util
 
 fun Byte.toByteArray(): ByteArray {
     return ByteArray(1).also { it[0] = this }

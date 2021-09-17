@@ -17,7 +17,7 @@ val InitiatorIdentity = Identity(address = 1)
 
 fun initialClientState(): ClientState {
     return ClientState(
-        isConnected = false,
+
         isInitiator = false,
         socket = null,
         authState = ClientServerAuthState.UNAUTHENTICATED,
@@ -26,13 +26,13 @@ fun initialClientState(): ClientState {
         sessionCookie = null,
         nonces = mapOf(),
         identity = null,
-        responders = mapOf(),
+        responders = null,
+        isInitiatorConnected = null,
         clientAuthStates = mapOf(),
     )
 }
 
 data class ClientState(
-    val isConnected: Boolean,
     val isInitiator: Boolean,
     val socket: WebSocket?,
     val authState: ClientServerAuthState,
@@ -41,7 +41,8 @@ data class ClientState(
     val sessionCookie: Cookie?,
     val identity: Identity?,
     val nonces: Map<Identity, Nonce>,
-    val responders: Map<Identity, LastMessageSentTimeStamp>,
+    val responders: Map<Identity, LastMessageSentTimeStamp>?,
+    val isInitiatorConnected: Boolean?,
     val clientAuthStates: Map<Identity, ClientClientAuthState>
 )
 

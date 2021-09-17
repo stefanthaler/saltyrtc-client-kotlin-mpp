@@ -19,6 +19,7 @@ import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.state.*
+import org.saltyrtc.client.util.currentTimeInMs
 
 class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
@@ -154,15 +155,17 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
  * The message SHALL be NaCl public-key encrypted by the server's session key pair and the initiator's permanent key pair.
  */
 private fun SaltyRtcClient.handleNewResponder(payloadMap: Map<MessageField, Any>) {
+    require(current.isInitiator)
     val message = newResponderMessage(payloadMap)
     requireResponderId(message.id)
 
-    val responders = current.responders.toMutableMap().apply {
-        put(message.id, LastMessageSentTimeStamp(0)) // TODO path cleaning
-    }
+    val responders = current.responders
+    requireNotNull(responders)
 
     current = current.copy(
-        responders = responders
+        responders = responders.toMutableMap().apply {
+            put(message.id, LastMessageSentTimeStamp(currentTimeInMs())) // TODO path cleaning
+        }
     )
 }
 
@@ -325,10 +328,16 @@ private fun SaltyRtcClient.handleServerAuth(it: Message) {
     val concatenated = sessionPublicKey.bytes + ownPermanentKey.publicKey.bytes
     require(decryptedSignedKeys.bytes.contentEquals(concatenated))
 
+
+
     current = current.copy(
         authState = ClientServerAuthState.AUTHENTICATED,
-        identity = message.identity
+        identity = message.identity,
+        isInitiatorConnected = message.isInitiatorConnected,
+        responders = message.responders
     )
+
+
     logDebug("[$debugName] Authenticated towards server (Initiator:${current.isInitiator})")
 }
 

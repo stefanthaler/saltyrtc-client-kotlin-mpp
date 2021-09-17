@@ -12,6 +12,8 @@ import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.state.Identity
 import org.saltyrtc.client.state.InitiatorIdentity
+import org.saltyrtc.client.state.LastMessageSentTimeStamp
+import org.saltyrtc.client.util.currentTimeInMs
 
 fun serverAuthMessage(
     message: Message,
@@ -35,11 +37,15 @@ fun serverAuthMessage(
         requireResponderId(Identity(message.nonce.destination))
     }
 
+    val responders = MessageField.responders(payloadMap)?.associate {
+        it to LastMessageSentTimeStamp(currentTimeInMs())
+    }
+
     return ServerAuthMessage(
         yourCookie = MessageField.yourCookie(payloadMap),
         identity = Identity(message.nonce.destination),
         isInitiatorConnected = MessageField.isInitiatorConnected(payloadMap),
-        responders = MessageField.responders(payloadMap),
+        responders = responders,
         signedKeys = MessageField.signedKeys(payloadMap),
     )
 }
@@ -60,6 +66,6 @@ data class ServerAuthMessage(
     val yourCookie: Cookie,
     val identity: Identity,
     val isInitiatorConnected: Boolean? = null,
-    val responders: List<Identity>? = null,
+    val responders: Map<Identity, LastMessageSentTimeStamp>? = null,
     val signedKeys: ByteArray
 )

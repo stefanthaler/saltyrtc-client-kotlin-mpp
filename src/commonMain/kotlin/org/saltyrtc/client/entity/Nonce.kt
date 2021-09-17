@@ -4,7 +4,7 @@ package org.saltyrtc.client.entity
 import org.saltyrtc.client.Cookie
 import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.crypto.secureRandomInt
-import org.saltyrtc.client.extensions.*
+import org.saltyrtc.client.util.*
 
 const val NONCE_LENGTH = 24
 
