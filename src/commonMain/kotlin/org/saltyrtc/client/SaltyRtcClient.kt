@@ -7,10 +7,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.requireInitiatorId
+import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.NaClKeyPair
-import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.decrypt
+import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.ClientServerAuthState
 import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.messages.MessageField
@@ -29,9 +31,8 @@ class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
-    otherPermanentPublicKey: PublicKey?
 ) : Client {
-    private val _state = MutableStateFlow(value = initialClientState(otherPermanentPublicKey))
+    private val _state = MutableStateFlow(value = initialClientState())
     val state: SharedFlow<ClientState> = _state
     var current: ClientState
         get() = _state.value
@@ -161,6 +162,29 @@ internal fun SaltyRtcClient.clearResponderPath(identity: Identity) {
 
 
 private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
+    val source = it.nonce.source
+    if (current.isInitiator) {
+        requireResponderId(source)
+    } else {
+        requireInitiatorId(source)
+    }
+    // TODO validate that this is a correct source
+    val authState = current.clientAuthStates[source]
+    requireNotNull(authState)
+    when (authState) {
+        ClientClientAuthState.UNAUTHENTICATED -> {
+            if (current.isInitiator) {
+                handleClientSessionKeyMessage(it)
+                //TODO handle token message and disconnect
+            } else {
+                handleClientSessionKeyMessage(it)
+            }
+        }
+        ClientClientAuthState.CLIENT_AUTH -> {
+            handleClientAuthMessage(it)
+        }
+        ClientClientAuthState.AUTHENTICATED -> TODO()
+    }
 
 }
 

@@ -2,6 +2,8 @@ package org.saltyrtc.client.state
 
 import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.WebSocket
+import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.entity.ClientClientAuthState
@@ -14,10 +16,9 @@ value class Identity(val address: Byte)
 val ServerIdentity = Identity(address = 0)
 val InitiatorIdentity = Identity(address = 1)
 
-fun initialClientState(otherPermanentPublicKey: PublicKey?): ClientState {
+fun initialClientState(): ClientState {
     return ClientState(
         isInitiator = false,
-        otherPermanentPublicKey = otherPermanentPublicKey,
         socket = null,
         authState = ClientServerAuthState.UNAUTHENTICATED,
         serverSessionPublicKey = null, // session key
@@ -28,12 +29,14 @@ fun initialClientState(otherPermanentPublicKey: PublicKey?): ClientState {
         isInitiatorConnected = null,
         clientAuthStates = mapOf(),
         sessionSharedKeys = mapOf(),
+        otherPermanentPublicKeys = mapOf(),
+        sessionOwnKeyPair = mapOf(),
     )
 }
 
 data class ClientState(
     val isInitiator: Boolean,
-    val otherPermanentPublicKey: PublicKey?,
+    val otherPermanentPublicKeys: Map<Identity, PublicKey>,
     val socket: WebSocket?,
     val authState: ClientServerAuthState,
     val serverSessionPublicKey: PublicKey?,
@@ -43,7 +46,8 @@ data class ClientState(
     val responders: Map<Identity, LastMessageSentTimeStamp>?,
     val isInitiatorConnected: Boolean?,
     val clientAuthStates: Map<Identity, ClientClientAuthState>,
-    val sessionSharedKeys: Map<Identity, SharedKey>
+    val sessionSharedKeys: Map<Identity, SharedKey>,
+    val sessionOwnKeyPair: Map<Identity, NaClKeyPair>,
 ) {
     val serverSessionSharedKey: SharedKey? by lazy {
         sessionSharedKeys[ServerIdentity]
@@ -54,11 +58,12 @@ data class ClientState(
     }
 
     val responderShouldSendKey: Boolean by lazy {
-        isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
+        isResponder && isInitiatorConnected == true && otherPermanentPublicKeys.containsKey(InitiatorIdentity)
     }
 
-    val initiatorShouldSendToken: Boolean by lazy {
-        isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKey == null
+    fun initiatorShouldSendToken(responder: Identity): Boolean {
+        requireResponderId(responder)
+        return isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKeys[responder] == null
     }
 }
 

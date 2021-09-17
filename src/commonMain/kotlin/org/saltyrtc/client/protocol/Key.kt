@@ -1,13 +1,20 @@
 package org.saltyrtc.client.protocol
 
+import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.SaltyRtcClient
+import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.api.requireAuthenticatedToServer
+import org.saltyrtc.client.api.requireInitiatorId
+import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.generateKeyPair
 import org.saltyrtc.client.crypto.sharedKey
+import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.messages.client.clientSessionKeyMessage
 import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.state.Identity
+import org.saltyrtc.client.state.InitiatorIdentity
 
 
 /**
@@ -27,27 +34,74 @@ import org.saltyrtc.client.state.Identity
  *
  * The message SHALL be NaCl public-key encrypted by the client's permanent key pair and the other client's permanent key pair.
  */
-internal fun SaltyRtcClient.sendClientSessionKey(destination: Identity) {
-    val otherPermanentPublicKey = current.otherPermanentPublicKey
+internal fun SaltyRtcClient.sendClientSessionKey(nonce: Nonce) {
+    val destination = nonce.destination
+    val otherPermanentPublicKey = current.otherPermanentPublicKeys[destination]
     requireNotNull(otherPermanentPublicKey)
     requireAuthenticatedToServer(current)
 
     val sharedKey = sharedKey(ownPermanentKey.privateKey, otherPermanentPublicKey)
     val sessionKeyPair = generateKeyPair(ownPermanentKey)
 
-    val nonce = nonce(
-        source = current.identity!!, // required by authenticated
-        destination = destination
-    )
     val message = clientSessionKeyMessage(sessionKeyPair.publicKey, sharedKey, nonce)
 
     val nonces = current.nonces.toMutableMap().apply {
         put(destination, nonce)
     }
+    val sessionOwnKeyPairs = current.sessionOwnKeyPair.toMutableMap().apply {
+        put(destination, sessionKeyPair)
+    }
 
     current = current.copy(
-        nonces = nonces
+        nonces = nonces,
+        sessionOwnKeyPair = sessionOwnKeyPairs,
     )
 
     queue(ClientIntent.SendMessage(message))
+}
+
+internal fun SaltyRtcClient.handleClientSessionKeyMessage(it: Message) {
+    val otherIdentity = it.nonce.source
+    if (current.isInitiator) {
+        requireResponderId(otherIdentity)
+    } else {
+        requireInitiatorId(otherIdentity)
+    }
+    val otherPermanentKey = current.otherPermanentPublicKeys[otherIdentity]
+    requireNotNull(otherPermanentKey)
+    val permanentSharedKey = sharedKey(ownPermanentKey.privateKey, otherPermanentKey)
+    val incomingMessage = clientSessionKeyMessage(it, permanentSharedKey, it.nonce)
+
+    if (current.isInitiator) {
+        val nonce = nonce(
+            source = InitiatorIdentity,
+            destination = otherIdentity
+        )
+        sendClientSessionKey(nonce)
+    }
+    updateSessionSharedKey(otherIdentity, incomingMessage.clientSession)
+    if (current.isResponder) {
+        sendResponderAuthMessage()
+    }
+}
+
+private fun SaltyRtcClient.updateSessionSharedKey(identity: Identity, sessionOtherPublicKey: PublicKey) {
+    val ownSessionKeyPair = current.sessionOwnKeyPair[identity]
+    requireNotNull(ownSessionKeyPair)
+
+    val sharedKey = sharedKey(
+        ownSessionKeyPair.privateKey,
+        sessionOtherPublicKey
+    )
+    val sessionSharedKeys = current.sessionSharedKeys.toMutableMap().apply {
+        put(identity, sharedKey)
+    }
+    val clientAuthStates = current.clientAuthStates.toMutableMap().apply {
+        put(identity, ClientClientAuthState.CLIENT_AUTH)
+    }
+
+    current = current.copy(
+        sessionSharedKeys = sessionSharedKeys,
+        clientAuthStates = clientAuthStates
+    )
 }
