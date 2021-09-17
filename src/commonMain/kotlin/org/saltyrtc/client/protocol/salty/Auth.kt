@@ -1,13 +1,14 @@
-package org.saltyrtc.client.protocol
+package org.saltyrtc.client.protocol.salty
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.SupportedTask
 import org.saltyrtc.client.entity.ClientClientAuthState
-import org.saltyrtc.client.entity.Task
 import org.saltyrtc.client.entity.messages.client.authMessage
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.state.Identity
 import org.saltyrtc.client.state.InitiatorIdentity
+import org.saltyrtc.client.state.nextSendingNonce
 
 /**
  * This message is sent by both initiator and responder. The responder SHALL send this message after it has received and processed a 'key' message from the initiator. The initiator MUST wait until it has successfully processed the 'auth' message before it sends an 'auth' message to that responder.
@@ -78,7 +79,7 @@ internal fun SaltyRtcClient.sendResponderAuthMessage() {
         nonce = nextNonce,
         yourCookie = initiatorCookie,
         task = null,
-        tasks = Task.ALL,
+        tasks = SupportedTask.ALL,
         data = mapOf() // TODO
     )
     queue(ClientIntent.SendMessage(authMessage))

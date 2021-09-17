@@ -2,11 +2,15 @@ package org.saltyrtc.client.state
 
 import org.saltyrtc.client.WebSocket
 import org.saltyrtc.client.api.Nonce
+import org.saltyrtc.client.api.SupportedTask
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey
-import org.saltyrtc.client.entity.*
+import org.saltyrtc.client.entity.ClientClientAuthState
+import org.saltyrtc.client.entity.ClientServerAuthState
+import org.saltyrtc.client.entity.nonce
+import org.saltyrtc.client.entity.withIncreasedSequenceNumber
 import org.saltyrtc.client.logging.logDebug
 import kotlin.jvm.JvmInline
 
@@ -51,7 +55,7 @@ data class ClientState(
     val clientAuthStates: Map<Identity, ClientClientAuthState>,
     val sessionSharedKeys: Map<Identity, SharedKey>,
     val sessionOwnKeyPair: Map<Identity, NaClKeyPair>,
-    val task: Task?,
+    val task: SupportedTask?,
 ) {
     val serverSessionSharedKey: SharedKey? by lazy {
         sessionSharedKeys[ServerIdentity]

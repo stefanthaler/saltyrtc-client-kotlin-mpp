@@ -14,8 +14,7 @@ import org.saltyrtc.client.entity.messages.server.MessageField
 import org.saltyrtc.client.entity.messages.server.MessageType
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.logging.logDebug
-import org.saltyrtc.client.logging.logWarn
-import org.saltyrtc.client.protocol.*
+import org.saltyrtc.client.protocol.salty.*
 import org.saltyrtc.client.state.ServerIdentity
 
 internal fun SaltyRtcClient.handleMessage(it: Message) {
@@ -74,7 +73,6 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
         }
         ClientClientAuthState.AUTHENTICATED -> {
             handleAuthenticatedClientClientMessage(it)
-
         }
     }
 }
@@ -82,12 +80,14 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
 private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
+    val selectedTask = registeredTasks[current.task?.taskUrl]
+    requireNotNull(selectedTask)
     requireNotNull(sessionSharedKey)
-    when (val type = messageType(it, sessionSharedKey)) {
+    when (messageType(it, sessionSharedKey)) {
         MessageType.APPLICATION -> handleApplicationMessage(it)
         MessageType.CLOSE -> handleClose(it)
-        else -> { //TODO
-            logWarn("[$debugName] Received Client2ClientMessage: $type")
+        else -> {
+            current = selectedTask.handle(it, current)
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.saltyrtc.client.protocol
+package org.saltyrtc.client.protocol.salty
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.*
@@ -9,6 +9,7 @@ import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.messages.client.clientSessionKeyMessage
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.state.Identity
+import org.saltyrtc.client.state.nextSendingNonce
 
 
 /**

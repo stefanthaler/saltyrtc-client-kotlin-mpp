@@ -17,7 +17,11 @@ enum class MessageType(val type: String) {
     KEY("key"),
     AUTH("auth"),
     APPLICATION("application"),
-    CLOSE("close")
+    CLOSE("close"),
+
+
+    // relayed data
+    DATA("data"),
     ;
 
     companion object {

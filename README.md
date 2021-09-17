@@ -24,6 +24,14 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 | Tasks - ORTC                 |              |              | |
 | Tasks - ORTC - Tests         |              |              | |
 
+# Todos
+
+* Unit Tests
+* Other build targets (Android, JVM, JS, ...)
+* Support multiple WebSocket clients (Ktor, other?)
+* Test compatibility with other SaltyRTC clients
+* Refactor tasks as modules
+
 # Links
 
 * [Kotlin MPP](https://kotlinlang.org/docs/reference/mpp-intro.html)
@@ -50,28 +58,6 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 # TODO SaltyRTC – End-to-End-Encrypted Signalling
 
 * https://github.com/saltyrtc/saltyrtc-meta/blob/master/Protocol.md
-
-## Client2Server
-
-* Path Cleaning
-* 'drop-responder' Message
-* 'disconnected' Message
-* 'send-error' Message
-
-## Client2Client
-
-* 'token' Message
-* 'key' Message
-* 'auth' Message
-* 'application' Message
-* 'close' Message
-
-## Other
-
-* Unit Tests
-* Other build targets (Android, JVM, JS, ...)
-* Support multiple WebSocket clients (Ktor, other?)
-* Test compatibility with other SaltyRTC clients
 
 # TODO - Tasks
 

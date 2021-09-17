@@ -6,13 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.saltyrtc.client.api.Client
-import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.Server
-import org.saltyrtc.client.api.SignallingPath
+import org.saltyrtc.client.api.*
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
-import org.saltyrtc.client.entity.Task
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.intents.connect
 import org.saltyrtc.client.intents.handleMessage
@@ -26,7 +22,10 @@ class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
+    tasks: List<Task> = listOf(),
 ) : Client {
+    internal val registeredTasks = tasks.associateBy { it.url }
+
     private val _state = MutableStateFlow(value = initialClientState())
     val state: SharedFlow<ClientState> = _state
     var current: ClientState
@@ -74,7 +73,7 @@ class SaltyRtcClient(
     override fun connect(
         isInitiator: Boolean,
         path: SignallingPath,
-        task: Task,
+        task: SupportedTask,
         otherPermanentPublicKey: PublicKey?
     ) {
         queue(
@@ -87,7 +86,6 @@ class SaltyRtcClient(
         )
     }
 }
-
 
 internal fun SaltyRtcClient.clearInitiatorPath() {
     //TODO

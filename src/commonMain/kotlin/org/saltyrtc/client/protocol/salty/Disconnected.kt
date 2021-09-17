@@ -1,4 +1,4 @@
-package org.saltyrtc.client.protocol
+package org.saltyrtc.client.protocol.salty
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.requireInitiatorId

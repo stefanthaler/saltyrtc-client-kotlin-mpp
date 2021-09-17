@@ -1,7 +1,9 @@
 package org.saltyrtc.client.entity.messages.server
 
+import org.saltyrtc.client.api.SupportedTask
+import org.saltyrtc.client.api.TaskUrl
 import org.saltyrtc.client.entity.CloseReason
-import org.saltyrtc.client.entity.Task
+import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.cookie
 import org.saltyrtc.client.state.Identity
 
@@ -20,6 +22,9 @@ enum class MessageField {
     TASKS,
     TASK,
     DATA,
+
+    //relayed task
+    P,
     ;
 
     companion object {
@@ -35,11 +40,15 @@ enum class MessageField {
         fun id(payloadMap: Map<MessageField, Any>) = Identity((payloadMap[ID] as Int).toByte())
         fun reason(payloadMap: Map<MessageField, Any>) = CloseReason.valueOf(payloadMap[REASON] as String)
         fun tasks(payloadMap: Map<MessageField, Any>) =
-            (payloadMap[TASKS] as List<String>?)?.map { Task.valueOfUrl(it) }
+            (payloadMap[TASKS] as List<String>?)?.map { SupportedTask.valueOfUrl(TaskUrl(it)) }
 
-        fun task(payloadMap: Map<MessageField, Any>) = (payloadMap[TASK] as String?)?.let { Task.valueOfUrl(it) }
+        fun task(payloadMap: Map<MessageField, Any>) =
+            (payloadMap[TASK] as String?)?.let { SupportedTask.valueOfUrl(TaskUrl(it)) }
+
         fun data(payloadMap: Map<MessageField, Any>) = (payloadMap[DATA] as Map<String, Any>).map { (key, entry) ->
-            Task.valueOfUrl(key) to entry
+            SupportedTask.valueOfUrl(TaskUrl(key)) to entry
         }.toMap()
+
+        fun p(payloadMap: Map<MessageField, Any>) = Payload(payloadMap[P] as ByteArray)
     }
 }

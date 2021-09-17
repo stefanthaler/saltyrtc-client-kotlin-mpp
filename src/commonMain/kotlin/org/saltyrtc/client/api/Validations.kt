@@ -36,3 +36,11 @@ fun Map<MessageField, Any>.requireFields(vararg fields: MessageField) {
     }
 }
 
+fun SupportedTask.requireValidMessageType(type: MessageType) {
+    when (this) {
+        SupportedTask.V1_ORTC -> TODO()
+        SupportedTask.V1_WEBRTC -> TODO()
+        SupportedTask.V0_RELAYED_DATA -> require(type in listOf(MessageType.APPLICATION, MessageType.DATA))
+    }
+}
+
