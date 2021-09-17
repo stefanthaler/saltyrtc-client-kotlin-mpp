@@ -5,6 +5,7 @@ import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.api.requireInitiatorId
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.CipherText
+import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.ClientServerAuthState
@@ -13,6 +14,7 @@ import org.saltyrtc.client.entity.messages.MessageField
 import org.saltyrtc.client.entity.messages.MessageType
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.logging.logDebug
+import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.protocol.*
 import org.saltyrtc.client.state.ServerIdentity
 
@@ -70,8 +72,30 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
         ClientClientAuthState.CLIENT_AUTH -> {
             handleClientAuthMessage(it)
         }
-        ClientClientAuthState.AUTHENTICATED -> TODO()
+        ClientClientAuthState.AUTHENTICATED -> {
+            handleAuthenticatedClientClientMessage(it)
+
+        }
     }
+}
+
+private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
+    val source = it.nonce.source
+    val sessionSharedKey = current.sessionSharedKeys[source]
+    requireNotNull(sessionSharedKey)
+    when (val type = messageType(it, sessionSharedKey)) {
+        MessageType.APPLICATION -> handleApplicationMessage(it)
+        MessageType.CLOSE -> handleClose(it)
+        else -> { //TODO
+            logWarn("[$debugName] Received Client2ClientMessage: $type")
+        }
+    }
+}
+
+private fun messageType(it: Message, sharedKey: SharedKey): MessageType {
+    val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
+    val payloadMap = unpack(Payload(plainText.bytes))
+    return MessageField.type(payloadMap)
 }
 
 
