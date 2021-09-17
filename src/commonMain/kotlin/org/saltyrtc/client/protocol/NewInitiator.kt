@@ -2,6 +2,7 @@ package org.saltyrtc.client.protocol
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.clearInitiatorPath
+import org.saltyrtc.client.state.InitiatorIdentity
 
 /**
  * When a new initiator has authenticated itself towards the server on a path, the server MUST send this message to all
@@ -15,6 +16,11 @@ import org.saltyrtc.client.clearInitiatorPath
  * The message SHALL be NaCl public-key encrypted by the server's session key pair and the responder's permanent key pair.
  */
 internal fun SaltyRtcClient.handleNewInitiator() {
-    require(!current.isInitiator)
+    require(current.isResponder)
+
     clearInitiatorPath()
+
+    if (current.responderShouldSendKey) {
+        sendClientSessionKey(InitiatorIdentity)
+    }
 }

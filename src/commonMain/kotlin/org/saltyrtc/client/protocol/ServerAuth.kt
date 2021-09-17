@@ -8,6 +8,7 @@ import org.saltyrtc.client.crypto.sharedKey
 import org.saltyrtc.client.entity.ClientServerAuthState
 import org.saltyrtc.client.entity.messages.serverAuthMessage
 import org.saltyrtc.client.logging.logDebug
+import org.saltyrtc.client.state.InitiatorIdentity
 
 /**
  * Once the server has received the 'client-auth' message, it SHALL reply with this message.
@@ -57,7 +58,7 @@ internal fun SaltyRtcClient.handleServerAuth(it: Message) {
     )
 
     logDebug("[$debugName] Authenticated towards server")
-    if (current.isResponderShouldSendKey) {
-        //TODO sendClientSessionKey()
+    if (current.responderShouldSendKey) {
+        sendClientSessionKey(InitiatorIdentity)
     }
 }

@@ -54,7 +54,7 @@ data class ClientState(
         !isInitiator
     }
 
-    val isResponderShouldSendKey: Boolean by lazy {
+    val responderShouldSendKey: Boolean by lazy {
         isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
     }
 }
