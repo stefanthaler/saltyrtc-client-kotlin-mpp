@@ -1,7 +1,7 @@
 package org.saltyrtc.client.entity
 
 
-import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.api.Message
 
 fun webSocketMessage(

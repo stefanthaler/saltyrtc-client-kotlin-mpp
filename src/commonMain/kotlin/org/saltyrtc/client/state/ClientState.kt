@@ -1,6 +1,6 @@
 package org.saltyrtc.client.state
 
-import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.WebSocket
 import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.NaClKeyPair

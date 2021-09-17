@@ -6,9 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.requireInitiatorId
-import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.api.*
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.decrypt

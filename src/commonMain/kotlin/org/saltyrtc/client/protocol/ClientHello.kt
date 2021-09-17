@@ -1,6 +1,6 @@
 package org.saltyrtc.client.protocol
 
-import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.entity.messages.clientHelloMessage
 import org.saltyrtc.client.intents.ClientIntent

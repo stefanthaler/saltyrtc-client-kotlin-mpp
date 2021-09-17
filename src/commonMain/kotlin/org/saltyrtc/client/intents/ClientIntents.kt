@@ -1,6 +1,6 @@
 package org.saltyrtc.client.intents
 
-import org.saltyrtc.client.SignallingPath
+import org.saltyrtc.client.api.SignallingPath
 import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.entity.Task
 

@@ -1,7 +1,7 @@
 package org.saltyrtc.client.entity
 
 
-import org.saltyrtc.client.Cookie
+import org.saltyrtc.client.api.Cookie
 import org.saltyrtc.client.crypto.secureRandomBytes
 
 private const val cookieLength = 16

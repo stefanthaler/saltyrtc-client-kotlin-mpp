@@ -1,6 +1,6 @@
 package org.saltyrtc.client.entity
 
-import org.saltyrtc.client.SignallingPath
+import org.saltyrtc.client.api.SignallingPath
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.util.fromHexToByteArray
 

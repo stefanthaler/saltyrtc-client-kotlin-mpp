@@ -1,6 +1,6 @@
 package org.saltyrtc.client.crypto
 
-import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.entity.Payload
 import kotlin.jvm.JvmInline
 

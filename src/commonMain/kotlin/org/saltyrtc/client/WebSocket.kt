@@ -8,6 +8,8 @@ import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.api.Server
+import org.saltyrtc.client.api.SignallingPath
 import org.saltyrtc.client.entity.webSocketMessage
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn

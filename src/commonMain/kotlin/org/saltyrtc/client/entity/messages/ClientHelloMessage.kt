@@ -1,6 +1,6 @@
 package org.saltyrtc.client.entity.messages
 
-import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.entity.message

@@ -1,44 +1,8 @@
-package org.saltyrtc.client
+package org.saltyrtc.client.api
 
-import org.saltyrtc.client.crypto.NaClKeyPair
-import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.entity.OverflowNumber
 import org.saltyrtc.client.entity.SequenceNumber
-import org.saltyrtc.client.entity.Task
 import org.saltyrtc.client.state.Identity
-
-/**
- *  A SaltyRTC compliant client. The client uses the signalling channel to establish a WebRTC or ORTC peer-to-peer connection.
- */
-interface Client {
-    /**
-     * The permanent key pair is a NaCl key pair for public key authenticated encryption. Each client MUST have or generate a permanent key pair that is valid beyond sessions.
-     */
-    val ownPermanentKey: NaClKeyPair
-
-    fun connect(isInitiator: Boolean, path: SignallingPath, task: Task)
-}
-
-/**
- * A SaltyRTC compliant server. The server provides the signalling channel clients may communicate with one another.
- */
-interface Server {
-    val host: String
-    val port: Int
-    val permanentPublicKey: PublicKey
-    val subProtocol: String
-}
-
-interface Task
-
-object Subprotocols {
-    val V1_SALTYRTC_ORG = "v1.saltyrtc.org"
-}
-
-
-interface Cookie {
-    val bytes: ByteArray
-}
 
 /**
  * The nonce is exactly 24 byte that SHALL only be used once per shared secret. A nonce can also be seen as the header of SaltyRTC messages as it is used by every single signalling message. It contains the following fields:
@@ -72,8 +36,3 @@ interface Nonce {
 
     val bytes: ByteArray
 }
-
-/**
- * A signalling path is a simple ASCII string and consists of the hex value of the initiator's public key. Initiator and responder connect to the same WebSocket path.
- */
-interface SignallingPath

@@ -1,7 +1,7 @@
 package org.saltyrtc.client.entity.messages.client
 
-import org.saltyrtc.client.Cookie
-import org.saltyrtc.client.Nonce
+import org.saltyrtc.client.api.Cookie
+import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.api.requireFields
 import org.saltyrtc.client.api.requireType

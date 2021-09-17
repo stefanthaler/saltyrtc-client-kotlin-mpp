@@ -1,6 +1,6 @@
 package org.saltyrtc.client.entity
 
-import org.saltyrtc.client.Server
+import org.saltyrtc.client.api.Server
 
 import org.saltyrtc.client.crypto.PublicKey
 
@@ -8,9 +8,9 @@ fun signallingServer(
     host: String,
     port: Int,
     permanentPublicKey: PublicKey,
-    subProtocol: String ="v1.saltyrtc.org",
-):Server {
-    return SignallingServer(host,port,permanentPublicKey,subProtocol)
+    subProtocol: String = "v1.saltyrtc.org",
+): Server {
+    return SignallingServer(host, port, permanentPublicKey, subProtocol)
 }
 
 private data class SignallingServer(

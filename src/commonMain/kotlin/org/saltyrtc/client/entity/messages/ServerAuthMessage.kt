@@ -1,6 +1,6 @@
 package org.saltyrtc.client.entity.messages
 
-import org.saltyrtc.client.Cookie
+import org.saltyrtc.client.api.Cookie
 import org.saltyrtc.client.api.*
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.SharedKey
