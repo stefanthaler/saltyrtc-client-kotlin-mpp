@@ -61,10 +61,11 @@ data class ClientState(
         !isInitiator
     }
 
-    val responderShouldSendKey: Boolean by lazy {
-        logDebug("Responder should send key: $isResponder $isInitiatorConnected $otherPermanentPublicKey")
-        isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
-    }
+    val responderShouldSendKey: Boolean
+        get() {
+            logDebug("Responder should send key: $isResponder $isInitiatorConnected $otherPermanentPublicKey")
+            return isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
+        }
 
     fun initiatorShouldSendToken(responder: Identity): Boolean { // TODO
         requireResponderId(responder)

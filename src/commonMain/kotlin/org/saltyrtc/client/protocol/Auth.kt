@@ -47,7 +47,9 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
     val authMessage = authMessage(it, sessionSharedKey, current.isInitiator)
-    require(authMessage.yourCookie == current.receivingNonces[source]?.cookie)
+    require(authMessage.yourCookie == current.sendingNonces[source]?.cookie) {
+        "Expected: ${authMessage.yourCookie}, was: ${current.sendingNonces[source]?.cookie}"
+    }
 
     // TODO error handling
 

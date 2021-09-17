@@ -1,10 +1,6 @@
 package org.saltyrtc.client.entity.messages.client
 
-import org.saltyrtc.client.api.Cookie
-import org.saltyrtc.client.api.Nonce
-import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.requireFields
-import org.saltyrtc.client.api.requireType
+import org.saltyrtc.client.api.*
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.decrypt
@@ -49,12 +45,12 @@ fun authMessage(
 ): Message {
     val payloadMap: Map<MessageField, Any> = buildMap {
         put(MessageField.TYPE, MessageType.AUTH.type)
-        put(MessageField.YOUR_COOKIE, yourCookie)
+        put(MessageField.YOUR_COOKIE, yourCookie.bytes)
         if (task != null) {
             put(MessageField.TASK, task.taskUrl)
         }
         if (tasks != null) {
-            put(MessageField.TASKS, tasks.forEach { it.taskUrl })
+            put(MessageField.TASKS, tasks.map { it.taskUrl })
         }
         put(MessageField.DATA, data.map { it.key.taskUrl to it.value }.toMap())
     }

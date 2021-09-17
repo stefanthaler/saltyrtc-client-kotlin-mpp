@@ -2,6 +2,7 @@ package org.saltyrtc.client.protocol
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.clearInitiatorPath
+import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.logging.logWarn
 import org.saltyrtc.client.state.InitiatorIdentity
@@ -21,6 +22,13 @@ internal fun SaltyRtcClient.handleNewInitiator() {
     require(current.isResponder)
 
     clearInitiatorPath()
+
+    current = current.copy(
+        isInitiatorConnected = true,
+        clientAuthStates = current.clientAuthStates.toMutableMap().apply {
+            put(InitiatorIdentity, ClientClientAuthState.UNAUTHENTICATED)
+        }
+    )
 
     if (current.responderShouldSendKey) {
         sendClientSessionKey(nonce(source = current.identity!!, destination = InitiatorIdentity))

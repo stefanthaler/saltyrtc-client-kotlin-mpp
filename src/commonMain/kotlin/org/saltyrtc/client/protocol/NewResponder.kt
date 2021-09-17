@@ -2,6 +2,7 @@ package org.saltyrtc.client.protocol
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.messages.MessageField
 import org.saltyrtc.client.entity.messages.newResponderMessage
 import org.saltyrtc.client.state.LastMessageSentTimeStamp
@@ -32,6 +33,9 @@ internal fun SaltyRtcClient.handleNewResponder(payloadMap: Map<MessageField, Any
     current = current.copy(
         responders = responders.toMutableMap().apply {
             put(message.id, LastMessageSentTimeStamp(currentTimeInMs())) // TODO path cleaning
+        },
+        clientAuthStates = current.clientAuthStates.toMutableMap().apply {
+            put(message.id, ClientClientAuthState.UNAUTHENTICATED)
         }
     )
 }

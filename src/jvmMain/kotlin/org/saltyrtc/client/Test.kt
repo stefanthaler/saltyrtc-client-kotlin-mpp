@@ -61,7 +61,7 @@ fun main() {
 
     val initiatorJob = GlobalScope.launch {
         initiator.state.collect {
-            logDebug("[Initiator] State changed: $it")
+            logDebug("[Initiator] State changed: ${it.authState} ${it.clientAuthStates}")
         }
     }
 
@@ -70,7 +70,7 @@ fun main() {
 
     val responderJob = GlobalScope.launch {
         responder.state.collect {
-            logDebug("[Responder] State changed: $it")
+            logDebug("[Responder] State changed: ${it.authState} ${it.clientAuthStates}")
         }
     }
 

@@ -26,6 +26,7 @@ enum class MessageField {
         fun type(payloadMap: Map<MessageField, Any>) = MessageType.valueOfType(payloadMap[TYPE] as String)
         fun key(payloadMap: Map<MessageField, Any>) = payloadMap[KEY] as ByteArray
         fun yourCookie(payloadMap: Map<MessageField, Any>) = cookie(payloadMap[YOUR_COOKIE] as ByteArray)
+
         fun isInitiatorConnected(payloadMap: Map<MessageField, Any>) = payloadMap[INITIATOR_CONNECTED] as Boolean?
         fun responders(payloadMap: Map<MessageField, Any>) =
             (payloadMap[RESPONDERS] as List<Int>?)?.map { Identity(it.toByte()) }

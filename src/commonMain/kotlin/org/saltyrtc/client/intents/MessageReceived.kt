@@ -17,10 +17,12 @@ import org.saltyrtc.client.protocol.*
 import org.saltyrtc.client.state.ServerIdentity
 
 internal fun SaltyRtcClient.handleMessage(it: Message) {
-    logDebug("[$debugName] received message (server: ${it.isClientServer()}): $it, ")
+    val nonce = it.nonce
+    val isClient2ServerMessage = it.isClientServer()
+    val type = if (isClient2ServerMessage) "Client2Server" else "Client2Client"
+    logDebug("[$debugName] received $type message ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination}  ")
     //TODO  handle error message and other messages
-
-    if (it.isClientServer()) {
+    if (isClient2ServerMessage) {
         handleClientServerMessage(it)
     } else {
         handleClientClientMessage(it)
@@ -28,7 +30,7 @@ internal fun SaltyRtcClient.handleMessage(it: Message) {
 }
 
 private fun Message.isClientServer(): Boolean {
-    logDebug("[Message ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination} ")
+    logDebug("[Message] ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination} ")
     return nonce.source == ServerIdentity
 }
 
@@ -55,7 +57,7 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
     }
     // TODO validate that this is a correct source
     val authState = current.clientAuthStates[source]
-    requireNotNull(authState)
+    requireNotNull(authState) { "[$debugName] AuthState $source: ${current.clientAuthStates} " }
     when (authState) {
         ClientClientAuthState.UNAUTHENTICATED -> {
             if (current.isInitiator) {
@@ -80,7 +82,7 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
     val payloadMap = unpack(Payload(plainText.bytes))
     require(payloadMap.containsKey(MessageField.TYPE))
     val type = MessageField.type(payloadMap)
-    logDebug("[$debugName] Handling authenticated message: $type")
+    logDebug("[$debugName] Authenticated Client2Server message: $type")
 
     if (current.isInitiator) {
         when (type) {

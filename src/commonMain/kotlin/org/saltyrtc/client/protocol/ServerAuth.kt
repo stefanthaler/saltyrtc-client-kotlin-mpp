@@ -5,6 +5,7 @@ import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.sharedKey
+import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.ClientServerAuthState
 import org.saltyrtc.client.entity.messages.serverAuthMessage
 import org.saltyrtc.client.entity.nonce
@@ -51,11 +52,21 @@ internal fun SaltyRtcClient.handleServerAuth(it: Message) {
     val concatenated = sessionPublicKey.bytes + ownPermanentKey.publicKey.bytes
     require(decryptedSignedKeys.bytes.contentEquals(concatenated))
 
+    val clientAuthStates = current.clientAuthStates.toMutableMap()
+
+    if (message.isInitiatorConnected == true) {
+        clientAuthStates[InitiatorIdentity] = ClientClientAuthState.UNAUTHENTICATED
+    }
+    message.responders?.keys?.forEach {
+        clientAuthStates[it] = ClientClientAuthState.UNAUTHENTICATED
+    }
+
     current = current.copy(
         authState = ClientServerAuthState.AUTHENTICATED,
         identity = message.identity,
         isInitiatorConnected = message.isInitiatorConnected,
-        responders = message.responders
+        responders = message.responders,
+        clientAuthStates = clientAuthStates
     )
 
     logDebug("[$debugName] Authenticated towards server")
