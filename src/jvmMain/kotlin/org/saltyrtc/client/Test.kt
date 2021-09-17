@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.naClKeyPair
+import org.saltyrtc.client.entity.Task
 import org.saltyrtc.client.entity.signallingPath
 import org.saltyrtc.client.entity.signallingServer
 import org.saltyrtc.client.logging.logDebug
@@ -44,10 +45,10 @@ fun main() {
             privatKeyHex = "B3267C2BFEB00B27B4B006F024659076A1FA86F5046B6F9C401F64F3D9644A65",
         )
 
-    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, null)
+    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys)
     GlobalScope.launch {
         delay(1_000)
-        initiator.connect(isInitiator = true, path = signallingPath)
+        initiator.connect(isInitiator = true, path = signallingPath, task = Task.V1_ORTC)
     }
 
 
@@ -63,8 +64,8 @@ fun main() {
             privatKeyHex = "DAD2D193A86B065DA4EA2B5D4D7532505FA550F6C0A7EFAFB2BF91F40F910B08",
         )
 
-    val responder = SaltyRtcClient("Responder", server, responderKeys, null)
-    responder.connect(isInitiator = false, path = signallingPath)
+    val responder = SaltyRtcClient("Responder", server, responderKeys)
+    responder.connect(isInitiator = false, path = signallingPath, task = Task.V1_ORTC)
 
     val responderJob = GlobalScope.launch {
         responder.state.collect {
