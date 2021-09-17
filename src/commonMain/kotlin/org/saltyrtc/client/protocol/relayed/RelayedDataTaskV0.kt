@@ -12,10 +12,11 @@ class RelayedDataTaskV0 : Task {
     }
 
     override fun handle(it: Message, state: ClientState): ClientState {
-        TODO("Not yet implemented")
+        handleDataMessage(it, state)
+        return state
     }
 
     override fun send(it: Message, state: ClientState): ClientState {
-        TODO("Not yet implemented")
+        TODO()
     }
 }

@@ -1,8 +1,8 @@
 package org.saltyrtc.client.protocol.relayed
 
-import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.Message
+import org.saltyrtc.client.state.ClientState
 
-fun SaltyRtcClient.handleDataMessage(it: Message) {
-    
+fun handleDataMessage(it: Message, state: ClientState) {
+
 }

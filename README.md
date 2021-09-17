@@ -9,15 +9,14 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 | Feature                      | Common       | JVM          | JS |
 | -------------                | -------------| -------------|------------- |
 | Documentation                |              |              | |
-| Server Authentication        |  Implemented | Implemented  | |
+| Server Authentication        |  Draft ready | Draft ready  | |
 | Server Authentication - Error Handling|              |              | |
 | Server Authentication - Unit Tests|              |              | |
-| Client Authentication        |  Implemented     | Implemented      | |
+| Client Authentication        |  Draft ready     | Draft ready      | |
 | Client Authentication - Error Handling|              |              | |
 | Client Authentication - Unit Tests |              |              | |
 | Tasks                        |              |              | |
-| Tasks - Tests                |              |              | |
-| Tasks - Relayed              |              |              | |
+| Tasks - Relayed              |  Ongoing     |              | |
 | Tasks - Relayed - Tests      |              |              | |
 | Tasks - WebRTC               |              |              | |
 | Tasks - WebRTC - Tests       |              |              | |
