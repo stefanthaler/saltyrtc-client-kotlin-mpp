@@ -83,3 +83,17 @@ fun Nonce.withIncreasedSequenceNumber(): Nonce {
         )
     }
 }
+
+fun Nonce.withSource(source: Identity): Nonce {
+    this as NonceImpl
+    return copy(
+        source = source
+    )
+}
+
+fun Nonce.withDestination(destination: Identity): Nonce {
+    this as NonceImpl
+    return copy(
+        destination = destination
+    )
+}

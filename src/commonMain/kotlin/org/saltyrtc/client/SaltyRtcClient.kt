@@ -12,12 +12,10 @@ import org.saltyrtc.client.api.requireResponderId
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.decrypt
-import org.saltyrtc.client.entity.ClientClientAuthState
-import org.saltyrtc.client.entity.ClientServerAuthState
-import org.saltyrtc.client.entity.Payload
+import org.saltyrtc.client.entity.*
+import org.saltyrtc.client.entity.Task
 import org.saltyrtc.client.entity.messages.MessageField
 import org.saltyrtc.client.entity.messages.MessageType
-import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.logging.logWarn
@@ -76,11 +74,12 @@ class SaltyRtcClient(
         }
     }
 
-    override fun connect(isInitiator: Boolean, path: SignallingPath) {
+    override fun connect(isInitiator: Boolean, path: SignallingPath, task: Task) {
         queue(
             ClientIntent.Connect(
                 isInitiator = isInitiator,
                 path = path,
+                task = task
             )
         )
     }
@@ -153,7 +152,7 @@ internal fun SaltyRtcClient.clearInitiatorPath() {
 
 internal fun SaltyRtcClient.clearResponderPath(identity: Identity) {
     current = current.copy(
-        nonces = current.nonces.toMutableMap().apply {
+        receivingNonces = current.receivingNonces.toMutableMap().apply {
             remove(identity)
         }
         // TODO clear responders
@@ -202,7 +201,8 @@ private fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
     current = current.copy(
         socket = socket,
         isInitiator = intent.isInitiator,
-        authState = ClientServerAuthState.UNAUTHENTICATED
+        authState = ClientServerAuthState.UNAUTHENTICATED,
+        task = intent.task
     )
 
     socket.open(intent.path)

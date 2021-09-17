@@ -5,22 +5,20 @@ import org.saltyrtc.client.Nonce
 import org.saltyrtc.client.api.Message
 import org.saltyrtc.client.api.requireFields
 import org.saltyrtc.client.api.requireType
-import org.saltyrtc.client.crypto.*
-import org.saltyrtc.client.entity.Payload
-import org.saltyrtc.client.entity.message
+import org.saltyrtc.client.crypto.CipherText
+import org.saltyrtc.client.crypto.SharedKey
+import org.saltyrtc.client.crypto.decrypt
+import org.saltyrtc.client.crypto.encrypt
+import org.saltyrtc.client.entity.*
 import org.saltyrtc.client.entity.messages.MessageField
 import org.saltyrtc.client.entity.messages.MessageType
-import org.saltyrtc.client.entity.pack
-import org.saltyrtc.client.entity.unpack
-import kotlin.jvm.JvmInline
 
 fun authMessage(
     it: Message,
     sharedKey: SharedKey,
-    nonce: Nonce,
     isInitiator: Boolean,
-): KeyMessage {
-    val plainText = decrypt(CipherText(it.data.bytes), nonce, sharedKey)
+): AuthMessage {
+    val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
     val payloadMap = unpack(Payload(plainText.bytes))
 
     payloadMap.requireType(MessageType.AUTH)
@@ -32,22 +30,37 @@ fun authMessage(
         payloadMap.requireFields(MessageField.TASK)
     }
 
-    val publicKey = PublicKey(MessageField.key(payloadMap))
-    return KeyMessage(publicKey)
+    return AuthMessage(
+        yourCookie = MessageField.yourCookie(payloadMap),
+        tasks = MessageField.tasks(payloadMap),
+        task = MessageField.task(payloadMap),
+        data = MessageField.data(payloadMap),
+    )
 }
 
 @OptIn(ExperimentalStdlibApi::class)
 fun authMessage(
-    sharedKey: SharedKey,
+    sessionSharedKey: SharedKey,
     nonce: Nonce,
+    yourCookie: Cookie, // to other clients cookie
+    task: Task?,
+    tasks: List<Task>?,
+    data: Map<Task, Any>,
 ): Message {
     val payloadMap: Map<MessageField, Any> = buildMap {
         put(MessageField.TYPE, MessageType.AUTH.type)
-        //TODO
+        put(MessageField.YOUR_COOKIE, yourCookie)
+        if (task != null) {
+            put(MessageField.TASK, task.taskUrl)
+        }
+        if (tasks != null) {
+            put(MessageField.TASKS, tasks.forEach { it.taskUrl })
+        }
+        put(MessageField.DATA, data.map { it.key.taskUrl to it.value }.toMap())
     }
 
     val payload = pack(payloadMap)
-    val encryptedData = encrypt(payload, nonce, sharedKey)
+    val encryptedData = encrypt(payload, nonce, sessionSharedKey)
 
     return message(
         nonce = nonce,
@@ -55,13 +68,12 @@ fun authMessage(
     )
 }
 
+
 data class AuthMessage(
     val yourCookie: Cookie,
     val tasks: List<Task>?,
     val task: Task?,
-//    val data: TODO
+    val data: Map<Task, Any>
 )
 
-@JvmInline
-value class Task(val task: String)
 

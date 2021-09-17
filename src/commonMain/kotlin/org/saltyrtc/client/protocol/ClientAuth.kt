@@ -71,12 +71,11 @@ internal fun SaltyRtcClient.sendClientAuth(
         sharedKey = sharedKey,
     )
 
-    val newNonces = current.nonces.toMutableMap().apply {
+    val newNonces = current.receivingNonces.toMutableMap().apply {
         put(ServerIdentity, serverNonce)
     }
     current = current.copy(
-        nonces = newNonces
+        receivingNonces = newNonces
     )
-
     queue(ClientIntent.SendMessage(authMessage))
 }

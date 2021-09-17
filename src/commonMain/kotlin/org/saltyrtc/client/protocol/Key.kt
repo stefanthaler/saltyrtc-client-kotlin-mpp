@@ -11,10 +11,8 @@ import org.saltyrtc.client.crypto.generateKeyPair
 import org.saltyrtc.client.crypto.sharedKey
 import org.saltyrtc.client.entity.ClientClientAuthState
 import org.saltyrtc.client.entity.messages.client.clientSessionKeyMessage
-import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.state.Identity
-import org.saltyrtc.client.state.InitiatorIdentity
 
 
 /**
@@ -45,7 +43,7 @@ internal fun SaltyRtcClient.sendClientSessionKey(nonce: Nonce) {
 
     val message = clientSessionKeyMessage(sessionKeyPair.publicKey, sharedKey, nonce)
 
-    val nonces = current.nonces.toMutableMap().apply {
+    val sendingNonces = current.sendingNonces.toMutableMap().apply {
         put(destination, nonce)
     }
     val sessionOwnKeyPairs = current.sessionOwnKeyPair.toMutableMap().apply {
@@ -53,7 +51,7 @@ internal fun SaltyRtcClient.sendClientSessionKey(nonce: Nonce) {
     }
 
     current = current.copy(
-        nonces = nonces,
+        sendingNonces = sendingNonces,
         sessionOwnKeyPair = sessionOwnKeyPairs,
     )
 
@@ -73,19 +71,16 @@ internal fun SaltyRtcClient.handleClientSessionKeyMessage(it: Message) {
     val incomingMessage = clientSessionKeyMessage(it, permanentSharedKey, it.nonce)
 
     if (current.isInitiator) {
-        val nonce = nonce(
-            source = InitiatorIdentity,
-            destination = otherIdentity
-        )
-        sendClientSessionKey(nonce)
+        val nextNonce = current.nextSendingNonce(otherIdentity)
+        sendClientSessionKey(nextNonce)
     }
-    updateSessionSharedKey(otherIdentity, incomingMessage.clientSession)
+    updateSession(otherIdentity, incomingMessage.clientSession, it.nonce)
     if (current.isResponder) {
         sendResponderAuthMessage()
     }
 }
 
-private fun SaltyRtcClient.updateSessionSharedKey(identity: Identity, sessionOtherPublicKey: PublicKey) {
+private fun SaltyRtcClient.updateSession(identity: Identity, sessionOtherPublicKey: PublicKey, otherNonce: Nonce) {
     val ownSessionKeyPair = current.sessionOwnKeyPair[identity]
     requireNotNull(ownSessionKeyPair)
 
@@ -100,8 +95,13 @@ private fun SaltyRtcClient.updateSessionSharedKey(identity: Identity, sessionOth
         put(identity, ClientClientAuthState.CLIENT_AUTH)
     }
 
+    val nonces = current.receivingNonces.toMutableMap().apply {
+        put(identity, otherNonce) // TODO validate
+    }
+
     current = current.copy(
         sessionSharedKeys = sessionSharedKeys,
-        clientAuthStates = clientAuthStates
+        clientAuthStates = clientAuthStates,
+        receivingNonces = nonces,
     )
 }

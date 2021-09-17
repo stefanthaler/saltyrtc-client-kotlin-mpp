@@ -4,6 +4,7 @@ import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.entity.OverflowNumber
 import org.saltyrtc.client.entity.SequenceNumber
+import org.saltyrtc.client.entity.Task
 import org.saltyrtc.client.state.Identity
 
 /**
@@ -15,7 +16,7 @@ interface Client {
      */
     val ownPermanentKey: NaClKeyPair
 
-    fun connect(isInitiator: Boolean, path: SignallingPath)
+    fun connect(isInitiator: Boolean, path: SignallingPath, task: Task)
 }
 
 /**

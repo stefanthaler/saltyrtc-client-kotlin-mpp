@@ -7,6 +7,7 @@ import org.saltyrtc.client.crypto.decrypt
 import org.saltyrtc.client.crypto.sharedKey
 import org.saltyrtc.client.entity.ClientServerAuthState
 import org.saltyrtc.client.entity.messages.serverAuthMessage
+import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.logging.logDebug
 import org.saltyrtc.client.state.InitiatorIdentity
 
@@ -59,10 +60,9 @@ internal fun SaltyRtcClient.handleServerAuth(it: Message) {
 
     logDebug("[$debugName] Authenticated towards server")
     if (current.responderShouldSendKey) {
-        sendClientSessionKey(InitiatorIdentity)
+        sendClientSessionKey(nonce(source = current.identity!!, destination = InitiatorIdentity))
     }
-    if (current.initiatorShouldSendToken) {
-        sendOneTimeToken()
-    }
+
+    // TODO handle token sending for initiator
 
 }

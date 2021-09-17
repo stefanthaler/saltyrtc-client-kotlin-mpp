@@ -21,11 +21,11 @@ import org.saltyrtc.client.state.Identity
  *  // TODO look how other clients deliver this one time tokens
  */
 internal fun SaltyRtcClient.sendOneTimeToken() {
-    
+
     val responders = current.responders
     requireNotNull(responders)
 
-    val nonces = current.nonces.toMutableMap()
+    val nonces = current.receivingNonces.toMutableMap()
     val tokens = mutableMapOf<Identity, ByteArray>()
 
     val sendIntents = responders
@@ -40,7 +40,7 @@ internal fun SaltyRtcClient.sendOneTimeToken() {
         .map { ClientIntent.SendMessage(it) }
 
     current = current.copy(
-        nonces = nonces,
+        receivingNonces = nonces,
         //tokens = tokens TODO
     )
 

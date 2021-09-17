@@ -1,9 +1,5 @@
 package org.saltyrtc.client.entity.messages
 
-private val byType by lazy {
-    MessageType.values().associateBy { it.type }
-}
-
 enum class MessageType(val type: String) {
     //client2server
     SERVER_HELLO("server-hello"),
@@ -27,5 +23,9 @@ enum class MessageType(val type: String) {
     companion object {
         fun valueOfType(type: String): MessageType = byType[type]!!
     }
+}
+
+private val byType by lazy {
+    MessageType.values().associateBy { it.type }
 }
 

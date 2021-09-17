@@ -2,6 +2,7 @@ package org.saltyrtc.client.protocol
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.clearInitiatorPath
+import org.saltyrtc.client.entity.nonce
 import org.saltyrtc.client.state.InitiatorIdentity
 
 /**
@@ -21,6 +22,6 @@ internal fun SaltyRtcClient.handleNewInitiator() {
     clearInitiatorPath()
 
     if (current.responderShouldSendKey) {
-        sendClientSessionKey(InitiatorIdentity)
+        sendClientSessionKey(nonce(source = current.identity!!, destination = InitiatorIdentity))
     }
 }
