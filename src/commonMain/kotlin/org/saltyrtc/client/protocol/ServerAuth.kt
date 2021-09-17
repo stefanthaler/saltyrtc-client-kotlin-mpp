@@ -61,4 +61,8 @@ internal fun SaltyRtcClient.handleServerAuth(it: Message) {
     if (current.responderShouldSendKey) {
         sendClientSessionKey(InitiatorIdentity)
     }
+    if (current.initiatorShouldSendToken) {
+        sendOneTimeToken()
+    }
+
 }

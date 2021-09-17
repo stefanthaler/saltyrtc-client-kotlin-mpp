@@ -49,13 +49,16 @@ data class ClientState(
         sessionSharedKeys[ServerIdentity]
     }
 
-
     val isResponder: Boolean by lazy {
         !isInitiator
     }
 
     val responderShouldSendKey: Boolean by lazy {
         isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
+    }
+
+    val initiatorShouldSendToken: Boolean by lazy {
+        isResponder && !responders.isNullOrEmpty() && otherPermanentPublicKey == null
     }
 }
 
