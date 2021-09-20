@@ -31,8 +31,8 @@ internal fun SaltyRtcClient.handleClose(it: Message) {
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
-    closeMessage(it, sessionSharedKey)
-
+    val reason = closeMessage(it, sessionSharedKey).reason
+    current.task?.handleClosed(reason)
     current = initialClientState()
     // TODO close signalling channel
 

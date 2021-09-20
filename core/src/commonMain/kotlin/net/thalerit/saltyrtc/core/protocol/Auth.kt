@@ -63,6 +63,7 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
     }
 
     val signallingChannel = signallingChannel(it.nonce, this)
+    current.task?.handleOpened(signallingChannel)
 
     current = current.copy(
         clientAuthStates = clientAuthState,
