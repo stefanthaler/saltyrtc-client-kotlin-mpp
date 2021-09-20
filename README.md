@@ -16,12 +16,11 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 | Client Authentication - Error Handling|              |              | |
 | Client Authentication - Unit Tests |              |              | |
 | Tasks                        |              |              | |
-| Tasks - Relayed              |  Ongoing     |              | |
+| Tasks - Relayed              |  Draft ready | Draft ready  | |
 | Tasks - Relayed - Tests      |              |              | |
-| Tasks - WebRTC               |              |              | |
+| Tasks - WebRTC               |  Ongoing     | Ongoing      | |
 | Tasks - WebRTC - Tests       |              |              | |
-| Tasks - ORTC                 |              |              | |
-| Tasks - ORTC - Tests         |              |              | |
+| Tasks - ORTC                 |  Not planned | Not planned  | |
 
 # Todos
 
@@ -30,6 +29,8 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 * Support multiple WebSocket clients (Ktor, other?)
 * Test compatibility with other SaltyRTC clients
 * Refactor tasks as modules
+* Documentation
+* Samples
 
 # Links
 
