@@ -51,8 +51,6 @@ fun main() {
             privatKeyHex = "DAD2D193A86B065DA4EA2B5D4D7532505FA550F6C0A7EFAFB2BF91F40F910B08",
         )
 
-    val task = RelayedDataTaskV0()
-
 
     val initiator = SaltyRtcClient("Initiator", server, initiatorKeys)
     GlobalScope.launch {
@@ -60,13 +58,14 @@ fun main() {
         val connection = initiator.connect(
             isInitiator = true,
             path = signallingPath,
-            task = task,
+            task = RelayedDataTaskV0(),
             webSocket = {
                 ktorWebSocket(it)
             },
             responderKeys.publicKey
         )
 
+        connection.getOrNull()?.send("Test")
     }
 
 
@@ -83,12 +82,15 @@ fun main() {
         val responder = responder.connect(
             isInitiator = false,
             path = signallingPath,
-            task = task,
+            task = RelayedDataTaskV0(),
             webSocket = {
                 ktorWebSocket(it)
             },
             initiatorKeys.publicKey
         )
+        responder.getOrNull()?.data?.collect {
+            println("Received: $it")
+        }
     }
 
     runBlocking {
