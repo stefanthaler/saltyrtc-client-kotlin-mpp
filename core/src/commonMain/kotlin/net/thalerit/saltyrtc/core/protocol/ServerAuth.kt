@@ -1,4 +1,4 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
 import net.thalerit.crypto.CipherText
 import net.thalerit.saltyrtc.api.Message

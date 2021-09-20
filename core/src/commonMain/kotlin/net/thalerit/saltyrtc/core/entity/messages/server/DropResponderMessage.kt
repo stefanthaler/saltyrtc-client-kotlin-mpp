@@ -1,8 +1,6 @@
 package net.thalerit.saltyrtc.core.entity.messages.server
 
-import net.thalerit.saltyrtc.api.CloseReason
-import net.thalerit.saltyrtc.api.Identity
-import net.thalerit.saltyrtc.api.Message
+import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType

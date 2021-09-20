@@ -1,4 +1,4 @@
-package net.thalerit.saltyrtc.core.entity.messages.server
+package net.thalerit.saltyrtc.api
 
 enum class MessageType(val type: String) {
     //client2server

@@ -1,11 +1,10 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
 import net.thalerit.saltyrtc.api.Identity
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.client.applicationMessage
 import net.thalerit.saltyrtc.core.intents.ClientIntent
-import net.thalerit.saltyrtc.core.logging.logWarn
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
 
 /**
@@ -29,10 +28,7 @@ internal fun SaltyRtcClient.handleApplicationMessage(it: Message) {
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
     val message = applicationMessage(it, sessionSharedKey)
-
-    // TODO
-    logWarn("[$debugName] unhandled ApplicationMessage received: $message ")
-
+    incomingApplicationMessage.trySend(message)
 }
 
 internal fun SaltyRtcClient.sendApplication(destination: Identity, data: Any) {

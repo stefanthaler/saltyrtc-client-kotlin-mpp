@@ -1,5 +1,6 @@
 package net.thalerit.saltyrtc.core.intents
 
+import kotlinx.coroutines.CancellableContinuation
 import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.*
 
@@ -7,8 +8,9 @@ sealed class ClientIntent {
     data class Connect(
         val isInitiator: Boolean,
         val path: SignallingPath,
-        val task: SupportedTask,
+        val task: Task<out Connection>,
         val webSocket: (Server) -> WebSocket,
+        val continuation: CancellableContinuation<Result<Connection>>,
         val otherPermanentPublicKey: PublicKey?
     ) : ClientIntent()
 

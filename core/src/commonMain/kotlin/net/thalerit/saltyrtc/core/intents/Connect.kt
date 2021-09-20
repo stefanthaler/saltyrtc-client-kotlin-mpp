@@ -23,6 +23,7 @@ internal fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
         isInitiator = intent.isInitiator,
         authState = ClientServerAuthState.UNAUTHENTICATED,
         task = intent.task,
+        continuation = intent.continuation,
         otherPermanentPublicKey = intent.otherPermanentPublicKey
     )
 

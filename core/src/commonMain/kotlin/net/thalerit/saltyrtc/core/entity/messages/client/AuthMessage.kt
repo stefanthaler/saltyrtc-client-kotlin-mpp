@@ -4,8 +4,8 @@ import net.thalerit.crypto.CipherText
 import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageType
+import net.thalerit.saltyrtc.api.MessageField
+import net.thalerit.saltyrtc.api.MessageType
 import net.thalerit.saltyrtc.core.entity.pack
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
@@ -44,20 +44,20 @@ fun authMessage(
     sessionSharedKey: SharedKey,
     nonce: Nonce,
     yourCookie: Cookie, // to other clients cookie
-    task: SupportedTask?,
-    tasks: List<SupportedTask>?,
-    data: Map<SupportedTask, Any>,
+    task: Task<out Connection>?,
+    tasks: List<TaskUrl>?,
+    data: Map<Task<out Connection>, Any>,
 ): Message {
     val payloadMap: Map<MessageField, Any> = buildMap {
         put(MessageField.TYPE, MessageType.AUTH.type)
         put(MessageField.YOUR_COOKIE, yourCookie.bytes)
         if (task != null) {
-            put(MessageField.TASK, task.taskUrl.url)
+            put(MessageField.TASK, task.url.url)
         }
         if (tasks != null) {
-            put(MessageField.TASKS, tasks.map { it.taskUrl.url })
+            put(MessageField.TASKS, tasks.map { it.url })
         }
-        put(MessageField.DATA, data.map { it.key.taskUrl.url to it.value }.toMap())
+        put(MessageField.DATA, data.map { it.key.url.url to it.value }.toMap())
     }
 
     val payload = pack(payloadMap)
@@ -69,12 +69,9 @@ fun authMessage(
     )
 }
 
-
 data class AuthMessage(
     val yourCookie: Cookie,
-    val tasks: List<SupportedTask>?,
-    val task: SupportedTask?,
-    val data: Map<SupportedTask, Any>
+    val tasks: List<Task<out Connection>>?,
+    val task: Task<out Connection>?,
+    val data: Map<Task<out Connection>, Any>
 )
-
-

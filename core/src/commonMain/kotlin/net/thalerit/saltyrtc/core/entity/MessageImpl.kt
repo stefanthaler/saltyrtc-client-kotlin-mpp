@@ -1,6 +1,7 @@
 package net.thalerit.saltyrtc.core.entity
 
 
+import net.thalerit.crypto.PlainText
 import net.thalerit.saltyrtc.api.*
 
 fun webSocketMessage(
@@ -14,6 +15,13 @@ fun webSocketMessage(
         nonce(nonceData),
         Payload(data)
     )
+}
+
+fun unencryptedMessage(
+    nonce: Nonce,
+    plainText: PlainText,
+): UnencryptedMessage {
+    return UnencryptedRawMessage(nonce, Payload(plainText.bytes))
 }
 
 fun message(
@@ -31,3 +39,13 @@ private data class RawMessage(
         nonce.bytes + data.bytes
     }
 }
+
+private data class UnencryptedRawMessage(
+    override val nonce: Nonce,
+    override val data: Payload,
+) : UnencryptedMessage {
+    override val bytes: ByteArray by lazy {
+        nonce.bytes + data.bytes
+    }
+}
+

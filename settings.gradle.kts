@@ -33,5 +33,8 @@ include(":crypto")
 // websocket
 include(":websocket-ktor")
 
+// tasks
+include(":task-relayed-data")
+
 // samples
 include(":sample-jvm")

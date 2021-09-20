@@ -1,4 +1,4 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.core.SaltyRtcClient

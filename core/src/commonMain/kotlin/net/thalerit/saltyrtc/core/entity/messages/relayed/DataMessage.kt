@@ -6,8 +6,8 @@ import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.api.Payload
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageType
+import net.thalerit.saltyrtc.api.MessageField
+import net.thalerit.saltyrtc.api.MessageType
 import net.thalerit.saltyrtc.core.entity.pack
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields

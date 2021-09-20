@@ -3,15 +3,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.thalerit.saltyrtc.api.SupportedTask
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.signallingPath
 import net.thalerit.saltyrtc.core.entity.signallingServer
 import net.thalerit.saltyrtc.core.logging.logDebug
-import net.thalerit.saltyrtc.core.protocol.relayed.RelayedDataTaskV0
 import net.thalerit.saltyrtc.crypto.naClKeyPair
 import net.thalerit.saltyrtc.crypto.publicKey
 import net.thalerit.saltyrtc.ktorWebSocket
+import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 
 /**
  * use to generate a public private keypair
@@ -52,21 +51,22 @@ fun main() {
             privatKeyHex = "DAD2D193A86B065DA4EA2B5D4D7532505FA550F6C0A7EFAFB2BF91F40F910B08",
         )
 
-    val tasks = listOf(RelayedDataTaskV0())
+    val task = RelayedDataTaskV0()
 
 
-    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, tasks = tasks)
+    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys)
     GlobalScope.launch {
         delay(1_000)
-        initiator.connect(
+        val connection = initiator.connect(
             isInitiator = true,
             path = signallingPath,
-            task = SupportedTask.V1_ORTC,
+            task = task,
             webSocket = {
                 ktorWebSocket(it)
             },
             responderKeys.publicKey
         )
+
     }
 
 
@@ -76,21 +76,19 @@ fun main() {
         }
     }
 
-    val responder = SaltyRtcClient("Responder", server, responderKeys, tasks = tasks)
-    responder.connect(
-        isInitiator = false,
-        path = signallingPath,
-        task = SupportedTask.V1_ORTC,
-        webSocket = {
-            ktorWebSocket(it)
-        },
-        initiatorKeys.publicKey
-    )
+
+    val responder = SaltyRtcClient("Responder", server, responderKeys)
 
     val responderJob = GlobalScope.launch {
-        responder.state.collect {
-            logDebug("[Responder] State changed: ${it.authState} ${it.clientAuthStates}")
-        }
+        val responder = responder.connect(
+            isInitiator = false,
+            path = signallingPath,
+            task = task,
+            webSocket = {
+                ktorWebSocket(it)
+            },
+            initiatorKeys.publicKey
+        )
     }
 
     runBlocking {

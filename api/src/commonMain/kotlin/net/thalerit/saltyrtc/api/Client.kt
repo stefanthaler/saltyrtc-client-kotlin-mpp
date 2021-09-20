@@ -1,5 +1,6 @@
 package net.thalerit.saltyrtc.api
 
+import kotlinx.coroutines.flow.SharedFlow
 import net.thalerit.crypto.NaClKeyPair
 import net.thalerit.crypto.PublicKey
 
@@ -12,15 +13,31 @@ interface Client {
      */
     val ownPermanentKey: NaClKeyPair
 
-    fun connect(
+    /**
+     * Create a connection that of the type that is defined by the Task.
+     *
+     * Suspends until a connection is created or the process an exception occurred
+     */
+    suspend fun <T : Connection> connect(
         isInitiator: Boolean, // TODO hide this
         path: SignallingPath,
-        task: SupportedTask,
+        task: Task<T>,
         webSocket: (Server) -> WebSocket,
         otherPermanentPublicKey: PublicKey?,
-    )
+    ): Result<T>
+
+    /**
+     * Once the client-to-client handshake has been completed, the user application of a client MAY trigger sending this
+     * message.
+     */
+    suspend fun send(destination: Identity, data: Any)
+
+    /**
+     * Incoming application messages
+     */
+    val applicationMessage: SharedFlow<ApplicationMessage>
 }
 
-object Subprotocols {
+object SubProtocols {
     val V1_SALTYRTC_ORG = "v1.saltyrtc.org"
 }

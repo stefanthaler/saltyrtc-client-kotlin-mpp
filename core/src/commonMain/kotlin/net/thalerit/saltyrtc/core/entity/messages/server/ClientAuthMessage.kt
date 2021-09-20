@@ -29,7 +29,7 @@ fun clientAuthMessage(
     val payloadMap: Map<MessageField, Any> = buildMap {
         put(MessageField.TYPE, MessageType.CLIENT_AUTH.type)
         put(MessageField.YOUR_COOKIE, serverCookie.bytes)
-        put(MessageField.SUBPROTOCOLS, listOf(Subprotocols.V1_SALTYRTC_ORG))
+        put(MessageField.SUBPROTOCOLS, listOf(SubProtocols.V1_SALTYRTC_ORG))
         put(MessageField.PING_INTERVAL, 30) // TODO configurable?
         put(MessageField.YOUR_KEY, serverPublicKey.bytes)
     }

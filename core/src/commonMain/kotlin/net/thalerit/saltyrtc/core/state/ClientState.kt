@@ -1,12 +1,10 @@
 package net.thalerit.saltyrtc.core.state
 
+import kotlinx.coroutines.CancellableContinuation
 import net.thalerit.crypto.NaClKeyPair
 import net.thalerit.crypto.PublicKey
 import net.thalerit.crypto.SharedKey
-import net.thalerit.saltyrtc.api.Identity
-import net.thalerit.saltyrtc.api.WebSocket
-import net.thalerit.saltyrtc.api.Nonce
-import net.thalerit.saltyrtc.api.SupportedTask
+import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.nonce
@@ -34,7 +32,9 @@ fun initialClientState(): ClientState {
         sessionSharedKeys = mapOf(),
         otherPermanentPublicKey = null,
         sessionOwnKeyPair = mapOf(),
-        task = null
+        task = null,
+        continuation = null,
+        signallingChannel = null,
     )
 }
 
@@ -53,7 +53,9 @@ data class ClientState(
     val clientAuthStates: Map<Identity, ClientClientAuthState>,
     val sessionSharedKeys: Map<Identity, SharedKey>,
     val sessionOwnKeyPair: Map<Identity, NaClKeyPair>,
-    val task: SupportedTask?,
+    val task: Task<out Connection>?,
+    val continuation: CancellableContinuation<Result<Connection>>?,
+    val signallingChannel: SignallingChannel? = null,
 ) {
     val serverSessionSharedKey: SharedKey? by lazy {
         sessionSharedKeys[ServerIdentity]

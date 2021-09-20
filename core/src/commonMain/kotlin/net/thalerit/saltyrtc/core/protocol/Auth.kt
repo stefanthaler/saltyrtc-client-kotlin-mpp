@@ -1,11 +1,12 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
 import net.thalerit.saltyrtc.api.Identity
 import net.thalerit.saltyrtc.api.Message
-import net.thalerit.saltyrtc.api.SupportedTask
+import net.thalerit.saltyrtc.api.supportedTasks
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.messages.client.authMessage
+import net.thalerit.saltyrtc.core.entity.signallingChannel
 import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
@@ -61,8 +62,11 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
         put(source, ClientClientAuthState.AUTHENTICATED)
     }
 
+    val signallingChannel = signallingChannel(it.nonce, this)
+
     current = current.copy(
-        clientAuthStates = clientAuthState
+        clientAuthStates = clientAuthState,
+        signallingChannel = signallingChannel,
     )
 }
 
@@ -79,7 +83,7 @@ internal fun SaltyRtcClient.sendResponderAuthMessage() {
         nonce = nextNonce,
         yourCookie = initiatorCookie,
         task = null,
-        tasks = SupportedTask.ALL,
+        tasks = supportedTasks,
         data = mapOf() // TODO
     )
     queue(ClientIntent.SendMessage(authMessage))

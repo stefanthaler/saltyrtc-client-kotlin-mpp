@@ -3,7 +3,7 @@ package net.thalerit.saltyrtc.core.entity
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.thalerit.saltyrtc.api.Payload
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
+import net.thalerit.saltyrtc.api.MessageField
 import org.msgpack.jackson.dataformat.MessagePackFactory
 import java.io.IOException
 

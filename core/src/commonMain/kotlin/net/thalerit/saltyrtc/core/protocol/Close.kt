@@ -1,4 +1,4 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
 import net.thalerit.saltyrtc.api.CloseReason
 import net.thalerit.saltyrtc.api.Identity
@@ -33,6 +33,7 @@ internal fun SaltyRtcClient.handleClose(it: Message) {
     requireNotNull(sessionSharedKey)
     closeMessage(it, sessionSharedKey)
     current = initialClientState()
+    // TODO close signalling channel
     close()
 }
 

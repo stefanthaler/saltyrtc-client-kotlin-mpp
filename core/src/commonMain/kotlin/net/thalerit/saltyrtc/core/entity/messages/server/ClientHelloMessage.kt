@@ -2,6 +2,8 @@ package net.thalerit.saltyrtc.core.entity.messages.server
 
 import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.Message
+import net.thalerit.saltyrtc.api.MessageField
+import net.thalerit.saltyrtc.api.MessageType
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.pack

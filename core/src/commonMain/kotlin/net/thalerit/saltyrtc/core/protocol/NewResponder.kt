@@ -1,8 +1,8 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
+import net.thalerit.saltyrtc.api.MessageField
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
 import net.thalerit.saltyrtc.core.entity.messages.server.newResponderMessage
 import net.thalerit.saltyrtc.core.state.LastMessageSentTimeStamp
 import net.thalerit.saltyrtc.core.util.currentTimeInMs

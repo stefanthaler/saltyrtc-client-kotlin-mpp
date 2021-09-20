@@ -1,9 +1,9 @@
-package net.thalerit.saltyrtc.core.protocol.salty
+package net.thalerit.saltyrtc.core.protocol
 
+import net.thalerit.saltyrtc.api.MessageField
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.clearInitiatorPath
 import net.thalerit.saltyrtc.core.clearResponderPath
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
 import net.thalerit.saltyrtc.core.entity.messages.server.disconnectedMessage
 import net.thalerit.saltyrtc.core.util.requireInitiatorId
 import net.thalerit.saltyrtc.core.util.requireResponderId

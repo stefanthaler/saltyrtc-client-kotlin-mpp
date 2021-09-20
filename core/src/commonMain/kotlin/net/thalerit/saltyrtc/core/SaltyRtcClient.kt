@@ -2,29 +2,28 @@ package net.thalerit.saltyrtc.core
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import net.thalerit.crypto.NaClKeyPair
 import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
+import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
+import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.intents.connect
 import net.thalerit.saltyrtc.core.intents.handleMessage
 import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.logging.logWarn
+import net.thalerit.saltyrtc.core.protocol.sendApplication
 import net.thalerit.saltyrtc.core.state.ClientState
 import net.thalerit.saltyrtc.core.state.initialClientState
-
+import net.thalerit.saltyrtc.crypto.encrypt
 
 class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
-    tasks: List<Task> = listOf(),
 ) : Client {
-    internal val registeredTasks = tasks.associateBy { it.url }
 
     private val _state = MutableStateFlow(value = initialClientState())
     val state: SharedFlow<ClientState> = _state
@@ -70,23 +69,56 @@ class SaltyRtcClient(
         }
     }
 
-    override fun connect(
+    internal suspend fun send(plaintext: UnencryptedMessage) {
+        // TODO checks
+        val nonce = plaintext.nonce
+        val destination = nonce.destination
+        val sharedSessionKey = current.sessionSharedKeys[destination]!!
+
+        val encryptedPayload = Payload(encrypt(plaintext.data, nonce, sharedSessionKey).bytes)
+        val message = message(nonce, encryptedPayload)
+        send(message = message)
+    }
+
+    override suspend fun <T : Connection> connect(
         isInitiator: Boolean,
         path: SignallingPath,
-        task: SupportedTask,
+        task: Task<T>,
         webSocket: (Server) -> WebSocket,
         otherPermanentPublicKey: PublicKey?
-    ) {
-        queue(
-            ClientIntent.Connect(
-                isInitiator = isInitiator,
-                path = path,
-                task = task,
-                webSocket = webSocket,
-                otherPermanentPublicKey = otherPermanentPublicKey
+    ): Result<T> {
+        val result: Result<Connection> = suspendCancellableCoroutine { continuation ->
+            queue(
+                ClientIntent.Connect(
+                    isInitiator = isInitiator,
+                    path = path,
+                    task = task,
+                    webSocket = webSocket,
+                    continuation = continuation,
+                    otherPermanentPublicKey = otherPermanentPublicKey
+                )
             )
-        )
+            // will suspend here until continuation is resumed
+        }
+        return if (result.isSuccess) {
+            Result.success(result.getOrNull() as T) // TODO manage unsafe cast
+        } else {
+            Result.failure(result.exceptionOrNull()!!)
+        }
     }
+
+    internal val incomingApplicationMessage = Channel<ApplicationMessage>(Channel.UNLIMITED)
+
+    override suspend fun send(destination: Identity, data: Any) {
+        require(current.authState == ClientServerAuthState.AUTHENTICATED)
+        require(current.clientAuthStates[destination] == ClientClientAuthState.CLIENT_AUTH)
+        sendApplication(destination, data)
+    }
+
+    override val applicationMessage: SharedFlow<ApplicationMessage> =
+        incomingApplicationMessage
+            .receiveAsFlow()
+            .shareIn(intentScope, started = SharingStarted.Eagerly, replay = 0)
 }
 
 internal fun SaltyRtcClient.clearInitiatorPath() {

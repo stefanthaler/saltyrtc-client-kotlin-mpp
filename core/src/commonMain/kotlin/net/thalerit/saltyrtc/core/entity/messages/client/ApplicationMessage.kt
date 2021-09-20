@@ -2,12 +2,13 @@ package net.thalerit.saltyrtc.core.entity.messages.client
 
 import net.thalerit.crypto.CipherText
 import net.thalerit.crypto.SharedKey
+import net.thalerit.saltyrtc.api.ApplicationMessage
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.api.Payload
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageType
+import net.thalerit.saltyrtc.api.MessageField
+import net.thalerit.saltyrtc.api.MessageType
 import net.thalerit.saltyrtc.core.entity.pack
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
@@ -48,7 +49,3 @@ fun applicationMessage(
         data = Payload(encryptedData.bytes),
     )
 }
-
-data class ApplicationMessage(
-    val data: Any
-)

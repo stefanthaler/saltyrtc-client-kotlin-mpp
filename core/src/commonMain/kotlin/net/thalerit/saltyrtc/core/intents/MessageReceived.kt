@@ -1,17 +1,19 @@
 package net.thalerit.saltyrtc.core.intents
 
+import kotlinx.coroutines.flow.MutableSharedFlow
 import net.thalerit.crypto.CipherText
 import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.Message
+import net.thalerit.saltyrtc.api.MessageField
+import net.thalerit.saltyrtc.api.MessageType
 import net.thalerit.saltyrtc.api.Payload
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
-import net.thalerit.saltyrtc.core.entity.messages.server.MessageType
+import net.thalerit.saltyrtc.core.entity.messages.type
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.logging.logDebug
-import net.thalerit.saltyrtc.core.protocol.salty.*
+import net.thalerit.saltyrtc.core.protocol.*
 import net.thalerit.saltyrtc.core.state.ServerIdentity
 import net.thalerit.saltyrtc.core.util.requireInitiatorId
 import net.thalerit.saltyrtc.core.util.requireResponderId
@@ -81,14 +83,18 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
 private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
-    val selectedTask = registeredTasks[current.task?.taskUrl]
-    requireNotNull(selectedTask)
     requireNotNull(sessionSharedKey)
     when (messageType(it, sessionSharedKey)) {
         MessageType.APPLICATION -> handleApplicationMessage(it)
         MessageType.CLOSE -> handleClose(it)
         else -> {
-            //TODO current = selectedTask.handle(it, current)
+            // TODO checks
+            val incoming = current.signallingChannel!!.message as MutableSharedFlow
+            val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sessionSharedKey)
+            val unpacked = unpack(Payload(plainText.bytes))
+            incoming.tryEmit(
+                unpacked
+            )
         }
     }
 }

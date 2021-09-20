@@ -1,29 +1,28 @@
 package net.thalerit.saltyrtc.api
 
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.jvm.JvmInline
 
-interface Task {
+interface Task<T : Connection> {
     val url: TaskUrl
+
+    val connection: StateFlow<T?>
+
+    /**
+     * Once the client2client handshake is completed, the open signalling channel will be passed to the task.
+     */
+    fun handleOpened(channel: SignallingChannel)
+    fun handleClosed(reason: CloseReason)
 }
 
-enum class SupportedTask(val taskUrl: TaskUrl) {
-    V1_ORTC(TaskUrl("v1.ortc.tasks.saltyrtc.org")),
-    V1_WEBRTC(TaskUrl("v1.webrtc.tasks.saltyrtc.org")),
-    V0_RELAYED_DATA(TaskUrl("v0.relayed-data.tasks.saltyrtc.org")),
-    // TODO
-    ;
+val V1_WEBRTC_TASK = TaskUrl("v1.webrtc.tasks.saltyrtc.org")
+val V0_RELAYED_DATA = TaskUrl("v0.relayed-data.tasks.saltyrtc.org")
 
-    companion object {
-        val ALL by lazy { values().toList() }
-
-        fun valueOfUrl(url: TaskUrl): SupportedTask = byUrl[url]!!
-    }
-}
+val supportedTasks = listOf(
+    V1_WEBRTC_TASK,
+    V0_RELAYED_DATA,
+    // TODO ORTC task
+)
 
 @JvmInline
 value class TaskUrl(val url: String)
-
-private val byUrl by lazy {
-    SupportedTask.values().associateBy { it.taskUrl }
-}
-

@@ -13,7 +13,6 @@ fun ktorWebSocket(server: Server): WebSocket {
     return WebSocketImpl(server)
 }
 
-
 private class WebSocketImpl(
     private val server: Server
 ) : WebSocket {
