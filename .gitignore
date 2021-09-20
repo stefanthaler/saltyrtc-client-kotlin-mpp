@@ -28,6 +28,10 @@ hs_err_pid*
 build/**
 
 
+
 local.properties
 
 # idea
+
+# buildSrc
+buildSrc/build/**
