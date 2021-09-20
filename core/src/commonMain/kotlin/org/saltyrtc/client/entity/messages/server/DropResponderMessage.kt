@@ -1,8 +1,8 @@
 package org.saltyrtc.client.entity.messages.server
 
 import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.requireFields
-import org.saltyrtc.client.api.requireType
+import org.saltyrtc.client.util.requireFields
+import org.saltyrtc.client.util.requireType
 import org.saltyrtc.client.entity.CloseReason
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.state.Identity

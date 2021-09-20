@@ -1,5 +1,6 @@
-package org.saltyrtc.client.api
+package org.saltyrtc.client.util
 
+import org.saltyrtc.client.api.SupportedTask
 import org.saltyrtc.client.entity.ClientServerAuthState
 import org.saltyrtc.client.entity.messages.server.MessageField
 import org.saltyrtc.client.entity.messages.server.MessageType

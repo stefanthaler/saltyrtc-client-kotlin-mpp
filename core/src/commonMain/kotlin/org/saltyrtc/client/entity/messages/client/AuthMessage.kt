@@ -11,6 +11,8 @@ import org.saltyrtc.client.entity.messages.server.MessageField
 import org.saltyrtc.client.entity.messages.server.MessageType
 import org.saltyrtc.client.entity.pack
 import org.saltyrtc.client.entity.unpack
+import org.saltyrtc.client.util.requireFields
+import org.saltyrtc.client.util.requireType
 
 fun authMessage(
     it: Message,

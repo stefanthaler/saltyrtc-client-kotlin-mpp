@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.entity.ClientServerAuthState
-import org.saltyrtc.client.webSocket
+import org.saltyrtc.client.api.webSocket
 
 internal fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
     messageSupervisor.cancelChildren()

@@ -1,9 +1,9 @@
 package org.saltyrtc.client.state
 
-import org.saltyrtc.client.WebSocket
+import org.saltyrtc.client.api.WebSocket
 import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.api.SupportedTask
-import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.util.requireResponderId
 import org.saltyrtc.client.crypto.NaClKeyPair
 import org.saltyrtc.client.crypto.PublicKey
 import org.saltyrtc.client.crypto.SharedKey

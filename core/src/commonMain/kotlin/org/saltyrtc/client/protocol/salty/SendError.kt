@@ -1,8 +1,8 @@
 package org.saltyrtc.client.protocol.salty
 
 import org.saltyrtc.client.SaltyRtcClient
-import org.saltyrtc.client.api.requireInitiatorId
-import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.util.requireInitiatorId
+import org.saltyrtc.client.util.requireResponderId
 import org.saltyrtc.client.clearResponderPath
 import org.saltyrtc.client.entity.messages.server.MessageField
 import org.saltyrtc.client.entity.messages.server.sendErrorMessage

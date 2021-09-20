@@ -10,6 +10,9 @@ import org.saltyrtc.client.entity.messages.client.clientSessionKeyMessage
 import org.saltyrtc.client.intents.ClientIntent
 import org.saltyrtc.client.state.Identity
 import org.saltyrtc.client.state.nextSendingNonce
+import org.saltyrtc.client.util.requireAuthenticatedToServer
+import org.saltyrtc.client.util.requireInitiatorId
+import org.saltyrtc.client.util.requireResponderId
 
 
 /**

@@ -2,8 +2,8 @@ package org.saltyrtc.client.intents
 
 import org.saltyrtc.client.SaltyRtcClient
 import org.saltyrtc.client.api.Message
-import org.saltyrtc.client.api.requireInitiatorId
-import org.saltyrtc.client.api.requireResponderId
+import org.saltyrtc.client.util.requireInitiatorId
+import org.saltyrtc.client.util.requireResponderId
 import org.saltyrtc.client.crypto.CipherText
 import org.saltyrtc.client.crypto.SharedKey
 import org.saltyrtc.client.crypto.decrypt

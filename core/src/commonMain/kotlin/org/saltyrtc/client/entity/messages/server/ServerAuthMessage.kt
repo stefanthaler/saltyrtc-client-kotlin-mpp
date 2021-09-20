@@ -9,7 +9,7 @@ import org.saltyrtc.client.entity.Payload
 import org.saltyrtc.client.entity.unpack
 import org.saltyrtc.client.state.Identity
 import org.saltyrtc.client.state.LastMessageSentTimeStamp
-import org.saltyrtc.client.util.currentTimeInMs
+import org.saltyrtc.client.util.*
 
 fun serverAuthMessage(
     message: Message,
