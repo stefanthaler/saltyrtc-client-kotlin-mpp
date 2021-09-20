@@ -2,11 +2,10 @@
 
 package org.saltyrtc.client.crypto
 
-
-import com.goterl.lazycode.lazysodium.LazySodiumJava
-import com.goterl.lazycode.lazysodium.SodiumJava
-import com.goterl.lazycode.lazysodium.interfaces.Box.BEFORENMBYTES
-import com.goterl.lazycode.lazysodium.interfaces.Box.MACBYTES
+import com.goterl.lazysodium.LazySodiumJava
+import com.goterl.lazysodium.SodiumJava
+import com.goterl.lazysodium.interfaces.Box.BEFORENMBYTES
+import com.goterl.lazysodium.interfaces.Box.MACBYTES
 import org.saltyrtc.client.api.Nonce
 import org.saltyrtc.client.crypto.NaClConstants.PRIVATE_KEY_BYTES
 import org.saltyrtc.client.crypto.NaClConstants.PUBLIC_KEY_BYTES
