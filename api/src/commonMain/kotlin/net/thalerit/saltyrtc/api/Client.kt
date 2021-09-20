@@ -30,7 +30,7 @@ interface Client {
      * Once the client-to-client handshake has been completed, the user application of a client MAY trigger sending this
      * message.
      */
-    suspend fun send(destination: Identity, data: Any)
+    suspend fun send(data: Any)
 
     /**
      * Incoming application messages

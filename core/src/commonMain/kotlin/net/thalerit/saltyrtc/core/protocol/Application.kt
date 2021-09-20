@@ -1,11 +1,8 @@
 package net.thalerit.saltyrtc.core.protocol
 
-import net.thalerit.saltyrtc.api.Identity
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.client.applicationMessage
-import net.thalerit.saltyrtc.core.intents.ClientIntent
-import net.thalerit.saltyrtc.core.state.nextSendingNonce
 
 /**
  * Once the client-to-client handshake has been completed, the user application of a client MAY trigger sending this
@@ -31,9 +28,8 @@ internal fun SaltyRtcClient.handleApplicationMessage(it: Message) {
     incomingApplicationMessage.trySend(message)
 }
 
-internal fun SaltyRtcClient.sendApplication(destination: Identity, data: Any) {
-    val nonce = current.nextSendingNonce(destination)
-    val sessionSharedKey = current.sessionSharedKeys[destination]!!
-    val message = applicationMessage(data, sessionSharedKey, nonce)
-    queue(ClientIntent.SendMessage(message))
+internal fun SaltyRtcClient.sendApplication(data: Any) {
+    val message = applicationMessage(data)
+
+    current.signallingChannel?.send(message)
 }

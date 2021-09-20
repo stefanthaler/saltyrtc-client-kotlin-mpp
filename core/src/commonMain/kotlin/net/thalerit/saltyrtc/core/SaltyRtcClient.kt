@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.*
 import net.thalerit.crypto.NaClKeyPair
 import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.*
-import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.intents.ClientIntent
@@ -69,7 +68,7 @@ class SaltyRtcClient(
         }
     }
 
-    internal suspend fun send(plaintext: UnencryptedMessage) {
+    internal fun send(plaintext: UnencryptedMessage) {
         // TODO checks
         val nonce = plaintext.nonce
         val destination = nonce.destination
@@ -77,7 +76,7 @@ class SaltyRtcClient(
 
         val encryptedPayload = Payload(encrypt(plaintext.data, nonce, sharedSessionKey).bytes)
         val message = message(nonce, encryptedPayload)
-        send(message = message)
+        queue(ClientIntent.SendMessage(message))
     }
 
     override suspend fun <T : Connection> connect(
@@ -109,10 +108,9 @@ class SaltyRtcClient(
 
     internal val incomingApplicationMessage = Channel<ApplicationMessage>(Channel.UNLIMITED)
 
-    override suspend fun send(destination: Identity, data: Any) {
+    override suspend fun send(data: Any) {
         require(current.authState == ClientServerAuthState.AUTHENTICATED)
-        require(current.clientAuthStates[destination] == ClientClientAuthState.CLIENT_AUTH)
-        sendApplication(destination, data)
+        sendApplication(data)
     }
 
     override val applicationMessage: SharedFlow<ApplicationMessage> =

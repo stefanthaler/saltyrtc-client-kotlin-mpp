@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import net.thalerit.crypto.PlainText
 import net.thalerit.saltyrtc.api.MessageField
 import net.thalerit.saltyrtc.api.Nonce
+import net.thalerit.saltyrtc.api.PayloadMap
 import net.thalerit.saltyrtc.api.SignallingChannel
-import net.thalerit.saltyrtc.api.UnencryptedMessage
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 
 fun signallingChannel(nonce: Nonce, client: SaltyRtcClient): SignallingChannel {
@@ -18,15 +18,14 @@ private class SignallingChannel(
     private val saltyRtcClient: SaltyRtcClient
 ) : SignallingChannel {
 
-    override suspend fun send(payloadMap: Map<MessageField, Any>) {
+    override fun send(payloadMap: Map<MessageField, Any>) {
         nonce = nonce.withIncreasedSequenceNumber()
         val unencrypted = unencryptedMessage(
             nonce = nonce,
             plainText = PlainText(pack(payloadMap).bytes)
         )
-
         saltyRtcClient.send(unencrypted)
     }
 
-    override val message: SharedFlow<UnencryptedMessage> = MutableSharedFlow(replay = 1)
+    override val message: SharedFlow<PayloadMap> = MutableSharedFlow(replay = 1)
 }

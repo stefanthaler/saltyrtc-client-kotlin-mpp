@@ -2,19 +2,11 @@ package net.thalerit.saltyrtc.core.entity.messages.client
 
 import net.thalerit.crypto.CipherText
 import net.thalerit.crypto.SharedKey
-import net.thalerit.saltyrtc.api.ApplicationMessage
-import net.thalerit.saltyrtc.api.Message
-import net.thalerit.saltyrtc.api.Nonce
-import net.thalerit.saltyrtc.api.Payload
-import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.api.MessageField
-import net.thalerit.saltyrtc.api.MessageType
-import net.thalerit.saltyrtc.core.entity.pack
+import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
 import net.thalerit.saltyrtc.crypto.decrypt
-import net.thalerit.saltyrtc.crypto.encrypt
 
 fun applicationMessage(
     it: Message,
@@ -33,19 +25,9 @@ fun applicationMessage(
 @OptIn(ExperimentalStdlibApi::class)
 fun applicationMessage(
     data: Any,
-    sharedKey: SharedKey,
-    nonce: Nonce,
-): Message {
-    val payloadMap: Map<MessageField, Any> = buildMap {
-        put(MessageField.TYPE, MessageType.CLOSE.type)
+): PayloadMap {
+    return buildMap {
+        put(MessageField.TYPE, MessageType.APPLICATION.type)
         put(MessageField.DATA, data)
     }
-
-    val payload = pack(payloadMap)
-    val encryptedData = encrypt(payload, nonce, sharedKey)
-
-    return message(
-        nonce = nonce,
-        data = Payload(encryptedData.bytes),
-    )
 }

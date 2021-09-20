@@ -11,7 +11,7 @@ class RelayedDataConnection(
 ) : Connection {
     val data: Flow<Any> = channel.message.map { it[MessageField.P]!! } // TODO error handling
 
-    suspend fun send(data: Any) {
+    fun send(data: Any) {
         channel.send(dataMessage(data))
     }
 }
