@@ -25,7 +25,13 @@ dependencyResolutionManagement {
     }
 }
 
-// projects
+// library
+include(":api")
 include(":core")
+include(":crypto")
 
+// websocket
+include(":websocket-ktor")
+
+// samples
 include(":sample-jvm")

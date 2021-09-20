@@ -36,14 +36,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                // KTOR Web Sockets dependencies
-                implementation("io.ktor:ktor-websockets:${v("ktor")}")
-                implementation("io.ktor:ktor-client-websockets:${v("ktor")}")
-                implementation("io.ktor:ktor-client-cio:${v("ktor")}")
-                // implementation("io.ktor:ktor-client-js:$ktor_version")
-                //implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-
-                // coroutines version
+                implementation(project(":api"))
+                implementation(project(":crypto"))
+                implementation(kotlin("stdlib"))
+                implementation("io.ktor:ktor-utils:${v("ktor")}")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${v("coroutines")}")
             }
         }
@@ -62,11 +58,6 @@ kotlin {
 
                 // Override some jackson-dataformat-msgpack 2.9 dependencies due to security vulnerabilities
                 implementation("com.fasterxml.jackson.core:jackson-databind:2.10.+")
-
-                // NaCl library
-                implementation("com.goterl:resource-loader:${v("resource-loader")}")
-                implementation("net.java.dev.jna:jna:5.5.0")
-                implementation("com.goterl:lazysodium-java:${v("lazysodium-java")}")
 
                 implementation("io.github.microutils:kotlin-logging:1.8.3")
                 implementation("org.slf4j:slf4j-simple:1.7.29")

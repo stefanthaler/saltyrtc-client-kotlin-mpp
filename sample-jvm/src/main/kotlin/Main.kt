@@ -1,18 +1,17 @@
-package org.saltyrtc.client
-
-
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.saltyrtc.client.api.SupportedTask
-import org.saltyrtc.client.crypto.PublicKey
-import org.saltyrtc.client.crypto.naClKeyPair
-import org.saltyrtc.client.entity.signallingPath
-import org.saltyrtc.client.entity.signallingServer
-import org.saltyrtc.client.logging.logDebug
-import org.saltyrtc.client.protocol.relayed.RelayedDataTaskV0
+import net.thalerit.saltyrtc.api.SupportedTask
+import net.thalerit.saltyrtc.core.SaltyRtcClient
+import net.thalerit.saltyrtc.core.entity.signallingPath
+import net.thalerit.saltyrtc.core.entity.signallingServer
+import net.thalerit.saltyrtc.core.logging.logDebug
+import net.thalerit.saltyrtc.core.protocol.relayed.RelayedDataTaskV0
+import net.thalerit.saltyrtc.crypto.naClKeyPair
+import net.thalerit.saltyrtc.crypto.publicKey
+import net.thalerit.saltyrtc.ktorWebSocket
 
 /**
  * use to generate a public private keypair
@@ -32,12 +31,13 @@ import org.saltyrtc.client.protocol.relayed.RelayedDataTaskV0
 //}
 
 fun main() {
+
     val server = signallingServer(
         host = "0.0.0.0",
         port = 8765,
-        permanentPublicKey = PublicKey("56708c9821673c0f989f593b33d0e047f15ffebc7ab6c40413c58dc55a1f222a")
+        permanentPublicKey = publicKey("56708c9821673c0f989f593b33d0e047f15ffebc7ab6c40413c58dc55a1f222a")
     )
-    val clientPublicKey = PublicKey("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E")
+    val clientPublicKey = publicKey("DB5412C08BAA6D5A521D2C061E36B29872FC9CAF9ADDF31A2F2EE116A1FBDE2E")
     val signallingPath = signallingPath(clientPublicKey)
 
     val initiatorKeys =
@@ -54,6 +54,7 @@ fun main() {
 
     val tasks = listOf(RelayedDataTaskV0())
 
+
     val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, tasks = tasks)
     GlobalScope.launch {
         delay(1_000)
@@ -61,6 +62,9 @@ fun main() {
             isInitiator = true,
             path = signallingPath,
             task = SupportedTask.V1_ORTC,
+            webSocket = {
+                ktorWebSocket(it)
+            },
             responderKeys.publicKey
         )
     }
@@ -73,7 +77,15 @@ fun main() {
     }
 
     val responder = SaltyRtcClient("Responder", server, responderKeys, tasks = tasks)
-    responder.connect(isInitiator = false, path = signallingPath, task = SupportedTask.V1_ORTC, initiatorKeys.publicKey)
+    responder.connect(
+        isInitiator = false,
+        path = signallingPath,
+        task = SupportedTask.V1_ORTC,
+        webSocket = {
+            ktorWebSocket(it)
+        },
+        initiatorKeys.publicKey
+    )
 
     val responderJob = GlobalScope.launch {
         responder.state.collect {

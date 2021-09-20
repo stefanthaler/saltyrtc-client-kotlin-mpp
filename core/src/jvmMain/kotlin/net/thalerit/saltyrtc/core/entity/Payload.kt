@@ -1,0 +1,25 @@
+package net.thalerit.saltyrtc.core.entity
+
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import net.thalerit.saltyrtc.api.Payload
+import net.thalerit.saltyrtc.core.entity.messages.server.MessageField
+import org.msgpack.jackson.dataformat.MessagePackFactory
+import java.io.IOException
+
+actual fun unpack(payload: Payload): Map<MessageField, Any> {
+    val objectMapper = ObjectMapper(MessagePackFactory())
+    val map: Map<String, Any> = try {
+        val ref = object : TypeReference<Map<String, Any>>() {}
+        objectMapper.readValue(payload.bytes, ref)
+    } catch (e: IOException) {
+        throw Exception("Deserialization failed", e)
+    }
+    return map.map { MessageField.valueOf(it.key.uppercase()) to it.value }.toMap()
+}
+
+actual fun pack(payloadMap: Map<MessageField, Any>): Payload {
+    val map = payloadMap.map { it.key.name.lowercase() to it.value }.toMap()
+    val objectMapper = ObjectMapper(MessagePackFactory())
+    return Payload(objectMapper.writeValueAsBytes(map))
+}
