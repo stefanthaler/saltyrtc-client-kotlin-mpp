@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.map
 import net.thalerit.saltyrtc.api.Connection
 import net.thalerit.saltyrtc.api.MessageField
 import net.thalerit.saltyrtc.api.SignallingChannel
+import net.thalerit.saltyrtc.tasks.message.dataMessage
 
 class RelayedDataConnection(
     private val channel: SignallingChannel

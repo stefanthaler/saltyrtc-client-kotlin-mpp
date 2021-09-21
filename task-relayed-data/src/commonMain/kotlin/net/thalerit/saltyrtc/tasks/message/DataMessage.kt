@@ -1,4 +1,4 @@
-package net.thalerit.saltyrtc.tasks
+package net.thalerit.saltyrtc.tasks.message
 
 import net.thalerit.saltyrtc.api.MessageField
 import net.thalerit.saltyrtc.api.MessageType

@@ -35,6 +35,7 @@ include(":websocket-ktor")
 
 // tasks
 include(":task-relayed-data")
+include(":task-webrtc")
 
 // samples
 include(":sample-jvm")
