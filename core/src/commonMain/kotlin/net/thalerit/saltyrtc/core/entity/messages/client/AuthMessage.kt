@@ -46,20 +46,24 @@ fun authMessage(
     sessionSharedKey: SharedKey,
     nonce: Nonce,
     yourCookie: Cookie, // to other clients cookie
-    task: Task<out Connection>?,
+    isInitiator: Boolean,
+    task: TaskUrl,
     tasks: List<TaskUrl>?,
-    data: Map<Task<out Connection>, Any>,
+    data: Any?,
 ): Message {
     val payloadMap: Map<MessageField, Any> = buildMap {
         put(MessageField.TYPE, MessageType.AUTH.type)
         put(MessageField.YOUR_COOKIE, yourCookie.bytes)
-        if (task != null) {
-            put(MessageField.TASK, task.url.url)
-        }
-        if (tasks != null) {
+        if (isInitiator) {
+            put(MessageField.TASK, task.url)
+        } else {
+            requireNotNull(tasks)
             put(MessageField.TASKS, tasks.map { it.url })
         }
-        put(MessageField.DATA, data.map { it.key.url.url to it.value }.toMap())
+
+        put(MessageField.DATA, buildMap<String, Any?> {
+            put(task.url, data)
+        })
     }
 
     val payload = pack(payloadMap)
@@ -75,5 +79,5 @@ data class AuthMessage(
     val yourCookie: Cookie,
     val tasks: List<TaskUrl>?,
     val task: TaskUrl?,
-    val data: Map<TaskUrl, Any>
+    val data: Map<TaskUrl, Any?>
 )

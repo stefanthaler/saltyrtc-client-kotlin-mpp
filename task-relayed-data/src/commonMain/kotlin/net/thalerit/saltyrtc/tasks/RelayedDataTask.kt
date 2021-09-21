@@ -13,8 +13,11 @@ class RelayedDataTaskV0 : Task<RelayedDataConnection> {
 
     override val connection: StateFlow<Result<RelayedDataConnection>?> = MutableStateFlow(null)
 
-    override fun openConnection(newChannel: SignallingChannel) {
+    override val authData: Any? = null
+
+    override fun openConnection(newChannel: SignallingChannel, data: Any?) {
         channel = newChannel
+        require(data == null)
         (connection as MutableStateFlow).value = Result.success(RelayedDataConnection(newChannel))
     }
 

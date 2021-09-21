@@ -35,8 +35,9 @@ fun MessageField.Companion.task(payloadMap: Map<MessageField, Any>) =
     (payloadMap[MessageField.TASK] as String?)?.let { tasksByUrl[it]!! }
 
 fun MessageField.Companion.data(payloadMap: Map<MessageField, Any>) =
-    (payloadMap[MessageField.DATA] as Map<String, Any>).map { (key, entry) ->
-        tasksByUrl[key]!! to entry
+    (payloadMap[MessageField.DATA] as Map<String, Any?>).map {
+        tasksByUrl[it.key]!! to it.value
     }.toMap()
+
 
 fun MessageField.Companion.p(payloadMap: Map<MessageField, Any>) = Payload(payloadMap[MessageField.P] as ByteArray)

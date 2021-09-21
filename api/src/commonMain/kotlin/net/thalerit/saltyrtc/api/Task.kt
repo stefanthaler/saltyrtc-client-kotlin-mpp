@@ -17,8 +17,11 @@ interface Task<T : Connection> {
      * Once the client2client handshake is completed, the open signalling channel will be passed to the task, and the
      * task attempts to a connection.
      */
-    fun openConnection(channel: SignallingChannel)
+    fun openConnection(channel: SignallingChannel, data: Any?)
     fun handleClosed(reason: CloseReason)
+
+    val authData: Any?
+
 }
 
 val V1_WEBRTC_TASK = TaskUrl("v1.webrtc.tasks.saltyrtc.org")

@@ -71,7 +71,7 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
 
     val signallingChannel = signallingChannel(source, this)
 
-    task.openConnection(signallingChannel)
+    task.openConnection(signallingChannel, authMessage.data[task.url])
     intentScope.launch {
         task.connection.filterNotNull().collect {
             if (continuation.isActive) {
@@ -90,6 +90,7 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
 
 internal fun SaltyRtcClient.sendResponderAuthMessage() {
     val initiatorCookie = current.receivingNonces[InitiatorIdentity]?.cookie
+    val task = current.task!!
     requireNotNull(initiatorCookie)
     val nextNonce = current.nextSendingNonce(InitiatorIdentity)
 
@@ -100,15 +101,17 @@ internal fun SaltyRtcClient.sendResponderAuthMessage() {
         sessionSharedKey = sessionSharedKey,
         nonce = nextNonce,
         yourCookie = initiatorCookie,
-        task = null,
+        isInitiator = current.isInitiator,
+        task = task.url,
         tasks = supportedTasks,
-        data = mapOf() // TODO
+        data = task.authData
     )
     queue(ClientIntent.SendMessage(authMessage))
 }
 
 internal fun SaltyRtcClient.sendInitiatorAuth(id: Identity) {
     val otherCookie = current.receivingNonces[id]?.cookie
+    val task = current.task!!
     requireNotNull(otherCookie)
     val nextNonce = current.nextSendingNonce(id)
 
@@ -119,9 +122,10 @@ internal fun SaltyRtcClient.sendInitiatorAuth(id: Identity) {
         sessionSharedKey = sessionSharedKey,
         nonce = nextNonce,
         yourCookie = otherCookie,
-        task = current.task,
+        isInitiator = current.isInitiator,
+        task = task.url,
         tasks = null,
-        data = mapOf() // TODO
+        data = task.authData
     )
     queue(ClientIntent.SendMessage(authMessage))
 }
