@@ -88,8 +88,14 @@ fun main() {
             },
             responderKeys.publicKey
         )
+        connection.onFailure {
+            print("Failed to open connection: $it")
+        }
+        connection.onSuccess {
+            it.send("Test 1234")
+        }
 
-        connection.getOrNull()?.send("Test")
+
     }
 
 

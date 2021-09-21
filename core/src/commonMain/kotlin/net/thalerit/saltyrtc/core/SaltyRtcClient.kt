@@ -101,11 +101,14 @@ class SaltyRtcClient(
             )
             // will suspend here until continuation is resumed
         }
-        return if (result.isSuccess) {
-            Result.success(result.getOrNull() as T) // TODO manage unsafe cast
-        } else {
-            Result.failure(result.exceptionOrNull()!!)
+
+        result.onSuccess {
+            return Result.success(it as T) // TODO manage unsafe cast
         }
+        result.onFailure {
+            return Result.failure(it)
+        }
+        throw IllegalStateException()
     }
 
     internal val incomingApplicationMessage = Channel<ApplicationMessage>(Channel.UNLIMITED)

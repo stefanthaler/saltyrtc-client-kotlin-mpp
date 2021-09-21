@@ -18,10 +18,13 @@ private class WebSocketImpl(
 ) : WebSocket {
     private var session: WebSocketSession? = null
     private val supervisor = SupervisorJob()
-    private val scope = CoroutineScope(Dispatchers.Default + supervisor) // TODO check scope
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        _frame.tryEmit(Result.failure(throwable))
+    }
+    private val scope = CoroutineScope(Dispatchers.Default + supervisor + exceptionHandler) // TODO check scope
 
-    private val _frame = MutableSharedFlow<WebSocketMessage>(extraBufferCapacity = 10)
-    override val message: SharedFlow<WebSocketMessage> = _frame
+    private val _frame = MutableSharedFlow<Result<WebSocketMessage>>(extraBufferCapacity = 10)
+    override val message: SharedFlow<Result<WebSocketMessage>> = _frame
 
     override fun open(path: SignallingPath) {
         supervisor.cancelChildren()
@@ -41,7 +44,7 @@ private class WebSocketImpl(
                 incoming.consumeAsFlow()
                     .filterIsInstance<Frame.Binary>()
                     .map { WebSocketMessage(it.data) }
-                    .collect { _frame.emit(it) }
+                    .collect { _frame.emit(Result.success(it)) }
             }
         }.invokeOnCompletion {
             GlobalScope.launch(NonCancellable) {

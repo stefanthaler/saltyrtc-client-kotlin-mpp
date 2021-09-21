@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.webSocketMessage
+import kotlin.coroutines.resume
 
 internal fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
     messageSupervisor.cancelChildren()
@@ -15,7 +16,18 @@ internal fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
     messageScope.launch {
         socket.message
             .collect {
-                queue(ClientIntent.MessageReceived(webSocketMessage(it)))
+                it.onSuccess { message ->
+                    queue(ClientIntent.MessageReceived(webSocketMessage(message)))
+                }
+                it.onFailure { throwable ->
+                    val cont = intent.continuation
+                    if (intent.continuation.isActive) {
+                        cont.resume(Result.failure(throwable))
+                    } else {
+                        println("Socket exception: $throwable")
+                        //TODO handle - close?
+                    }
+                }
             }
     }
 
