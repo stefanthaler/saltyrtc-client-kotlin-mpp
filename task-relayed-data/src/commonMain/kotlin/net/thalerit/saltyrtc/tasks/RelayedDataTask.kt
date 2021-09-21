@@ -11,11 +11,11 @@ class RelayedDataTaskV0 : Task<RelayedDataConnection> {
         V0_RELAYED_DATA
     }
 
-    override val connection: StateFlow<RelayedDataConnection?> = MutableStateFlow(null)
+    override val connection: StateFlow<Result<RelayedDataConnection>?> = MutableStateFlow(null)
 
-    override fun handleOpened(newChannel: SignallingChannel) {
+    override fun openConnection(newChannel: SignallingChannel) {
         channel = newChannel
-        (connection as MutableStateFlow).value = RelayedDataConnection(newChannel)
+        (connection as MutableStateFlow).value = Result.success(RelayedDataConnection(newChannel))
     }
 
     override fun handleClosed(reason: CloseReason) {

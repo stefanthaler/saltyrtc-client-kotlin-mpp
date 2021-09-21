@@ -6,6 +6,7 @@ import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.close
 import net.thalerit.saltyrtc.core.entity.messages.client.closeMessage
+import net.thalerit.saltyrtc.core.exceptions.CloseException
 import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.state.initialClientState
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
@@ -29,10 +30,19 @@ import net.thalerit.saltyrtc.core.state.nextSendingNonce
  */
 internal fun SaltyRtcClient.handleClose(it: Message) {
     val source = it.nonce.source
-    val sessionSharedKey = current.sessionSharedKeys[source]
-    requireNotNull(sessionSharedKey)
+    val sessionSharedKey = current.sessionSharedKeys[source]!!
+    val task = current.task!!
+    val continuation = current.continuation!!
     val reason = closeMessage(it, sessionSharedKey).reason
-    current.task?.handleClosed(reason)
+
+    if (continuation.isActive) {
+        continuation.resumeWith(
+            Result.failure(CloseException(reason))
+        )
+    }
+
+    task.handleClosed(reason)
+
     current = initialClientState()
     // TODO close signalling channel
 

@@ -4,8 +4,10 @@ import net.thalerit.crypto.CipherText
 import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.api.MessageField
-import net.thalerit.saltyrtc.api.MessageType
+import net.thalerit.saltyrtc.core.entity.messages.data
+import net.thalerit.saltyrtc.core.entity.messages.task
+import net.thalerit.saltyrtc.core.entity.messages.tasks
+import net.thalerit.saltyrtc.core.entity.messages.yourCookie
 import net.thalerit.saltyrtc.core.entity.pack
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
@@ -71,7 +73,7 @@ fun authMessage(
 
 data class AuthMessage(
     val yourCookie: Cookie,
-    val tasks: List<Task<out Connection>>?,
-    val task: Task<out Connection>?,
-    val data: Map<Task<out Connection>, Any>
+    val tasks: List<TaskUrl>?,
+    val task: TaskUrl?,
+    val data: Map<TaskUrl, Any>
 )

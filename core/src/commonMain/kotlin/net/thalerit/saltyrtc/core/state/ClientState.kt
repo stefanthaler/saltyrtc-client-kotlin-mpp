@@ -85,6 +85,14 @@ fun ClientState.nextSendingNonce(destination: Identity): Nonce {
     return nextNonce.withIncreasedSequenceNumber()
 }
 
+fun ClientState.withSendingNonce(nonce: Nonce): ClientState {
+    return copy(
+        sendingNonces = sendingNonces.mutableApply {
+            put(nonce.destination, nonce)
+        }
+    )
+}
+
 
 @JvmInline
 value class LastMessageSentTimeStamp(val time: Long)

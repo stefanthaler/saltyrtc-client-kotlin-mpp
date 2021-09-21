@@ -19,7 +19,6 @@ import net.thalerit.saltyrtc.core.util.requireInitiatorId
 import net.thalerit.saltyrtc.core.util.requireResponderId
 import net.thalerit.saltyrtc.crypto.decrypt
 
-
 internal fun SaltyRtcClient.handleMessage(it: Message) {
     val nonce = it.nonce
     val isClient2ServerMessage = it.isClientServer()

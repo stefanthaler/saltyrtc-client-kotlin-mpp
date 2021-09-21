@@ -29,6 +29,30 @@ import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 //    println("${pair.privateKey.toHexString()} ${pair.publicKey.toHexString()}")
 //}
 
+//fun main() {
+//    val s = MutableSharedFlow<String>()
+//
+//    val job = GlobalScope.launch {
+//        s.collect {
+//            println("Hello hello: $it")
+//
+//        }
+//    }
+//
+//    GlobalScope.launch {
+//        delay(1_000)
+//        s.tryEmit(
+//            "Stefan"
+//        )
+//    }
+//
+//
+//
+//    runBlocking {
+//        job.join()
+//    }
+//}
+
 fun main() {
 
     val server = signallingServer(

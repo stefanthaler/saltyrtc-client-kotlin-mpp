@@ -1,5 +1,8 @@
 package net.thalerit.saltyrtc.core.protocol
 
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import net.thalerit.saltyrtc.api.Identity
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.api.supportedTasks
@@ -9,7 +12,9 @@ import net.thalerit.saltyrtc.core.entity.messages.client.authMessage
 import net.thalerit.saltyrtc.core.entity.signallingChannel
 import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
+import net.thalerit.saltyrtc.core.state.mutableApply
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
+import kotlin.coroutines.resume
 
 /**
  * This message is sent by both initiator and responder. The responder SHALL send this message after it has received and processed a 'key' message from the initiator. The initiator MUST wait until it has successfully processed the 'auth' message before it sends an 'auth' message to that responder.
@@ -47,6 +52,8 @@ import net.thalerit.saltyrtc.core.state.nextSendingNonce
 internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
+    val task = current.task!!
+    val continuation = current.continuation!!
     requireNotNull(sessionSharedKey)
     val authMessage = authMessage(it, sessionSharedKey, current.isInitiator)
     require(authMessage.yourCookie == current.sendingNonces[source]?.cookie) {
@@ -58,12 +65,22 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
         sendInitiatorAuth(source)
     }
 
-    val clientAuthState = current.clientAuthStates.toMutableMap().apply {
+    val clientAuthState = current.clientAuthStates.mutableApply {
         put(source, ClientClientAuthState.AUTHENTICATED)
     }
 
-    val signallingChannel = signallingChannel(it.nonce, this)
-    current.task?.handleOpened(signallingChannel)
+    val signallingChannel = signallingChannel(source, this)
+
+    task.openConnection(signallingChannel)
+    intentScope.launch {
+        task.connection.filterNotNull().collect {
+            if (continuation.isActive) {
+                continuation.resume(it)
+            } else {
+                // TODO
+            }
+        }
+    }
 
     current = current.copy(
         clientAuthStates = clientAuthState,

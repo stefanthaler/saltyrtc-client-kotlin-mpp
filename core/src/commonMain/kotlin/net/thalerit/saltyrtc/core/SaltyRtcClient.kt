@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import net.thalerit.crypto.NaClKeyPair
+import net.thalerit.crypto.PlainText
 import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
@@ -16,6 +17,8 @@ import net.thalerit.saltyrtc.core.logging.logWarn
 import net.thalerit.saltyrtc.core.protocol.sendApplication
 import net.thalerit.saltyrtc.core.state.ClientState
 import net.thalerit.saltyrtc.core.state.initialClientState
+import net.thalerit.saltyrtc.core.state.nextSendingNonce
+import net.thalerit.saltyrtc.core.state.withSendingNonce
 import net.thalerit.saltyrtc.crypto.encrypt
 
 class SaltyRtcClient(
@@ -33,7 +36,7 @@ class SaltyRtcClient(
         }
 
     private val intents = Channel<ClientIntent>(capacity = Channel.UNLIMITED)
-    private val intentScope = CoroutineScope(Dispatchers.Default) // TODO
+    internal val intentScope = CoroutineScope(Dispatchers.Default) // TODO
 
     init {
         intentScope.launch {
@@ -65,16 +68,15 @@ class SaltyRtcClient(
             logWarn("[$debugName] Attempted to send message to unitialized socket")
         } else {
             socket.send(message)
+            current = current.withSendingNonce(message.nonce)
         }
     }
 
-    internal fun send(plaintext: UnencryptedMessage) {
+    internal fun send(destination: Identity, plaintext: PlainText) {
         // TODO checks
-        val nonce = plaintext.nonce
-        val destination = nonce.destination
+        val nonce = current.nextSendingNonce(destination)
         val sharedSessionKey = current.sessionSharedKeys[destination]!!
-
-        val encryptedPayload = Payload(encrypt(plaintext.data, nonce, sharedSessionKey).bytes)
+        val encryptedPayload = Payload(encrypt(Payload(plaintext.bytes), nonce, sharedSessionKey).bytes)
         val message = message(nonce, encryptedPayload)
         queue(ClientIntent.SendMessage(message))
     }
@@ -116,7 +118,7 @@ class SaltyRtcClient(
     override val applicationMessage: SharedFlow<ApplicationMessage> =
         incomingApplicationMessage
             .receiveAsFlow()
-            .shareIn(intentScope, started = SharingStarted.Eagerly, replay = 0)
+            .shareIn(messageScope, started = SharingStarted.Eagerly, replay = 0)
 }
 
 internal fun SaltyRtcClient.clearInitiatorPath() {

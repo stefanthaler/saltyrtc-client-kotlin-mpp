@@ -13,9 +13,10 @@ internal fun SaltyRtcClient.connect(intent: ClientIntent.Connect) {
 
     val socket = intent.webSocket(signallingServer)
     messageScope.launch {
-        socket.message.collect {
-            queue(ClientIntent.MessageReceived(webSocketMessage(it)))
-        }
+        socket.message
+            .collect {
+                queue(ClientIntent.MessageReceived(webSocketMessage(it)))
+            }
     }
 
     current = current.copy(

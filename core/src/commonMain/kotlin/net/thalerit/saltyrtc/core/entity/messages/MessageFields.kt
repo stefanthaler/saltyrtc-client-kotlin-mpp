@@ -29,14 +29,14 @@ fun MessageField.Companion.reason(payloadMap: Map<MessageField, Any>) =
     CloseReason.valueOf(payloadMap[MessageField.REASON] as String)
 
 fun MessageField.Companion.tasks(payloadMap: Map<MessageField, Any>) =
-    (payloadMap[MessageField.TASKS] as List<String>?)?.map { tasksByUrl[it] }
+    (payloadMap[MessageField.TASKS] as List<String>?)?.map { tasksByUrl[it]!! }
 
 fun MessageField.Companion.task(payloadMap: Map<MessageField, Any>) =
-    (payloadMap[MessageField.TASK] as String?)?.let { tasksByUrl[it] }
+    (payloadMap[MessageField.TASK] as String?)?.let { tasksByUrl[it]!! }
 
 fun MessageField.Companion.data(payloadMap: Map<MessageField, Any>) =
     (payloadMap[MessageField.DATA] as Map<String, Any>).map { (key, entry) ->
-        tasksByUrl[key] to entry
+        tasksByUrl[key]!! to entry
     }.toMap()
 
 fun MessageField.Companion.p(payloadMap: Map<MessageField, Any>) = Payload(payloadMap[MessageField.P] as ByteArray)

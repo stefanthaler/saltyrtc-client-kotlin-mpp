@@ -2,12 +2,9 @@ package net.thalerit.saltyrtc.core.entity.messages.relayed
 
 import net.thalerit.crypto.CipherText
 import net.thalerit.crypto.SharedKey
-import net.thalerit.saltyrtc.api.Message
-import net.thalerit.saltyrtc.api.Nonce
-import net.thalerit.saltyrtc.api.Payload
+import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.api.MessageField
-import net.thalerit.saltyrtc.api.MessageType
+import net.thalerit.saltyrtc.core.entity.messages.p
 import net.thalerit.saltyrtc.core.entity.pack
 import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.util.requireFields

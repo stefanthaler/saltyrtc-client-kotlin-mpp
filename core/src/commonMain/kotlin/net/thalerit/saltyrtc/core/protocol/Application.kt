@@ -30,6 +30,5 @@ internal fun SaltyRtcClient.handleApplicationMessage(it: Message) {
 
 internal fun SaltyRtcClient.sendApplication(data: Any) {
     val message = applicationMessage(data)
-
     current.signallingChannel?.send(message)
 }
