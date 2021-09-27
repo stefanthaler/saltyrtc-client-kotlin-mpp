@@ -9,6 +9,7 @@ import net.thalerit.saltyrtc.core.entity.signallingServer
 import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.crypto.naClKeyPair
 import net.thalerit.saltyrtc.crypto.publicKey
+import net.thalerit.saltyrtc.defaultMsgPacker
 import net.thalerit.saltyrtc.ktorWebSocket
 import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 
@@ -76,7 +77,7 @@ fun main() {
         )
 
 
-    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys)
+    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, defaultMsgPacker)
     GlobalScope.launch {
         delay(1_000)
         val connection = initiator.connect(
@@ -106,7 +107,7 @@ fun main() {
     }
 
 
-    val responder = SaltyRtcClient("Responder", server, responderKeys)
+    val responder = SaltyRtcClient("Responder", server, responderKeys, defaultMsgPacker)
 
     val responderJob = GlobalScope.launch {
         val responder = responder.connect(

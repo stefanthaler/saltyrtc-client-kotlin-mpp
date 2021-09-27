@@ -21,10 +21,12 @@ import net.thalerit.saltyrtc.core.state.nextSendingNonce
 import net.thalerit.saltyrtc.core.state.withSendingNonce
 import net.thalerit.saltyrtc.crypto.encrypt
 
+// TODO builder
 class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
+    internal val msgPacker: MessagePacker
 ) : Client {
 
     private val _state = MutableStateFlow(value = initialClientState())

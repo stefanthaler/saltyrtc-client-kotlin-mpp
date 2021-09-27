@@ -33,6 +33,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 * Refactor tasks as modules
 * Documentation
 * Samples
+* Logger
 
 # Links
 

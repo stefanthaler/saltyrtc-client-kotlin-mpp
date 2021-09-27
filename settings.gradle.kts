@@ -39,6 +39,7 @@ dependencyResolutionManagement {
 include(":api")
 include(":core")
 include(":crypto")
+include(":msgpack-default")
 
 // websocket
 include(":websocket-ktor")
