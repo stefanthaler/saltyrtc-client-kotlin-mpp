@@ -14,7 +14,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 | Server Authentication - Unit Tests|              |              | |
 | Client Authentication        |  Draft ready     | Draft ready      | |
 | Client Authentication - Error Handling|              |              | |
-| Client Authentication - Unit Tests |              |              | |
+| Datachannel Chunking                     |   |   | |
 | Tasks                        |              |              | |
 | Tasks - Relayed              |  Draft ready | Draft ready  | |
 | Tasks - Relayed - Tests      |              |              | |
@@ -24,16 +24,13 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 # Todos
 
-* Modularization
-* Message pack provider
+* Continuous integration
+* Other build targets (Js, iOS, Native ...)
 * Unit Tests
-* Other build targets (Android, JVM, JS, ...)
-* Support multiple WebSocket clients (Ktor, other?)
 * Test compatibility with other SaltyRTC clients
-* Refactor tasks as modules
 * Documentation
 * Samples
-* Logger
+* Publish in Maven repository
 
 # Links
 
