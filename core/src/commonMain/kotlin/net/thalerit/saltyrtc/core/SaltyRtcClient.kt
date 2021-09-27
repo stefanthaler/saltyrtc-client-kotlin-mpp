@@ -118,12 +118,24 @@ class SaltyRtcClient(
     /**
      * Pass a TaskIntent to the initialized task.
      */
-    override suspend fun send(intent: TaskIntent) {
+    override fun send(intent: TaskIntent) {
         require(current.authState == ClientServerAuthState.AUTHENTICATED)
-        val task = current.task!!
-        // TODO synchronize via queue
-        task.handle(intent)
+        current.task!!
+        taskIntents.trySend(intent)
     }
+
+    private val taskIntents = Channel<TaskIntent>(Channel.UNLIMITED)
+
+    init {
+        // TODO more fine grained management
+        intentScope.launch {
+            taskIntents.receiveAsFlow().collect {
+                val task = current.task!!
+                task.handle(it)
+            }
+        }
+    }
+
 
     override val message: SharedFlow<TaskMessage> = MutableSharedFlow() // TODO
 

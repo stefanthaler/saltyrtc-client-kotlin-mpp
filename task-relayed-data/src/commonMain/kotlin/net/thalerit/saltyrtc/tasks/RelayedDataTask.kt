@@ -15,7 +15,7 @@ class RelayedDataTaskV0 : Task {
         channel = newChannel
         require(data == null)
     }
-    
+
     override fun handleClosed(reason: CloseReason) {
         // TODO
     }
@@ -25,7 +25,9 @@ class RelayedDataTaskV0 : Task {
     }
 
     override fun handle(intent: TaskIntent) {
-        intent.type
+        val outChannel = channel!!
+        require(intent.type in listOf(MessageType.DATA, MessageType.APPLICATION))
+        outChannel.send(intent.payloadMap)
     }
 
     override fun emitToClient(taskMessage: TaskMessage): Boolean {

@@ -48,4 +48,5 @@ interface TaskMessage {
 
 interface TaskIntent {
     val type: MessageType
+    val payloadMap: PayloadMap
 }
