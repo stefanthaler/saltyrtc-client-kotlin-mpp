@@ -24,5 +24,11 @@ interface EncryptedMessage : Message
 interface UnencryptedMessage : Message
 
 data class ApplicationMessage(
-    val data: Any
-)
+    override val payloadMap: PayloadMap,
+) : TaskMessage {
+    override val type: MessageType = MessageType.APPLICATION
+
+    val data: Any by lazy {
+        payloadMap[MessageField.DATA]!!
+    }
+}

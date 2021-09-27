@@ -18,7 +18,7 @@ fun SaltyRtcClient.applicationMessage(
     payloadMap.requireType(MessageType.APPLICATION)
     payloadMap.requireFields(MessageField.DATA)
     return ApplicationMessage(
-        data = payloadMap[MessageField.DATA]!!
+        payloadMap
     )
 }
 

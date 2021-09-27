@@ -9,12 +9,12 @@ import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.messages.type
+import net.thalerit.saltyrtc.core.entity.taskMessage
 import net.thalerit.saltyrtc.core.protocol.*
 import net.thalerit.saltyrtc.core.state.ServerIdentity
 import net.thalerit.saltyrtc.core.util.requireInitiatorId
 import net.thalerit.saltyrtc.core.util.requireResponderId
 import net.thalerit.saltyrtc.crypto.CipherText
-import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.decrypt
 import net.thalerit.saltyrtc.logging.d
 
@@ -79,28 +79,23 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
 }
 
 private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
+    val task = current.task!!
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
-    when (messageType(it, sessionSharedKey)) {
-        MessageType.APPLICATION -> handleApplicationMessage(it)
+    val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sessionSharedKey)
+    val unpacked = unpack(Payload(plainText.bytes))
+    val message = taskMessage(unpacked)
+
+    when (message.type) {
         MessageType.CLOSE -> handleClose(it)
         else -> {
-            // TODO checks
-            val incoming = current.signallingChannel!!.message as MutableSharedFlow
-            val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sessionSharedKey)
-            val unpacked = unpack(Payload(plainText.bytes))
-            incoming.tryEmit(
-                unpacked
-            )
+            if (task.emitToClient(message)) {
+                // TODO nicer emission
+                (this.message as MutableSharedFlow).tryEmit(message)
+            }
         }
     }
-}
-
-private fun SaltyRtcClient.messageType(it: Message, sharedKey: SharedKey): MessageType {
-    val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
-    val payloadMap = unpack(Payload(plainText.bytes))
-    return MessageField.type(payloadMap)
 }
 
 private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {

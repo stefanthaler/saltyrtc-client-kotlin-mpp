@@ -52,8 +52,8 @@ data class ClientState(
     val clientAuthStates: Map<Identity, ClientClientAuthState>,
     val sessionSharedKeys: Map<Identity, SharedKey>,
     val sessionOwnKeyPair: Map<Identity, NaClKeyPair>,
-    val task: Task<out Connection>?,
-    val continuation: CancellableContinuation<Result<Connection>>?,
+    val task: Task?,
+    val continuation: CancellableContinuation<Result<Unit>>?,
     val signallingChannel: SignallingChannel? = null,
 ) {
     val serverSessionSharedKey: SharedKey? by lazy {

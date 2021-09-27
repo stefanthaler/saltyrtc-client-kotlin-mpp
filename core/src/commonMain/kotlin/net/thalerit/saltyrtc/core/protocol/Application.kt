@@ -25,7 +25,9 @@ internal fun SaltyRtcClient.handleApplicationMessage(it: Message) {
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
     val message = applicationMessage(it, sessionSharedKey)
-    incomingApplicationMessage.trySend(message)
+
+
+//    incomingApplicationMessage.trySend(message)
 }
 
 internal fun SaltyRtcClient.sendApplication(data: Any) {

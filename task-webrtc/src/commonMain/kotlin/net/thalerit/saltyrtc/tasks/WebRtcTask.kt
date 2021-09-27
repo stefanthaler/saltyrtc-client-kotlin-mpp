@@ -3,7 +3,10 @@ package net.thalerit.saltyrtc.tasks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.tasks.intent.WebRtcIntent
@@ -19,7 +22,7 @@ import net.thalerit.saltyrtc.tasks.intent.WebRtcIntent
 class WebRtcTask(
     private val exclude: List<Int>,
     private val isHandover: Boolean,
-) : Task<WebRtcConnection> {
+) : Task {
     private var channel: SignallingChannel? = null
 
     init {
@@ -61,8 +64,6 @@ class WebRtcTask(
     override val url: TaskUrl by lazy {
         V1_WEBRTC_TASK
     }
-    private val _connection = MutableStateFlow<Result<WebRtcConnection>?>(null)
-    override val connection: StateFlow<Result<WebRtcConnection>?> = _connection
 
     override fun openConnection(channel: SignallingChannel, data: Any?) {
         this.channel = channel
@@ -76,6 +77,14 @@ class WebRtcTask(
 
     override fun handleClosed(reason: CloseReason) {
         this.channel = null
+    }
+
+    override fun handle(intent: TaskIntent) {
+        TODO("Not yet implemented")
+    }
+
+    override fun emitToClient(taskMessage: TaskMessage): Boolean {
+        TODO("Not yet implemented")
     }
 
     @OptIn(ExperimentalStdlibApi::class)

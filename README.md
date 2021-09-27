@@ -24,6 +24,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 # Todos
 
+* Public State for connection
 * Continuous integration
 * Other build targets (Js, iOS, Native ...)
 * Unit Tests

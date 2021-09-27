@@ -9,7 +9,6 @@ import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.intents.connect
 import net.thalerit.saltyrtc.core.intents.handleMessage
-import net.thalerit.saltyrtc.core.protocol.sendApplication
 import net.thalerit.saltyrtc.core.state.ClientState
 import net.thalerit.saltyrtc.core.state.initialClientState
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
@@ -34,7 +33,7 @@ class SaltyRtcClient(
 
     private val _state = MutableStateFlow(value = initialClientState())
     val state: SharedFlow<ClientState> = _state
-    var current: ClientState
+    var current: ClientState // TODO public client state
         get() = _state.value
         set(value) {
             _state.value = value
@@ -86,14 +85,14 @@ class SaltyRtcClient(
         queue(ClientIntent.SendMessage(message))
     }
 
-    override suspend fun <T : Connection> connect(
+    override suspend fun connect(
         isInitiator: Boolean,
         path: SignallingPath,
-        task: Task<T>,
+        task: Task,
         webSocket: (Server) -> WebSocket,
         otherPermanentPublicKey: PublicKey?
-    ): Result<T> {
-        val result: Result<Connection> = suspendCancellableCoroutine { continuation ->
+    ): Result<Unit> {
+        val result: Result<Unit> = suspendCancellableCoroutine { continuation ->
             queue(
                 ClientIntent.Connect(
                     isInitiator = isInitiator,
@@ -108,7 +107,7 @@ class SaltyRtcClient(
         }
 
         result.onSuccess {
-            return Result.success(it as T) // TODO manage unsafe cast
+            return Result.success(Unit) // TODO manage unsafe cast
         }
         result.onFailure {
             return Result.failure(it)
@@ -116,17 +115,17 @@ class SaltyRtcClient(
         throw IllegalStateException()
     }
 
-    internal val incomingApplicationMessage = Channel<ApplicationMessage>(Channel.UNLIMITED)
-
-    override suspend fun send(data: Any) {
+    /**
+     * Pass a TaskIntent to the initialized task.
+     */
+    override suspend fun send(intent: TaskIntent) {
         require(current.authState == ClientServerAuthState.AUTHENTICATED)
-        sendApplication(data)
+        val task = current.task!!
+        // TODO synchronize via queue
+        task.handle(intent)
     }
 
-    override val applicationMessage: SharedFlow<ApplicationMessage> =
-        incomingApplicationMessage
-            .receiveAsFlow()
-            .shareIn(messageScope, started = SharingStarted.Eagerly, replay = 0)
+    override val message: SharedFlow<TaskMessage> = MutableSharedFlow() // TODO
 
     internal fun unpack(payload: Payload): Map<MessageField, Any> = msgPacker.unpack(payload)
 

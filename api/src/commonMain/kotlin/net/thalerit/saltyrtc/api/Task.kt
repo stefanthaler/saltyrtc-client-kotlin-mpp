@@ -1,6 +1,5 @@
 package net.thalerit.saltyrtc.api
 
-import kotlinx.coroutines.flow.StateFlow
 import kotlin.jvm.JvmInline
 
 /**
@@ -8,10 +7,8 @@ import kotlin.jvm.JvmInline
  * authentication phase. Once a task has been negotiated and the authentication is complete, the task protocol defines
  * further procedures, messages, etc.
  */
-interface Task<T : Connection> {
+interface Task {
     val url: TaskUrl
-
-    val connection: StateFlow<Result<T>?>
 
     /**
      * Once the client2client handshake is completed, the open signalling channel will be passed to the task, and the
@@ -20,8 +17,17 @@ interface Task<T : Connection> {
     fun openConnection(channel: SignallingChannel, data: Any?)
     fun handleClosed(reason: CloseReason)
 
-    val authData: Any?
+    /**
+     * Actions that the task supports once it is opened, e.g. SendOffer
+     */
+    fun handle(intent: TaskIntent)
 
+    /**
+     * Whether an incoming task message should be published to client.
+     */
+    fun emitToClient(taskMessage: TaskMessage): Boolean
+
+    val authData: Any?
 }
 
 val V1_WEBRTC_TASK = TaskUrl("v1.webrtc.tasks.saltyrtc.org")
@@ -34,3 +40,12 @@ val supportedTasks = listOf(
 
 @JvmInline
 value class TaskUrl(val url: String)
+
+interface TaskMessage {
+    val type: MessageType
+    val payloadMap: PayloadMap
+}
+
+interface TaskIntent {
+    val type: MessageType
+}

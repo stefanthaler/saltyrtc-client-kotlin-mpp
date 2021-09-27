@@ -18,24 +18,24 @@ interface Client {
      *
      * Suspends until a connection is created or the process an exception occurred
      */
-    suspend fun <T : Connection> connect(
+    suspend fun connect(
         isInitiator: Boolean, // TODO hide this
         path: SignallingPath,
-        task: Task<T>,
+        task: Task,
         webSocket: (Server) -> WebSocket,
         otherPermanentPublicKey: PublicKey?,
-    ): Result<T>
+    ): Result<Unit>
 
     /**
-     * Once the client-to-client handshake has been completed, the user application of a client MAY trigger sending this
-     * message.
+     * Once the client-to-client handshake has been completed, the user application may send intents that should be handled
+     * by the task that has been initialized
      */
-    suspend fun send(data: Any)
+    suspend fun send(taskIntent: TaskIntent)
 
     /**
-     * Incoming application messages
+     * Once the client-to-client handshake has been completed, Messages may be received from the task
      */
-    val applicationMessage: SharedFlow<ApplicationMessage>
+    val message: SharedFlow<TaskMessage>
 }
 
 object SubProtocols {
