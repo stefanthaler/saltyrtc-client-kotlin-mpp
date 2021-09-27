@@ -6,7 +6,6 @@ import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.nonce
 import net.thalerit.saltyrtc.core.entity.withIncreasedSequenceNumber
-import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.util.requireResponderId
 import net.thalerit.saltyrtc.crypto.NaClKeyPair
 import net.thalerit.saltyrtc.crypto.PublicKey
@@ -67,7 +66,6 @@ data class ClientState(
 
     val responderShouldSendKey: Boolean
         get() {
-            logDebug("Responder should send key: $isResponder $isInitiatorConnected $otherPermanentPublicKey")
             return isResponder && isInitiatorConnected == true && otherPermanentPublicKey != null
         }
 }

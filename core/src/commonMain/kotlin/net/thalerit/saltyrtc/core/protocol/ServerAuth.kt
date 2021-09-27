@@ -6,11 +6,11 @@ import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.nonce
-import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
 import net.thalerit.saltyrtc.crypto.CipherText
 import net.thalerit.saltyrtc.crypto.decrypt
 import net.thalerit.saltyrtc.crypto.sharedKey
+import net.thalerit.saltyrtc.logging.d
 import serverAuthMessage
 
 
@@ -71,7 +71,7 @@ internal fun SaltyRtcClient.handleServerAuth(it: Message) {
         clientAuthStates = clientAuthStates
     )
 
-    logDebug("[$debugName] Authenticated towards server")
+    d("[$debugName] Authenticated towards server")
     if (current.responderShouldSendKey) {
         sendClientSessionKey(nonce(source = current.identity!!, destination = InitiatorIdentity))
     }

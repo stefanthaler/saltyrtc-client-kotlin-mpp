@@ -6,11 +6,12 @@ import kotlinx.coroutines.runBlocking
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.signallingPath
 import net.thalerit.saltyrtc.core.entity.signallingServer
-import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.crypto.naClKeyPair
 import net.thalerit.saltyrtc.crypto.publicKey
 import net.thalerit.saltyrtc.defaultMsgPacker
 import net.thalerit.saltyrtc.ktorWebSocket
+import net.thalerit.saltyrtc.logging.Logger
+import net.thalerit.saltyrtc.logging.Loggers
 import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 
 /**
@@ -53,23 +54,7 @@ import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 //        job.join()
 //    }
 //}
-class PrintLogger : Logger {
-    override fun log(msg: String, level: Logger.Level) {
-        println("<$level> $msg")
-    }
-
-}
-
-class A : Loggable {
-    override val logger = PrintLogger()
-}
-
 fun main() {
-    val a = A()
-    a.t("Test")
-}
-
-fun main2() {
 
     val server = signallingServer(
         host = "0.0.0.0",
@@ -92,7 +77,7 @@ fun main2() {
         )
 
 
-    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, defaultMsgPacker)
+    val initiator = SaltyRtcClient("Initiator", server, initiatorKeys, defaultMsgPacker, Loggers.default)
     GlobalScope.launch {
         delay(1_000)
         val connection = initiator.connect(
@@ -110,6 +95,7 @@ fun main2() {
         connection.onSuccess {
             it.send("Test 1234")
         }
+        println()
 
 
     }
@@ -117,12 +103,16 @@ fun main2() {
 
     val initiatorJob = GlobalScope.launch {
         initiator.state.collect {
-            logDebug("[Initiator] State changed: ${it.authState} ${it.clientAuthStates}")
+            Loggers.default.log(
+                "Initiator",
+                "State changed: ${it.authState} ${it.clientAuthStates}",
+                Logger.Level.DEBUG
+            )
         }
     }
 
 
-    val responder = SaltyRtcClient("Responder", server, responderKeys, defaultMsgPacker)
+    val responder = SaltyRtcClient("Responder", server, responderKeys, defaultMsgPacker, Loggers.default)
 
     val responderJob = GlobalScope.launch {
         val responder = responder.connect(

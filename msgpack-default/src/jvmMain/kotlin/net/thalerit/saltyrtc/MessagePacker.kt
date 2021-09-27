@@ -1,3 +1,5 @@
+@file:JvmName("JVMMessagePacker")
+
 package net.thalerit.saltyrtc
 
 import com.fasterxml.jackson.core.type.TypeReference

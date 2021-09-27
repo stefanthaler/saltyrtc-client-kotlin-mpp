@@ -1,8 +1,8 @@
 package net.thalerit.saltyrtc.core.intents
 
 import kotlinx.coroutines.CancellableContinuation
-import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.crypto.PublicKey
 
 sealed class ClientIntent {
     data class Connect(

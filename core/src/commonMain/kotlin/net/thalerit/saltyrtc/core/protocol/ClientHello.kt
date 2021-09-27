@@ -4,7 +4,7 @@ import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.server.clientHelloMessage
 import net.thalerit.saltyrtc.core.intents.ClientIntent
-import net.thalerit.saltyrtc.core.logging.logDebug
+import net.thalerit.saltyrtc.logging.i
 
 
 /**
@@ -21,7 +21,7 @@ import net.thalerit.saltyrtc.core.logging.logDebug
  */
 
 internal fun SaltyRtcClient.sendClientHello(nonce: Nonce) {
-    logDebug("[$debugName] sending 'client-hello' message")
+    i("[$debugName] sending 'client-hello' message")
     require(!current.isInitiator)
     val message = clientHelloMessage(ownPermanentKey.publicKey, nonce)
     queue(ClientIntent.SendMessage(message))

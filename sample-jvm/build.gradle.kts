@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":crypto"))
     implementation(project(":msgpack-default"))
+    implementation(project(":logger-default"))
     implementation(project(":websocket-ktor"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${v("coroutines")}")
 

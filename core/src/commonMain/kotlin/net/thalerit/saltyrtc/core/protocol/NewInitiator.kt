@@ -4,8 +4,8 @@ import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.clearInitiatorPath
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.nonce
-import net.thalerit.saltyrtc.core.logging.logWarn
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
+import net.thalerit.saltyrtc.logging.w
 
 /**
  * When a new initiator has authenticated itself towards the server on a path, the server MUST send this message to all
@@ -33,6 +33,6 @@ internal fun SaltyRtcClient.handleNewInitiator() {
     if (current.responderShouldSendKey) {
         sendClientSessionKey(nonce(source = current.identity!!, destination = InitiatorIdentity))
     } else {
-        logWarn("[$debugName] Public key of initiator unknown")
+        w("[$debugName] Public key of initiator unknown")
     }
 }

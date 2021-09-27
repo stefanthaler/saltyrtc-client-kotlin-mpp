@@ -4,8 +4,8 @@ import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.server.clientAuthMessage
 import net.thalerit.saltyrtc.core.intents.ClientIntent
-import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.state.ServerIdentity
+import net.thalerit.saltyrtc.logging.i
 
 /**
  * After the 'client-hello' message has been sent (responder) or after the 'server-hello' message has been received
@@ -61,7 +61,7 @@ internal fun SaltyRtcClient.sendClientAuth(
     nonce: Nonce,
     serverNonce: Nonce,
 ) {
-    logDebug("[$debugName] sending 'client-auth' message")
+    i("[$debugName] sending 'client-auth' message")
     val sharedKey = current.serverSessionSharedKey
     requireNotNull(sharedKey)
     val authMessage = clientAuthMessage(

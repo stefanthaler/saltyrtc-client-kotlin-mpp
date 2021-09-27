@@ -1,3 +1,5 @@
+@file:JvmName("AndroidMessagePacker")
+
 package net.thalerit.saltyrtc
 
 import com.fasterxml.jackson.core.type.TypeReference

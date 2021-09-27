@@ -1,25 +1,26 @@
 package net.thalerit.saltyrtc.core.intents
 
 import kotlinx.coroutines.flow.MutableSharedFlow
-import net.thalerit.crypto.CipherText
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.messages.type
-import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.protocol.*
 import net.thalerit.saltyrtc.core.state.ServerIdentity
 import net.thalerit.saltyrtc.core.util.requireInitiatorId
 import net.thalerit.saltyrtc.core.util.requireResponderId
+import net.thalerit.saltyrtc.crypto.CipherText
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.decrypt
+import net.thalerit.saltyrtc.logging.d
 
 internal fun SaltyRtcClient.handleMessage(it: Message) {
     val nonce = it.nonce
+    d("[Message] ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination} ")
     val isClient2ServerMessage = it.isClientServer()
     val type = if (isClient2ServerMessage) "Client2Server" else "Client2Client"
-    logDebug("[$debugName] received $type message ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination}  ")
+    d("[$debugName] received $type message ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination}  ")
     //TODO  handle error message and other messages
     if (isClient2ServerMessage) {
         handleClientServerMessage(it)
@@ -29,7 +30,6 @@ internal fun SaltyRtcClient.handleMessage(it: Message) {
 }
 
 private fun Message.isClientServer(): Boolean {
-    logDebug("[Message] ${nonce.sequenceNumber}] ${nonce.source} => ${nonce.destination} ")
     return nonce.source == ServerIdentity
 }
 
@@ -107,7 +107,7 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
     val payloadMap = msgPacker.unpack(Payload(plainText.bytes))
     require(payloadMap.containsKey(MessageField.TYPE))
     val type = MessageField.type(payloadMap)
-    logDebug("[$debugName] Authenticated Client2Server message: $type")
+    d("[$debugName] Authenticated Client2Server message: $type")
 
     if (current.isInitiator) {
         when (type) {

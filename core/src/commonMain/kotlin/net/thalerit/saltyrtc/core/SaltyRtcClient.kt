@@ -9,8 +9,6 @@ import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.intents.connect
 import net.thalerit.saltyrtc.core.intents.handleMessage
-import net.thalerit.saltyrtc.core.logging.logDebug
-import net.thalerit.saltyrtc.core.logging.logWarn
 import net.thalerit.saltyrtc.core.protocol.sendApplication
 import net.thalerit.saltyrtc.core.state.ClientState
 import net.thalerit.saltyrtc.core.state.initialClientState
@@ -20,14 +18,19 @@ import net.thalerit.saltyrtc.crypto.NaClKeyPair
 import net.thalerit.saltyrtc.crypto.PlainText
 import net.thalerit.saltyrtc.crypto.PublicKey
 import net.thalerit.saltyrtc.crypto.encrypt
+import net.thalerit.saltyrtc.logging.Loggable
+import net.thalerit.saltyrtc.logging.Logger
+import net.thalerit.saltyrtc.logging.d
+import net.thalerit.saltyrtc.logging.w
 
 // TODO builder
 class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
-    internal val msgPacker: MessagePacker
-) : Client {
+    internal val msgPacker: MessagePacker,
+    override val logger: Logger
+) : Client, Loggable {
 
     private val _state = MutableStateFlow(value = initialClientState())
     val state: SharedFlow<ClientState> = _state
@@ -49,7 +52,7 @@ class SaltyRtcClient(
     }
 
     private suspend fun handle(it: ClientIntent) {
-        logDebug("[$debugName] handling intent $it")
+        d("[$debugName] handling intent $it")
         when (it) {
             is ClientIntent.Connect -> connect(it)
             is ClientIntent.MessageReceived -> handleMessage(it.message)
@@ -67,7 +70,7 @@ class SaltyRtcClient(
     private suspend fun send(message: Message) = withContext(messageScope.coroutineContext) {
         val socket = current.socket
         if (socket == null) {
-            logWarn("[$debugName] Attempted to send message to unitialized socket")
+            w("[$debugName] Attempted to send message to uninitialized socket")
         } else {
             socket.send(message)
             current = current.withSendingNonce(message.nonce)
@@ -146,7 +149,7 @@ fun SaltyRtcClient.pack(payloadMap: Map<MessageField, Any>): Payload = msgPacker
 fun SaltyRtcClient.close() {
     val socket = current.socket
     if (socket == null) {
-        logWarn("[$debugName] Attempted to close an uninitialized socket")
+        w("[$debugName] Attempted to close an uninitialized socket")
     } else {
         socket.close()
     }

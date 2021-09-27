@@ -40,6 +40,7 @@ include(":api")
 include(":core")
 include(":crypto")
 include(":msgpack-default")
+include(":logger-default")
 
 // websocket
 include(":websocket-ktor")
