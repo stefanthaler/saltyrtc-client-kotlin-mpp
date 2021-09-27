@@ -5,12 +5,12 @@ import net.thalerit.saltyrtc.api.MessagePacker
 import net.thalerit.saltyrtc.api.Payload
 
 val defaultMsgPacker = object : MessagePacker {
-    override fun unpack(payload: Payload): Map<MessageField, Any> = unpack(payload)
+    override fun unpack(payload: Payload): Map<MessageField, Any> = platformUnpack(payload)
 
-    override fun pack(payloadMap: Map<MessageField, Any>): Payload = pack(payloadMap)
+    override fun pack(payloadMap: Map<MessageField, Any>): Payload = platformPack(payloadMap)
 }
 
-expect fun unpack(payload: Payload): Map<MessageField, Any>
+internal expect fun platformUnpack(payload: Payload): Map<MessageField, Any>
 
-expect fun pack(payloadMap: Map<MessageField, Any>): Payload
+internal expect fun platformPack(payloadMap: Map<MessageField, Any>): Payload
 

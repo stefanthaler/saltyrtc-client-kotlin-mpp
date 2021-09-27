@@ -9,7 +9,7 @@ import net.thalerit.saltyrtc.api.Payload
 import org.msgpack.jackson.dataformat.MessagePackFactory
 import java.io.IOException
 
-actual fun unpack(payload: Payload): Map<MessageField, Any> {
+internal actual fun platformUnpack(payload: Payload): Map<MessageField, Any> {
     val objectMapper = ObjectMapper(MessagePackFactory())
     val map: Map<String, Any> = try {
         val ref = object : TypeReference<Map<String, Any>>() {}
@@ -20,7 +20,7 @@ actual fun unpack(payload: Payload): Map<MessageField, Any> {
     return map.map { MessageField.valueOf(it.key.uppercase()) to it.value }.toMap()
 }
 
-actual fun pack(payloadMap: Map<MessageField, Any>): Payload {
+internal actual fun platformPack(payloadMap: Map<MessageField, Any>): Payload {
     val map = payloadMap.map { it.key.name.lowercase() to it.value }.toMap()
     val objectMapper = ObjectMapper(MessagePackFactory())
     return Payload(objectMapper.writeValueAsBytes(map))

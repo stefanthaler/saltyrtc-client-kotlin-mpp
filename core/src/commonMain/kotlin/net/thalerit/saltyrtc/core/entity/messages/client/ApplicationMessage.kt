@@ -2,7 +2,6 @@ package net.thalerit.saltyrtc.core.entity.messages.client
 
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
-import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
 import net.thalerit.saltyrtc.crypto.CipherText

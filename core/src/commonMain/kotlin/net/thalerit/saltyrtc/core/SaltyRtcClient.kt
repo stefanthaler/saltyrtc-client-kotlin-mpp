@@ -28,7 +28,7 @@ class SaltyRtcClient(
     val debugName: String = "SaltyRtcClient",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
-    internal val msgPacker: MessagePacker,
+    private val msgPacker: MessagePacker,
     override val logger: Logger
 ) : Client, Loggable {
 
@@ -127,6 +127,10 @@ class SaltyRtcClient(
         incomingApplicationMessage
             .receiveAsFlow()
             .shareIn(messageScope, started = SharingStarted.Eagerly, replay = 0)
+
+    internal fun unpack(payload: Payload): Map<MessageField, Any> = msgPacker.unpack(payload)
+
+    internal fun pack(payloadMap: Map<MessageField, Any>): Payload = msgPacker.pack(payloadMap)
 }
 
 internal fun SaltyRtcClient.clearInitiatorPath() {
@@ -142,9 +146,6 @@ internal fun SaltyRtcClient.clearResponderPath(identity: Identity) {
     )
 }
 
-fun SaltyRtcClient.unpack(payload: Payload): Map<MessageField, Any> = msgPacker.unpack(payload)
-
-fun SaltyRtcClient.pack(payloadMap: Map<MessageField, Any>): Payload = msgPacker.pack(payloadMap)
 
 fun SaltyRtcClient.close() {
     val socket = current.socket

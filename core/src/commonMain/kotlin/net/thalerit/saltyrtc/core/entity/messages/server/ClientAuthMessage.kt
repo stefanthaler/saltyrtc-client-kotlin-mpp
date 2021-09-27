@@ -3,7 +3,6 @@ package net.thalerit.saltyrtc.core.entity.messages.server
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.core.pack
 import net.thalerit.saltyrtc.crypto.PublicKey
 import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.encrypt

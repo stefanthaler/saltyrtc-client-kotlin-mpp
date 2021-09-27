@@ -1,7 +1,10 @@
 package net.thalerit.saltyrtc.core.intents
 
 import kotlinx.coroutines.flow.MutableSharedFlow
-import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.api.Message
+import net.thalerit.saltyrtc.api.MessageField
+import net.thalerit.saltyrtc.api.MessageType
+import net.thalerit.saltyrtc.api.Payload
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
@@ -79,14 +82,14 @@ private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
-    when (messageType(it, sessionSharedKey, msgPacker)) {
+    when (messageType(it, sessionSharedKey)) {
         MessageType.APPLICATION -> handleApplicationMessage(it)
         MessageType.CLOSE -> handleClose(it)
         else -> {
             // TODO checks
             val incoming = current.signallingChannel!!.message as MutableSharedFlow
             val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sessionSharedKey)
-            val unpacked = msgPacker.unpack(Payload(plainText.bytes))
+            val unpacked = unpack(Payload(plainText.bytes))
             incoming.tryEmit(
                 unpacked
             )
@@ -94,9 +97,9 @@ private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
     }
 }
 
-private fun messageType(it: Message, sharedKey: SharedKey, msgPacker: MessagePacker): MessageType {
+private fun SaltyRtcClient.messageType(it: Message, sharedKey: SharedKey): MessageType {
     val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
-    val payloadMap = msgPacker.unpack(Payload(plainText.bytes))
+    val payloadMap = unpack(Payload(plainText.bytes))
     return MessageField.type(payloadMap)
 }
 
@@ -104,7 +107,7 @@ private fun SaltyRtcClient.handleAuthenticatedMessages(it: Message) {
     val sharedKey = current.serverSessionSharedKey
     requireNotNull(sharedKey)
     val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
-    val payloadMap = msgPacker.unpack(Payload(plainText.bytes))
+    val payloadMap = unpack(Payload(plainText.bytes))
     require(payloadMap.containsKey(MessageField.TYPE))
     val type = MessageField.type(payloadMap)
     d("[$debugName] Authenticated Client2Server message: $type")

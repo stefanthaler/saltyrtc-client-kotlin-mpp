@@ -5,7 +5,6 @@ import net.thalerit.saltyrtc.core.entity.messages.responders
 import net.thalerit.saltyrtc.core.entity.messages.signedKeys
 import net.thalerit.saltyrtc.core.entity.messages.yourCookie
 import net.thalerit.saltyrtc.core.state.LastMessageSentTimeStamp
-import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.*
 import net.thalerit.saltyrtc.crypto.CipherText
 import net.thalerit.saltyrtc.crypto.SharedKey

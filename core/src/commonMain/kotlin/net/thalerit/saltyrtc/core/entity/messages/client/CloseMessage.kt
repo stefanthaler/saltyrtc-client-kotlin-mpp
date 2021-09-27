@@ -4,7 +4,6 @@ import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.messages.reason
-import net.thalerit.saltyrtc.core.pack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
 import net.thalerit.saltyrtc.crypto.CipherText
@@ -18,7 +17,7 @@ fun SaltyRtcClient.closeMessage(
     sharedKey: SharedKey,
 ): CloseMessage {
     val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
-    val payloadMap = msgPacker.unpack(Payload(plainText.bytes))
+    val payloadMap = unpack(Payload(plainText.bytes))
 
     payloadMap.requireType(MessageType.CLOSE)
     payloadMap.requireFields(MessageField.REASON)

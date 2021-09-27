@@ -4,7 +4,6 @@ import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.nonce
-import net.thalerit.saltyrtc.core.pack
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
 import net.thalerit.saltyrtc.crypto.PublicKey
 import net.thalerit.saltyrtc.crypto.SharedKey

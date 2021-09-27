@@ -7,8 +7,6 @@ import net.thalerit.saltyrtc.core.entity.messages.data
 import net.thalerit.saltyrtc.core.entity.messages.task
 import net.thalerit.saltyrtc.core.entity.messages.tasks
 import net.thalerit.saltyrtc.core.entity.messages.yourCookie
-import net.thalerit.saltyrtc.core.pack
-import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
 import net.thalerit.saltyrtc.crypto.CipherText

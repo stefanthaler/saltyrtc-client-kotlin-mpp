@@ -22,7 +22,7 @@ private class SignallingChannelImpl(
 
     override fun send(payloadMap: Map<MessageField, Any>) {
 
-        saltyRtcClient.send(destination, PlainText(saltyRtcClient.msgPacker.pack(payloadMap).bytes))
+        saltyRtcClient.send(destination, PlainText(saltyRtcClient.pack(payloadMap).bytes))
     }
 
     override val message: SharedFlow<PayloadMap> = MutableSharedFlow(replay = 1)
