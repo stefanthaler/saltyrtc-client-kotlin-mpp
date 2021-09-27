@@ -13,7 +13,17 @@ pluginManagement {
         val kotlinVersion = version("kotlin")
         kotlin("multiplatform") version kotlinVersion
         kotlin("jvm") version kotlinVersion
-        // TODO kotlin("js") version kotlinVersion
+        kotlin("android") version kotlinVersion
+    }
+
+    resolutionStrategy {
+        eachPlugin {
+            when (requested.id.id) {
+                "com.android.library",
+                "com.android.application",
+                -> useModule("com.android.tools.build:gradle:${requested.version}")
+            }
+        }
     }
 }
 

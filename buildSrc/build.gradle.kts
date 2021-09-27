@@ -20,4 +20,5 @@ fun v(artifactId: String): String =
 
 dependencies {
     implementation(kotlin("gradle-plugin", v("kotlin")))
+    implementation("com.android.tools.build:gradle:${v("android.agp")}")
 }

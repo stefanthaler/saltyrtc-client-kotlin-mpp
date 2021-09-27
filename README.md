@@ -6,7 +6,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 # Status
 
-| Feature                      | Common       | JVM          | JS |
+| Feature                      | Common       | JVM          | Android |
 | -------------                | -------------| -------------|------------- |
 | Documentation                |              |              | |
 | Server Authentication        |  Draft ready | Draft ready  | |
@@ -24,6 +24,8 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 
 # Todos
 
+* Modularization
+* Message pack provider
 * Unit Tests
 * Other build targets (Android, JVM, JS, ...)
 * Support multiple WebSocket clients (Ktor, other?)

@@ -3,11 +3,14 @@ plugins {
     kotlin("multiplatform")
 
     `java-library-conventions`
+    `android-library-conventions`
 }
 
 kotlin {
     jvm()
-    
+
+    android()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -41,6 +44,12 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit5"))
+            }
+        }
+
+        val androidMain by getting {
+            dependencies {
+
             }
         }
     }
