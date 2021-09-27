@@ -2,10 +2,10 @@
 
 package net.thalerit.saltyrtc.crypto
 
-import com.goterl.lazysodium.LazySodiumJava
-import com.goterl.lazysodium.SodiumJava
+import com.goterl.lazysodium.LazySodiumAndroid
+import com.goterl.lazysodium.SodiumAndroid
 import com.goterl.lazysodium.interfaces.Box.BEFORENMBYTES
-import com.goterl.lazysodium.interfaces.Box.MACBYTES
+import com.goterl.lazysodium.interfaces.SecretBox.MACBYTES
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.api.Payload
 import net.thalerit.saltyrtc.crypto.*
@@ -19,7 +19,7 @@ import net.thalerit.saltyrtc.crypto.NaClConstants.PUBLIC_KEY_BYTES
  * @see https://libsodium.gitbook.io/doc/
  * @see https://libsodium.gitbook.io/doc/public-key_cryptography
  */
-private val sodium = LazySodiumJava(SodiumJava())
+private val sodium = LazySodiumAndroid(SodiumAndroid())
 
 actual fun sharedKey(ownPrivateKey: PrivateKey, otherPublicKey: PublicKey): SharedKey {
     val sharedKey = ByteArray(BEFORENMBYTES)

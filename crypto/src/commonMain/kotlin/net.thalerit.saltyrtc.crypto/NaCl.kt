@@ -16,8 +16,6 @@ fun generateKeyPair(exclude: NaClKeyPair): NaClKeyPair {
     }
 }
 
-expect fun derivePublicKey(privateKey: NaClKey): NaClKey
-
 expect fun sharedKey(
     ownPrivateKey: PrivateKey,
     otherPublicKey: PublicKey,

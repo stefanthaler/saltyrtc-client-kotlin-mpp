@@ -16,21 +16,22 @@ kotlin {
                 implementation(project(":api"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${v("coroutines")}")
 
-                implementation("com.goterl:resource-loader:${v("resource-loader")}")
-                implementation("net.java.dev.jna:jna:5.5.0")
-                implementation("com.goterl:lazysodium-java:${v("lazysodium-java")}")
+
             }
         }
 
         val jvmMain by getting {
             dependencies {
-
+                implementation("com.goterl:resource-loader:${v("jvm.resource-loader")}")
+                implementation("com.goterl:lazysodium-java:${v("jvm.lazysodium")}")
             }
         }
 
         val androidMain by getting {
             dependencies {
-
+                implementation("net.java.dev.jna:jna:5.8.0@aar") // TODO ?
+                implementation("com.goterl:resource-loader:${v("android.resource-loader")}")
+                implementation("com.goterl:lazysodium-android:${v("android.lazysodium")}")
             }
         }
     }
