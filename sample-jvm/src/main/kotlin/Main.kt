@@ -53,8 +53,23 @@ import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 //        job.join()
 //    }
 //}
+class PrintLogger : Logger {
+    override fun log(msg: String, level: Logger.Level) {
+        println("<$level> $msg")
+    }
+
+}
+
+class A : Loggable {
+    override val logger = PrintLogger()
+}
 
 fun main() {
+    val a = A()
+    a.t("Test")
+}
+
+fun main2() {
 
     val server = signallingServer(
         host = "0.0.0.0",

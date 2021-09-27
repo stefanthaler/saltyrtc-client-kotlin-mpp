@@ -1,22 +1,23 @@
 package net.thalerit.saltyrtc.core.entity.messages.client
 
-import net.thalerit.crypto.CipherText
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.messages.data
 import net.thalerit.saltyrtc.core.entity.messages.task
 import net.thalerit.saltyrtc.core.entity.messages.tasks
 import net.thalerit.saltyrtc.core.entity.messages.yourCookie
-import net.thalerit.saltyrtc.core.entity.pack
-import net.thalerit.saltyrtc.core.entity.unpack
+import net.thalerit.saltyrtc.core.pack
+import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
+import net.thalerit.saltyrtc.crypto.CipherText
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.decrypt
 import net.thalerit.saltyrtc.crypto.encrypt
 
 
-fun authMessage(
+fun SaltyRtcClient.authMessage(
     it: Message,
     sharedKey: SharedKey,
     isInitiator: Boolean,
@@ -42,7 +43,7 @@ fun authMessage(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-fun authMessage(
+fun SaltyRtcClient.authMessage(
     sessionSharedKey: SharedKey,
     nonce: Nonce,
     yourCookie: Cookie, // to other clients cookie

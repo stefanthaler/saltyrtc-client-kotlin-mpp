@@ -1,6 +1,5 @@
 package net.thalerit.saltyrtc.core.protocol
 
-import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.Identity
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.api.Nonce
@@ -12,6 +11,7 @@ import net.thalerit.saltyrtc.core.state.nextSendingNonce
 import net.thalerit.saltyrtc.core.util.requireAuthenticatedToServer
 import net.thalerit.saltyrtc.core.util.requireInitiatorId
 import net.thalerit.saltyrtc.core.util.requireResponderId
+import net.thalerit.saltyrtc.crypto.PublicKey
 import net.thalerit.saltyrtc.crypto.generateKeyPair
 import net.thalerit.saltyrtc.crypto.sharedKey
 

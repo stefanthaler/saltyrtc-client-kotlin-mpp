@@ -1,6 +1,5 @@
 package net.thalerit.saltyrtc.crypto
 
-import net.thalerit.crypto.*
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.api.Payload
 

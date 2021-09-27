@@ -1,4 +1,4 @@
-package net.thalerit.crypto
+package net.thalerit.saltyrtc.crypto
 
 interface NaClKeyPair {
     val publicKey: PublicKey

@@ -6,12 +6,11 @@ import com.goterl.lazysodium.LazySodiumJava
 import com.goterl.lazysodium.SodiumJava
 import com.goterl.lazysodium.interfaces.Box.BEFORENMBYTES
 import com.goterl.lazysodium.interfaces.Box.MACBYTES
-import net.thalerit.crypto.*
-import net.thalerit.crypto.NaClConstants.PRIVATE_KEY_BYTES
-import net.thalerit.crypto.NaClConstants.PUBLIC_KEY_BYTES
 import net.thalerit.saltyrtc.api.Nonce
 import net.thalerit.saltyrtc.api.Payload
 import net.thalerit.saltyrtc.crypto.*
+import net.thalerit.saltyrtc.crypto.NaClConstants.PRIVATE_KEY_BYTES
+import net.thalerit.saltyrtc.crypto.NaClConstants.PUBLIC_KEY_BYTES
 
 
 /**

@@ -1,6 +1,6 @@
 package net.thalerit.saltyrtc.api
 
-import net.thalerit.crypto.PublicKey
+import net.thalerit.saltyrtc.crypto.PublicKey
 
 /**
  * A SaltyRTC compliant server. The server provides the signalling channel clients may communicate with one another.

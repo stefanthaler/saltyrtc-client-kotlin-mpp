@@ -1,13 +1,14 @@
 package net.thalerit.saltyrtc.core.entity.messages.server
 
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.id
 import net.thalerit.saltyrtc.core.entity.messages.reason
-import net.thalerit.saltyrtc.core.entity.unpack
+import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
 
-fun dropResponderMessage(message: Message): DropResponderMessage {
+fun SaltyRtcClient.dropResponderMessage(message: Message): DropResponderMessage {
     val payloadMap = unpack(message.data)
 
     payloadMap.requireType(MessageType.NEW_RESPONDER)

@@ -1,9 +1,6 @@
 package net.thalerit.saltyrtc.core.state
 
 import kotlinx.coroutines.CancellableContinuation
-import net.thalerit.crypto.NaClKeyPair
-import net.thalerit.crypto.PublicKey
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
@@ -11,6 +8,9 @@ import net.thalerit.saltyrtc.core.entity.nonce
 import net.thalerit.saltyrtc.core.entity.withIncreasedSequenceNumber
 import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.util.requireResponderId
+import net.thalerit.saltyrtc.crypto.NaClKeyPair
+import net.thalerit.saltyrtc.crypto.PublicKey
+import net.thalerit.saltyrtc.crypto.SharedKey
 import kotlin.jvm.JvmInline
 
 val ServerIdentity = Identity(address = 0)

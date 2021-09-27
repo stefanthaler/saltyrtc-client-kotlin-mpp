@@ -1,18 +1,19 @@
 package net.thalerit.saltyrtc.core.entity.messages.relayed
 
-import net.thalerit.crypto.CipherText
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.messages.p
-import net.thalerit.saltyrtc.core.entity.pack
-import net.thalerit.saltyrtc.core.entity.unpack
+import net.thalerit.saltyrtc.core.pack
+import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
+import net.thalerit.saltyrtc.crypto.CipherText
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.decrypt
 import net.thalerit.saltyrtc.crypto.encrypt
 
-fun dataMessage(
+fun SaltyRtcClient.dataMessage(
     it: Message,
     sharedKey: SharedKey
 ): DataMessage {
@@ -27,7 +28,7 @@ fun dataMessage(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-fun dataMessage(
+fun SaltyRtcClient.dataMessage(
     data: Payload,
     sharedKey: SharedKey,
     nonce: Nonce,

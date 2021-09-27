@@ -3,9 +3,6 @@ package net.thalerit.saltyrtc.core
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import net.thalerit.crypto.NaClKeyPair
-import net.thalerit.crypto.PlainText
-import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
 import net.thalerit.saltyrtc.core.entity.message
@@ -19,6 +16,9 @@ import net.thalerit.saltyrtc.core.state.ClientState
 import net.thalerit.saltyrtc.core.state.initialClientState
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
 import net.thalerit.saltyrtc.core.state.withSendingNonce
+import net.thalerit.saltyrtc.crypto.NaClKeyPair
+import net.thalerit.saltyrtc.crypto.PlainText
+import net.thalerit.saltyrtc.crypto.PublicKey
 import net.thalerit.saltyrtc.crypto.encrypt
 
 // TODO builder
@@ -138,6 +138,10 @@ internal fun SaltyRtcClient.clearResponderPath(identity: Identity) {
         // TODO clear responders
     )
 }
+
+fun SaltyRtcClient.unpack(payload: Payload): Map<MessageField, Any> = msgPacker.unpack(payload)
+
+fun SaltyRtcClient.pack(payloadMap: Map<MessageField, Any>): Payload = msgPacker.pack(payloadMap)
 
 fun SaltyRtcClient.close() {
     val socket = current.socket

@@ -1,10 +1,5 @@
 package net.thalerit.saltyrtc.crypto
 
-import net.thalerit.crypto.NaClConstants
-import net.thalerit.crypto.PrivateKey
-import net.thalerit.crypto.PublicKey
-import net.thalerit.crypto.SymmetricKey
-
 fun publicKey(keyBytes: ByteArray): PublicKey = PublicKeyImpl(keyBytes)
 fun publicKey(hexString: String): PublicKey = PublicKeyImpl(hexString.fromHexToByteArray())
 fun privateKey(hexString: String): PrivateKey = PrivateKeyImpl(hexString.fromHexToByteArray())

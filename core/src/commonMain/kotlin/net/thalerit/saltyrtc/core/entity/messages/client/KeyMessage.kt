@@ -1,20 +1,16 @@
 package net.thalerit.saltyrtc.core.entity.messages.client
 
-import net.thalerit.crypto.CipherText
-import net.thalerit.crypto.PublicKey
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.messages.key
-import net.thalerit.saltyrtc.core.entity.pack
-import net.thalerit.saltyrtc.core.entity.unpack
+import net.thalerit.saltyrtc.core.pack
+import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
-import net.thalerit.saltyrtc.crypto.decrypt
-import net.thalerit.saltyrtc.crypto.encrypt
-import net.thalerit.saltyrtc.crypto.publicKey
+import net.thalerit.saltyrtc.crypto.*
 
-fun clientSessionKeyMessage(
+fun SaltyRtcClient.clientSessionKeyMessage(
     it: Message,
     sharedKey: SharedKey,
     nonce: Nonce,
@@ -30,7 +26,7 @@ fun clientSessionKeyMessage(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-fun clientSessionKeyMessage(
+fun SaltyRtcClient.clientSessionKeyMessage(
     clientSessionKey: PublicKey,
     sharedKey: SharedKey,
     nonce: Nonce,

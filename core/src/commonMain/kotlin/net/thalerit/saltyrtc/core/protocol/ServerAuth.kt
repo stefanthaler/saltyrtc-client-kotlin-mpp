@@ -1,16 +1,17 @@
 package net.thalerit.saltyrtc.core.protocol
 
-import net.thalerit.crypto.CipherText
+
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
-import net.thalerit.saltyrtc.core.entity.messages.server.serverAuthMessage
 import net.thalerit.saltyrtc.core.entity.nonce
 import net.thalerit.saltyrtc.core.logging.logDebug
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
+import net.thalerit.saltyrtc.crypto.CipherText
 import net.thalerit.saltyrtc.crypto.decrypt
 import net.thalerit.saltyrtc.crypto.sharedKey
+import serverAuthMessage
 
 
 /**

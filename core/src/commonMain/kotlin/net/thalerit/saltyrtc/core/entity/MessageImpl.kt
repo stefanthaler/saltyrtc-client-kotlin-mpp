@@ -1,8 +1,8 @@
 package net.thalerit.saltyrtc.core.entity
 
 
-import net.thalerit.crypto.PlainText
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.crypto.PlainText
 
 fun webSocketMessage(
     message: WebSocketMessage

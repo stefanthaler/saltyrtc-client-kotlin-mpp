@@ -1,14 +1,14 @@
 package net.thalerit.saltyrtc.core.protocol
 
-import net.thalerit.crypto.NaClConstants
-import net.thalerit.crypto.PublicKey
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.Identity
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.client.oneTimeTokenMessage
-import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.intents.ClientIntent
+import net.thalerit.saltyrtc.core.unpack
+import net.thalerit.saltyrtc.crypto.NaClConstants
+import net.thalerit.saltyrtc.crypto.PublicKey
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.secureRandomBytes
 
 

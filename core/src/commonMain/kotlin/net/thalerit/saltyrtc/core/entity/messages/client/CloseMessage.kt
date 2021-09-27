@@ -1,24 +1,24 @@
 package net.thalerit.saltyrtc.core.entity.messages.client
 
-import net.thalerit.crypto.CipherText
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
 import net.thalerit.saltyrtc.core.entity.messages.reason
-import net.thalerit.saltyrtc.core.entity.pack
-import net.thalerit.saltyrtc.core.entity.unpack
+import net.thalerit.saltyrtc.core.pack
 import net.thalerit.saltyrtc.core.util.requireFields
 import net.thalerit.saltyrtc.core.util.requireType
+import net.thalerit.saltyrtc.crypto.CipherText
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.decrypt
 import net.thalerit.saltyrtc.crypto.encrypt
 
 
-fun closeMessage(
+fun SaltyRtcClient.closeMessage(
     it: Message,
-    sharedKey: SharedKey
+    sharedKey: SharedKey,
 ): CloseMessage {
     val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sharedKey)
-    val payloadMap = unpack(Payload(plainText.bytes))
+    val payloadMap = msgPacker.unpack(Payload(plainText.bytes))
 
     payloadMap.requireType(MessageType.CLOSE)
     payloadMap.requireFields(MessageField.REASON)
@@ -27,7 +27,7 @@ fun closeMessage(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-fun closeMessage(
+fun SaltyRtcClient.closeMessage(
     reason: CloseReason,
     sharedKey: SharedKey,
     nonce: Nonce,

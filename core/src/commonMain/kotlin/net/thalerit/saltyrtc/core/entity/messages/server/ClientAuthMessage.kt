@@ -1,10 +1,11 @@
 package net.thalerit.saltyrtc.core.entity.messages.server
 
-import net.thalerit.crypto.PublicKey
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.message
-import net.thalerit.saltyrtc.core.entity.pack
+import net.thalerit.saltyrtc.core.pack
+import net.thalerit.saltyrtc.crypto.PublicKey
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.encrypt
 
 /**
@@ -20,7 +21,7 @@ import net.thalerit.saltyrtc.crypto.encrypt
 }
  */
 @OptIn(ExperimentalStdlibApi::class)
-fun clientAuthMessage(
+fun SaltyRtcClient.clientAuthMessage(
     nonce: Nonce,
     serverCookie: Cookie,
     serverPublicKey: PublicKey,

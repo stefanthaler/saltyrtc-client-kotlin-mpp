@@ -1,18 +1,17 @@
-package net.thalerit.saltyrtc.core.entity.messages.server
-
-import net.thalerit.crypto.CipherText
-import net.thalerit.crypto.SharedKey
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.messages.isInitiatorConnected
 import net.thalerit.saltyrtc.core.entity.messages.responders
 import net.thalerit.saltyrtc.core.entity.messages.signedKeys
 import net.thalerit.saltyrtc.core.entity.messages.yourCookie
-import net.thalerit.saltyrtc.core.entity.unpack
 import net.thalerit.saltyrtc.core.state.LastMessageSentTimeStamp
+import net.thalerit.saltyrtc.core.unpack
 import net.thalerit.saltyrtc.core.util.*
+import net.thalerit.saltyrtc.crypto.CipherText
+import net.thalerit.saltyrtc.crypto.SharedKey
 import net.thalerit.saltyrtc.crypto.decrypt
 
-fun serverAuthMessage(
+fun SaltyRtcClient.serverAuthMessage(
     message: Message,
     isInitiator: Boolean,
     sharedKey: SharedKey,

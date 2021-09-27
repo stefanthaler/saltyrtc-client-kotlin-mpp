@@ -1,4 +1,4 @@
-package net.thalerit.crypto
+package net.thalerit.saltyrtc.crypto
 
 import kotlin.jvm.JvmInline
 

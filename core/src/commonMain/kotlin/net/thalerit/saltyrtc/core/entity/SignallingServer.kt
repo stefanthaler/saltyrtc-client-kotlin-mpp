@@ -1,7 +1,7 @@
 package net.thalerit.saltyrtc.core.entity
 
-import net.thalerit.crypto.PublicKey
 import net.thalerit.saltyrtc.api.Server
+import net.thalerit.saltyrtc.crypto.PublicKey
 
 fun signallingServer(
     host: String,

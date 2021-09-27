@@ -1,8 +1,8 @@
 package net.thalerit.saltyrtc.api
 
 import kotlinx.coroutines.flow.SharedFlow
-import net.thalerit.crypto.NaClKeyPair
-import net.thalerit.crypto.PublicKey
+import net.thalerit.saltyrtc.crypto.NaClKeyPair
+import net.thalerit.saltyrtc.crypto.PublicKey
 
 /**
  *  A SaltyRTC compliant client. The client uses the signalling channel to establish a WebRTC or ORTC peer-to-peer connection.
