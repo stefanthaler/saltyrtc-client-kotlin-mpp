@@ -14,7 +14,7 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 | Server Authentication - Unit Tests|              |              | |
 | Client Authentication        |  Draft ready     | Draft ready      | |
 | Client Authentication - Error Handling|              |              | |
-| Datachannel Chunking                     |   |   | |
+| Data channel Chunking         |  Ongoing  |   | |
 | Tasks                        |              |              | |
 | Tasks - Relayed              |  Draft ready | Draft ready  | |
 | Tasks - Relayed - Tests      |              |              | |
