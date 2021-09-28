@@ -1,4 +1,3 @@
 package net.thalerit.saltyrtc.tasks.protocol
 
-internal class Close {
-}
+// supported by core package

@@ -30,12 +30,14 @@ interface Client {
      * Once the client-to-client handshake has been completed, the user application may send intents that should be handled
      * by the task that has been initialized
      */
-    fun send(taskIntent: TaskIntent)
+    fun queue(taskIntent: TaskIntent)
 
     /**
      * Once the client-to-client handshake has been completed, Messages may be received from the task
      */
     val message: Flow<TaskMessage>
+
+    fun launchOnIntentScope(action: suspend () -> Unit)
 }
 
 object SubProtocols {

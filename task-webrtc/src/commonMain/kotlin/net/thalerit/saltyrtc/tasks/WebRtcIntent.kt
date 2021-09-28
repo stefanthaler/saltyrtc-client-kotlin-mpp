@@ -7,11 +7,12 @@ import net.thalerit.saltyrtc.api.TaskIntent
 import net.thalerit.saltyrtc.tasks.entity.Answer
 import net.thalerit.saltyrtc.tasks.entity.Candidate
 import net.thalerit.saltyrtc.tasks.entity.Offer
+import net.thalerit.saltyrtc.tasks.entity.SecureDataChannel
 
-sealed class WebRtcIntent : TaskIntent {
+internal sealed interface WebRtcIntent : TaskIntent {
     data class SendOffer(
         val offer: Offer
-    ) : WebRtcIntent() {
+    ) : WebRtcIntent {
         override val type: MessageType by lazy {
             MessageType.OFFER
         }
@@ -27,7 +28,7 @@ sealed class WebRtcIntent : TaskIntent {
 
     data class SendAnswer(
         val answer: Answer,
-    ) : WebRtcIntent() {
+    ) : WebRtcIntent {
         override val type: MessageType by lazy {
             MessageType.ANSWER
         }
@@ -43,7 +44,7 @@ sealed class WebRtcIntent : TaskIntent {
 
     data class SendCandidates(
         val candidates: List<Candidate>
-    ) : WebRtcIntent() {
+    ) : WebRtcIntent {
         override val type: MessageType by lazy {
             MessageType.CANDIDATES
         }
@@ -59,6 +60,16 @@ sealed class WebRtcIntent : TaskIntent {
         }
     }
 
+    data class SendHandover(val secureDataChannel: SecureDataChannel) : WebRtcIntent {
+        override val type: MessageType by lazy { MessageType.HANDOVER }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override val payloadMap: PayloadMap by lazy {
+            buildMap {
+                put(MessageField.TYPE, MessageType.HANDOVER)
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalStdlibApi::class)

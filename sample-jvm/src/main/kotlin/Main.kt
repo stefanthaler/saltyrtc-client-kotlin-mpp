@@ -95,7 +95,7 @@ fun main() {
             print("Failed to open connection: $it")
         }
         connection.onSuccess {
-            initiator.send(RelayedDataIntent.SendData("Test 1234"))
+            initiator.queue(RelayedDataIntent.SendData("Test 1234"))
         }
         println()
 

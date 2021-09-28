@@ -53,3 +53,12 @@ interface TaskIntent {
     val type: MessageType
     val payloadMap: PayloadMap
 }
+
+fun taskMessageReceived(message: TaskMessage): TaskMessageReceived {
+    return TaskMessageReceived(message.type, message.payloadMap)
+}
+
+data class TaskMessageReceived(
+    override val type: MessageType,
+    override val payloadMap: PayloadMap
+) : TaskIntent, TaskMessage

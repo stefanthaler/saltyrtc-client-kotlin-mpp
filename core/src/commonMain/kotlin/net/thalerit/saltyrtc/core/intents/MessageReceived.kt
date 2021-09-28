@@ -1,9 +1,6 @@
 package net.thalerit.saltyrtc.core.intents
 
-import net.thalerit.saltyrtc.api.Message
-import net.thalerit.saltyrtc.api.MessageField
-import net.thalerit.saltyrtc.api.MessageType
-import net.thalerit.saltyrtc.api.Payload
+import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.core.entity.ClientClientAuthState
 import net.thalerit.saltyrtc.core.entity.ClientServerAuthState
@@ -78,7 +75,6 @@ private fun SaltyRtcClient.handleClientClientMessage(it: Message) {
 }
 
 private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
-    val task = current.task!!
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
     requireNotNull(sessionSharedKey)
@@ -89,9 +85,7 @@ private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
     when (message.type) {
         MessageType.CLOSE -> handleClose(it)
         else -> {
-            if (task.emitToClient(message)) {
-                emit(message)
-            }
+            queue(taskMessageReceived(message))
         }
     }
 }

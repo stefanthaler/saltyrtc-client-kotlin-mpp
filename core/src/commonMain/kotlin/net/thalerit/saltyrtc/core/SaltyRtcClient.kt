@@ -118,7 +118,7 @@ class SaltyRtcClient(
     /**
      * Pass a TaskIntent to the initialized task.
      */
-    override fun send(intent: TaskIntent) {
+    override fun queue(intent: TaskIntent) {
         require(current.authState == ClientServerAuthState.AUTHENTICATED)
         current.task!!
         taskIntents.trySend(intent)
@@ -131,14 +131,27 @@ class SaltyRtcClient(
         intentScope.launch {
             taskIntents.receiveAsFlow().collect {
                 val task = current.task!!
-                task.handle(it)
+                if (it is TaskMessageReceived) {
+                    if (task.emitToClient(it)) {
+                        emit(it)
+                    }
+                } else {
+                    task.handle(it)
+                }
             }
+        }
+    }
+
+    override fun launchOnIntentScope(action: suspend () -> Unit) {
+        intentScope.launch {
+            action()
         }
     }
 
     private val taskMessages = Channel<TaskMessage>(Channel.UNLIMITED)
     override val message: Flow<TaskMessage> = taskMessages.receiveAsFlow()
-    internal fun emit(taskMessage: TaskMessage) {
+
+    private fun emit(taskMessage: TaskMessage) {
         taskMessages.trySend(taskMessage)
     }
 

@@ -1,14 +1,11 @@
 package net.thalerit.saltyrtc.tasks
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import net.thalerit.saltyrtc.api.*
+import net.thalerit.saltyrtc.core.SaltyRtcClient
+import net.thalerit.saltyrtc.tasks.entity.SecureDataChannel
+import net.thalerit.saltyrtc.tasks.message.WebRtcMessage
+import net.thalerit.saltyrtc.tasks.message.toWebRtcMessage
 
 /**
  * This task uses the end-to-end encryption techniques of SaltyRTC to set up a secure WebRTC peer-to-peer connection.
@@ -23,6 +20,15 @@ class WebRtcTask(
     private val isHandover: Boolean,
 ) : Task {
     private var channel: SignallingChannel? = null
+    private var secureDataChannel: SecureDataChannel? = null
+
+    private var _isInitialized: Boolean?
+        get() = isInitialized.value
+        set(value) {
+            isInitialized as MutableStateFlow<Boolean?>
+            isInitialized.value = value
+        }
+    override val isInitialized: StateFlow<Boolean?> = MutableStateFlow(null)
 
     init {
         exclude.requireValidChannelIds()
@@ -36,27 +42,6 @@ class WebRtcTask(
             _state.value = value
         }
 
-    private val intents = Channel<WebRtcIntent>(capacity = Channel.UNLIMITED)
-    internal val intentScope = CoroutineScope(Dispatchers.Default) // TODO
-
-    init {
-        intentScope.launch {
-            intents.receiveAsFlow().collect {
-                handle(it)
-            }
-        }
-    }
-
-    private suspend fun handle(it: WebRtcIntent) {
-        when (it) {
-            // TODO
-        }
-    }
-
-    fun queue(intent: WebRtcIntent) {
-        intents.trySend(intent)
-    }
-
     internal var negotiatedHandover: Boolean = false
     lateinit var otherExclude: List<Int>
 
@@ -67,23 +52,77 @@ class WebRtcTask(
     override fun openConnection(channel: SignallingChannel, data: Any?) {
         this.channel = channel
 
-        val dataMap = data as Map<String, Any>
+        val dataMap = data as Map<String, Any> // TODO proper validation
         otherExclude = dataMap[paramExclude] as List<Int>
         negotiatedHandover = dataMap[paramExclude] as Boolean && isHandover
         otherExclude.requireValidChannelIds()
-    }
 
+        _isInitialized = true
+    }
 
     override fun handleClosed(reason: CloseReason) {
-        this.channel = null
+        this.channel = null // TODO
     }
 
-    override fun handle(intent: TaskIntent) {
-        TODO("Not yet implemented")
+    internal fun assemble(chunk: ByteArray): TaskMessage? {
+        //TODO
+        // collect chunks
+        // if message is complete, assemble and clear chunks.
+        // if first message, set their cookie. validate nonce otherwise
+        // decrypt
+
+        // should end up at webRtcMessage
+        return null
     }
 
-    override fun emitToClient(taskMessage: TaskMessage): Boolean {
-        TODO("Not yet implemented")
+    // should not be called directly
+    override fun handle(intent: TaskIntent) { // outgoing tasks
+        // TODO handle if is handover was already performed
+        require(
+            intent.type in listOf(
+                MessageType.HANDOVER,
+                MessageType.OFFER,
+                MessageType.CANDIDATES,
+                MessageType.ANSWER
+            )
+        )
+
+        if (intent is WebRtcIntent.SendHandover) {
+            secureDataChannel = intent.secureDataChannel
+            current = current.copy(
+                handoverSent = true
+            )
+            // Todo
+            //  initialize nonce
+        }
+
+        if (current.handoverIsCompleted) {
+            val data: ByteArray = TODO("Convert intent to secure, chunked data message")
+            //TODO
+            // encrypt
+            // chunk
+            // increase nonce and stuff
+
+            secureDataChannel?.send?.invoke(data)
+        } else {
+            val signallingChannel = channel!!
+            signallingChannel.send(intent.payloadMap)
+        }
+    }
+
+    override fun emitToClient(taskMessage: TaskMessage): Boolean { // incoming task messages
+        return when (taskMessage.type) {
+            MessageType.OFFER -> true
+            MessageType.ANSWER -> true
+            MessageType.CANDIDATES -> true
+            MessageType.HANDOVER -> {
+                current = current.copy(
+                    handoverReceived = true
+                )
+                false
+            }
+            else -> throw IllegalArgumentException("TaskMessage is not supported")
+        }
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -105,3 +144,19 @@ private fun List<Int>.requireValidChannelIds() {
         require(it in 0..65535)
     }
 }
+
+internal val SaltyRtcClient.webRtcTask: WebRtcTask
+    get() = current.task!! as WebRtcTask
+
+private val webRtcMessagesTypes = listOf(
+    MessageType.APPLICATION,
+    MessageType.OFFER,
+    MessageType.ANSWER,
+    MessageType.CANDIDATES,
+    MessageType.CLOSE,
+)
+
+internal val SaltyRtcClient.webRtcMessage: Flow<WebRtcMessage>
+    get() = message
+        .filter { it.type in webRtcMessagesTypes }
+        .map { it.toWebRtcMessage() }
