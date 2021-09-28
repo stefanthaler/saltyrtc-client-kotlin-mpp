@@ -16,9 +16,16 @@ enum class MessageField {
     TASK,
     DATA,
 
-    //relayed task
+    // relayed task
     P,
+
+    // webrtc task
+    OFFER,
+    ANSWER,
+    CANDIDATES,
     ;
+
+    override fun toString(): String = name.lowercase()
 
     companion object
 }

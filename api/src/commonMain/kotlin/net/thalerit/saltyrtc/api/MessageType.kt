@@ -20,8 +20,15 @@ enum class MessageType(val type: String) {
     CLOSE("close"),
 
 
-    // relayed data
+    // relayed data task
     DATA("data"),
+
+    // web rtc task
+    OFFER("offer"),
+    ANSWER("answer"),
+    CANDIDATES("candidates"),
+    HANDOVER("handover"),
+
     ;
 
     companion object {

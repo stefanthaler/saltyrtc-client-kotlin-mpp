@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import net.thalerit.saltyrtc.api.*
-import net.thalerit.saltyrtc.tasks.intent.WebRtcIntent
 
 /**
  * This task uses the end-to-end encryption techniques of SaltyRTC to set up a secure WebRTC peer-to-peer connection.
