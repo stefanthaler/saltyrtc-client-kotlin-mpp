@@ -8,9 +8,9 @@ sealed class ClientIntent {
     data class Connect(
         val isInitiator: Boolean,
         val path: SignallingPath,
-        val task: Task<out Connection>,
+        val task: Task,
         val webSocket: (Server) -> WebSocket,
-        val continuation: CancellableContinuation<Result<Connection>>,
+        val continuation: CancellableContinuation<Result<Unit>>,
         val otherPermanentPublicKey: PublicKey?
     ) : ClientIntent()
 

@@ -1,5 +1,6 @@
 package net.thalerit.saltyrtc.core.protocol
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import net.thalerit.saltyrtc.core.intents.ClientIntent
 import net.thalerit.saltyrtc.core.state.InitiatorIdentity
 import net.thalerit.saltyrtc.core.state.mutableApply
 import net.thalerit.saltyrtc.core.state.nextSendingNonce
+import net.thalerit.saltyrtc.logging.d
 import kotlin.coroutines.resume
 
 /**
@@ -49,6 +51,7 @@ import kotlin.coroutines.resume
 
  * The message SHALL be NaCl public-key encrypted by the client's session key pair and the other client's session key pair.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
     val source = it.nonce.source
     val sessionSharedKey = current.sessionSharedKeys[source]
@@ -73,9 +76,10 @@ internal fun SaltyRtcClient.handleClientAuthMessage(it: Message) {
 
     task.openConnection(signallingChannel, authMessage.data[task.url])
     intentScope.launch {
-        task.connection.filterNotNull().collect {
+        task.isInitialized.filterNotNull().collect {
+            d("$debugName Initialized: $it")
             if (continuation.isActive) {
-                continuation.resume(it)
+                continuation.resume(Result.success(Unit))
             } else {
                 // TODO
             }

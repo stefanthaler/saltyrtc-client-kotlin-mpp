@@ -136,8 +136,11 @@ class SaltyRtcClient(
         }
     }
 
-
-    override val message: SharedFlow<TaskMessage> = MutableSharedFlow() // TODO
+    private val taskMessages = Channel<TaskMessage>(Channel.UNLIMITED)
+    override val message: Flow<TaskMessage> = taskMessages.receiveAsFlow()
+    internal fun emit(taskMessage: TaskMessage) {
+        taskMessages.trySend(taskMessage)
+    }
 
     internal fun unpack(payload: Payload): Map<MessageField, Any> = msgPacker.unpack(payload)
 

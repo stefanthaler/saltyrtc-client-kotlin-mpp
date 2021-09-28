@@ -1,5 +1,6 @@
 package net.thalerit.saltyrtc.api
 
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.jvm.JvmInline
 
 /**
@@ -26,6 +27,8 @@ interface Task {
      * Whether an incoming task message should be published to client.
      */
     fun emitToClient(taskMessage: TaskMessage): Boolean
+
+    val isInitialized: StateFlow<Boolean?>
 
     val authData: Any?
 }

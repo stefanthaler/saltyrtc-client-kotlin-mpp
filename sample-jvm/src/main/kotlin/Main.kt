@@ -12,6 +12,8 @@ import net.thalerit.saltyrtc.defaultMsgPacker
 import net.thalerit.saltyrtc.ktorWebSocket
 import net.thalerit.saltyrtc.logging.Logger
 import net.thalerit.saltyrtc.logging.Loggers
+import net.thalerit.saltyrtc.logging.d
+import net.thalerit.saltyrtc.tasks.RelayedDataIntent
 import net.thalerit.saltyrtc.tasks.RelayedDataTaskV0
 
 /**
@@ -93,7 +95,7 @@ fun main() {
             print("Failed to open connection: $it")
         }
         connection.onSuccess {
-            it.send("Test 1234")
+            initiator.send(RelayedDataIntent.SendData("Test 1234"))
         }
         println()
 
@@ -115,7 +117,7 @@ fun main() {
     val responder = SaltyRtcClient("Responder", server, responderKeys, defaultMsgPacker, Loggers.default)
 
     val responderJob = GlobalScope.launch {
-        val responder = responder.connect(
+        responder.connect(
             isInitiator = false,
             path = signallingPath,
             task = RelayedDataTaskV0(),
@@ -124,8 +126,9 @@ fun main() {
             },
             initiatorKeys.publicKey
         )
-        responder.getOrNull()?.data?.collect {
-            println("Received: $it")
+        responder.d("Connected")
+        responder.message.collect {
+            responder.d("Received a message: $it")
         }
     }
 

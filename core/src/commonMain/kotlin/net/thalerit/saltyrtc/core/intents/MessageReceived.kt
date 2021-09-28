@@ -1,6 +1,5 @@
 package net.thalerit.saltyrtc.core.intents
 
-import kotlinx.coroutines.flow.MutableSharedFlow
 import net.thalerit.saltyrtc.api.Message
 import net.thalerit.saltyrtc.api.MessageField
 import net.thalerit.saltyrtc.api.MessageType
@@ -86,13 +85,12 @@ private fun SaltyRtcClient.handleAuthenticatedClientClientMessage(it: Message) {
     val plainText = decrypt(CipherText(it.data.bytes), it.nonce, sessionSharedKey)
     val unpacked = unpack(Payload(plainText.bytes))
     val message = taskMessage(unpacked)
-
+    d("Received message: ${message.type}")
     when (message.type) {
         MessageType.CLOSE -> handleClose(it)
         else -> {
             if (task.emitToClient(message)) {
-                // TODO nicer emission
-                (this.message as MutableSharedFlow).tryEmit(message)
+                emit(message)
             }
         }
     }

@@ -25,11 +25,15 @@ enum class MessageType(val type: String) {
     ;
 
     companion object {
-        fun valueOfType(type: String): MessageType = byType[type]!!
+        private val byType by lazy {
+            values().associateBy { it.type }
+        }
+
+        fun valueOfType(type: String): MessageType {
+            return byType[type.lowercase()]!!
+        }
     }
 }
 
-private val byType by lazy {
-    MessageType.values().associateBy { it.type }
-}
+
 

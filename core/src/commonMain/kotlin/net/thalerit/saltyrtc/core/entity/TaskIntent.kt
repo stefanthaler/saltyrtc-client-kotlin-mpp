@@ -11,7 +11,7 @@ fun taskIntent(payloadMap: PayloadMap): TaskIntent {
 }
 
 private data class TaskIntentImpl(
-    val payloadMap: PayloadMap
+    override val payloadMap: PayloadMap
 ) : TaskIntent {
     override val type: MessageType by lazy {
         MessageField.type(payloadMap)

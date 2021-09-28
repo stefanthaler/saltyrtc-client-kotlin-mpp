@@ -1,6 +1,6 @@
 package net.thalerit.saltyrtc.api
 
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import net.thalerit.saltyrtc.crypto.NaClKeyPair
 import net.thalerit.saltyrtc.crypto.PublicKey
 
@@ -35,7 +35,7 @@ interface Client {
     /**
      * Once the client-to-client handshake has been completed, Messages may be received from the task
      */
-    val message: SharedFlow<TaskMessage>
+    val message: Flow<TaskMessage>
 }
 
 object SubProtocols {
