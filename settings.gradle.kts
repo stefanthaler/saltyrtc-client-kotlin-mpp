@@ -7,10 +7,10 @@ pluginManagement {
     }
 
     plugins {
-        fun version(artifactId: String): String =
+        fun v(artifactId: String): String =
             extra["${artifactId}.version"] as String
 
-        val kotlinVersion = version("kotlin")
+        val kotlinVersion = v("kotlin")
         kotlin("multiplatform") version kotlinVersion
         kotlin("jvm") version kotlinVersion
         kotlin("android") version kotlinVersion
@@ -51,3 +51,4 @@ include(":task-webrtc")
 
 // samples
 include(":sample-jvm")
+include(":sample-android")

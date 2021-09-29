@@ -25,6 +25,7 @@ hs_err_pid*
 
 .idea/**
 .gradle/**
+.gradle**
 build/**
 
 */build/**
@@ -37,3 +38,4 @@ local.properties
 
 # buildSrc
 buildSrc/build/**
+buildSrc/.gradle/**

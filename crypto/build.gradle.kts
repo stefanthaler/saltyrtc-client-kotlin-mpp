@@ -29,7 +29,7 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
-                implementation("net.java.dev.jna:jna:5.8.0@aar") // TODO ?
+                //implementation("net.java.dev.jna:jna:5.8.0@aar") // TODO ?
                 implementation("com.goterl:resource-loader:${v("android.resource-loader")}")
                 implementation("com.goterl:lazysodium-android:${v("android.lazysodium")}")
             }
