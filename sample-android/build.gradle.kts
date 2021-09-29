@@ -15,6 +15,10 @@ dependencies {
     implementation(project(":websocket-ktor"))
     implementation(project(":task-relayed-data"))
 
+    // web rtc
+    implementation("org.webrtc:google-webrtc:1.0.32006")
+
+
     // kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${v("coroutines")}")
 

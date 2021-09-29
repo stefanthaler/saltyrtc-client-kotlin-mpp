@@ -38,8 +38,26 @@ Kotlin multiplatform programming implementation of the SaltyRTC client.
 * [Kotlin MPP](https://kotlinlang.org/docs/reference/mpp-intro.html)
 * [SaltyRTC Clients](https://saltyrtc.org/pages/implementations.html)
 * [SaltyRTC Protocol](https://github.com/saltyrtc/saltyrtc-meta/blob/master/Protocol.md)
+* [WebRTC](https://webrtc.org/getting-started/data-channels)
+* [TrickleICE](https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/) This page tests the trickle ICE
+  functionality in a WebRTC implementation.
 
 # Usage [IN DEVELOPMENT]
+
+## Open Signalling Channel
+
+* Keys required
+*
+
+## WebRTC Task
+
+### STUN and TURN servers
+
+### Offer
+
+### Answer
+
+### ICE candidates
 
 ## Start server
 

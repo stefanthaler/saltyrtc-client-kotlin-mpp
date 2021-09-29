@@ -97,9 +97,6 @@ fun main() {
         connection.onSuccess {
             initiator.queue(RelayedDataIntent.SendData("Test 1234"))
         }
-        println()
-
-
     }
 
 
