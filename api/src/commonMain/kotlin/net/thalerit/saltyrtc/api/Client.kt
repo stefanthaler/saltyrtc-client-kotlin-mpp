@@ -37,6 +37,9 @@ interface Client {
      */
     val message: Flow<TaskMessage>
 
+    /**
+     * For internal use only
+     */
     fun launchOnIntentScope(action: suspend () -> Unit)
 }
 

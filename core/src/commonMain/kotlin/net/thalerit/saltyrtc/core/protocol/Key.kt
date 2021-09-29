@@ -80,7 +80,11 @@ internal fun SaltyRtcClient.handleClientSessionKeyMessage(it: Message) {
     }
 }
 
-private fun SaltyRtcClient.updateSession(identity: Identity, sessionOtherPublicKey: PublicKey, otherNonce: Nonce) {
+private fun SaltyRtcClient.updateSession(
+    identity: Identity,
+    sessionOtherPublicKey: PublicKey,
+    otherNonce: Nonce
+) {
     val ownSessionKeyPair = current.sessionOwnKeyPair[identity]
     requireNotNull(ownSessionKeyPair)
 

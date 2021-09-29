@@ -24,7 +24,7 @@ import net.thalerit.saltyrtc.logging.w
 
 // TODO builder
 class SaltyRtcClient(
-    val debugName: String = "SaltyRtcClient",
+    val debugName: String = "SaltySaltySignallingChannel",
     internal val signallingServer: Server,
     override val ownPermanentKey: NaClKeyPair,
     private val msgPacker: MessagePacker,

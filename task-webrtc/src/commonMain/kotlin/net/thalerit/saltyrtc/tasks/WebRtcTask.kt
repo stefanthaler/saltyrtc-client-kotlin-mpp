@@ -1,11 +1,11 @@
 package net.thalerit.saltyrtc.tasks
 
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import net.thalerit.saltyrtc.api.*
 import net.thalerit.saltyrtc.core.SaltyRtcClient
 import net.thalerit.saltyrtc.tasks.entity.SecureDataChannel
-import net.thalerit.saltyrtc.tasks.message.WebRtcMessage
-import net.thalerit.saltyrtc.tasks.message.toWebRtcMessage
 
 /**
  * This task uses the end-to-end encryption techniques of SaltyRTC to set up a secure WebRTC peer-to-peer connection.
@@ -148,15 +148,4 @@ private fun List<Int>.requireValidChannelIds() {
 internal val SaltyRtcClient.webRtcTask: WebRtcTask
     get() = current.task!! as WebRtcTask
 
-private val webRtcMessagesTypes = listOf(
-    MessageType.APPLICATION,
-    MessageType.OFFER,
-    MessageType.ANSWER,
-    MessageType.CANDIDATES,
-    MessageType.CLOSE,
-)
 
-internal val SaltyRtcClient.webRtcMessage: Flow<WebRtcMessage>
-    get() = message
-        .filter { it.type in webRtcMessagesTypes }
-        .map { it.toWebRtcMessage() }
