@@ -47,7 +47,7 @@ private class WebSocketImpl(
                     .collect { _frame.emit(Result.success(it)) }
             }
         }.invokeOnCompletion {
-            GlobalScope.launch(NonCancellable) {
+            scope.launch(NonCancellable) {
                 try {
                     session?.close()
                     session = null

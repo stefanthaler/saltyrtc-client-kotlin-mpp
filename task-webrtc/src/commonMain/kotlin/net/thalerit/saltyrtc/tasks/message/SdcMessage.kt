@@ -1,6 +1,7 @@
 package net.thalerit.saltyrtc.tasks.message
 
 import net.thalerit.saltyrtc.api.Payload
+import kotlin.jvm.JvmInline
 
 /**
  * For all messages that are being exchanged over secure data channels (such as the handed over signalling channel),
@@ -43,7 +44,7 @@ internal data class SdcMessage(
     }
 }
 
-internal value class DataChannelId(val id: UShort)
-
-
-
+@JvmInline
+internal value class DataChannelId(
+    val id: UShort
+    )

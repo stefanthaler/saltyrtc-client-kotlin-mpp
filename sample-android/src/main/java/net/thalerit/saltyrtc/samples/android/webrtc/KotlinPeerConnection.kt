@@ -49,15 +49,15 @@ internal class RtcClientImpl(
     override val connection = factory.createPeerConnection(
         iceServers,
         object : BasePeerConnectionObserver() {
-            override fun onSignalingChange(state: PeerConnection.SignalingState?) {
-                if (state != null) {
-                    (signallingState as MutableStateFlow).value = state
+            override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
+                if (p0 != null) {
+                    (signallingState as MutableStateFlow).value = p0
                 }
             }
 
-            override fun onIceGatheringChange(state: PeerConnection.IceGatheringState?) {
-                if (state != null) {
-                    (iceGatheringState as MutableStateFlow).value = state
+            override fun onIceGatheringChange(p0: PeerConnection.IceGatheringState?) {
+                if (p0 != null) {
+                    (iceGatheringState as MutableStateFlow).value = p0
                 }
             }
 
