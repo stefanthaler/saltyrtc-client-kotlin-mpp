@@ -17,8 +17,7 @@ dependencies {
 
     // web rtc
     implementation("org.webrtc:google-webrtc:1.0.32006")
-
-
+    
     // kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${v("coroutines")}")
 
@@ -37,7 +36,7 @@ dependencies {
 }
 
 android {
-    compileSdkVersion(i("android.sdk.compile"))
+    compileSdk = i("android.sdk.compile")
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
