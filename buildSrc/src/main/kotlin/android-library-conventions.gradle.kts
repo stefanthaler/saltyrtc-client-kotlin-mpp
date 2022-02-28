@@ -3,13 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion(i("android.sdk.min"))
+    compileSdk = i("android.sdk.min")
 
     defaultConfig {
-        minSdkVersion(i("android.sdk.min"))
-        targetSdkVersion(i("android.sdk.target"))
-        versionCode = 1
-        versionName = "1.0.0" // semantic versioning
+        minSdk = i("android.sdk.min")
+        targetSdk = i("android.sdk.target")
     }
 
     compileOptions {
